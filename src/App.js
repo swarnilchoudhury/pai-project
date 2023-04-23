@@ -6,11 +6,12 @@ import {
 
 import LoginForm from "./Components/LoginForm";
 
-
 function App() {
+
+
   return (
     <>
-    <LoginForm/>
+      <LoginForm  />
     </>
   );
 }

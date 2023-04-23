@@ -1,6 +1,6 @@
 .p-5 {
     padding: 2rem!important;
-    height: 72vh;
+    height: 80vh;
 }
 
 #LoginBtn, #EmailTxt, #PasswordTxt{
@@ -12,7 +12,7 @@
 
 }
 
-#pText{
+.pText{
     font-size: 24px;
     font-family: 'Open Sans', sans-serif;
 }
