@@ -1,10 +1,16 @@
-.p-5 {
-    padding: 2rem!important;
-    height: 80vh;
+body{
+    background-color: #508bfc;
 }
 
-#LoginBtn, #EmailTxt, #PasswordTxt{
-    width:100%;
+.p-5 {
+    padding: 2rem !important;
+}
+
+#LoginBtn,
+#ClearBtn,
+#EmailTxt,
+#PasswordTxt {
+    width: 100%;
     margin-top: 1rem;
     padding-top: 1rem;
     padding-bottom: 1rem;
@@ -12,12 +18,12 @@
 
 }
 
-.pText{
+.pText {
     font-size: 24px;
     font-family: 'Open Sans', sans-serif;
 }
 
-#hText{
+#hText {
     font-weight: bold;
     font-family: 'Open Sans', sans-serif;
 }
