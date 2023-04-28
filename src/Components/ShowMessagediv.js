@@ -1,14 +1,18 @@
 import React from 'react';
 
-const ShowMessagediv = (props) => {
+export default function ShowMessagediv (props) {
 
     console.log(props);
+    let className = props.props.className;
+    let role = props.props.role;
+    let innerText = props.props.innerText;
+   
   return (
     <>
-        <div id="showMessage" className={props.props.className}>{props.props.innerText}</div>
+        <div id="showMessage" className={className} role={role}>{innerText}</div>
       
     </>
   )
 }
 
-export default ShowMessagediv;
+

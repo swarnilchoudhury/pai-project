@@ -6,6 +6,7 @@ import {
 } from "react-router-dom";
 
 import LoginForm from "./Components/LoginForm/LoginForm.js";
+import HomePage from "./Components/HomePage/HomePage.js";
 
 function App() {
 
@@ -13,6 +14,7 @@ function App() {
     <>
     <Routes>
        <Route exact path='/' element={<LoginForm/>}/>
+       <Route exact path='/Home' element={<HomePage/>}/>
        </Routes>
     </>
   );

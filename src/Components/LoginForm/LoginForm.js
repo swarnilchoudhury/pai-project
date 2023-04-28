@@ -5,11 +5,12 @@ import { useNavigate } from 'react-router-dom';
 import '../../ComponetsStyles/LoginForm.css'
 import ShowMessagediv from '../../Components/ShowMessagediv.js'
 
-export default function LoginForm() {
+export default function LoginForm(props) {
 
     const [EmailTxt, setEmailTxt] = useState("");
     const [PasswordTxt, setPasswordTxt] = useState("");
     const [user, setUser] = useState(null);
+    const [count, setCount] = useState(0);
 
     const [showMessage, setshowMessage] = useState({
         innerText: "",
@@ -20,6 +21,17 @@ export default function LoginForm() {
     let navigate = useNavigate();
 
     useEffect(() => {
+
+        if (props.Message !== null && props.Message) {
+
+            setCount(count + 1);
+            
+            setshowMessage({
+                innerText: "LogOut Successfull.",
+                className: "alert alert-danger",
+                role: "alert"
+            });
+        }
 
         const unsubscribe = auth.onAuthStateChanged((user) => {
 
@@ -46,19 +58,17 @@ export default function LoginForm() {
     const LoginBtnOnClick = async (e) => {
 
         e.preventDefault();
-        let showMessage = document.getElementById("showMessage");
+
+        setCount(count + 1);
 
         if (EmailTxt == "" || PasswordTxt == "") {
 
-            // setshowMessage({
-            //     innerText: "Please Enter User Name and Password to Login.",
-            //     className: "alert alert-danger",
-            //     role: "alert"
-            // });
+            setshowMessage({
+                innerText: "Please Enter User Name and Password to Login.",
+                className: "alert alert-danger",
+                role: "alert"
+            });
 
-            showMessage.innerText = "Please Enter User Name and Password to Login.";
-            showMessage.className = "alert alert-danger";
-            showMessage.role = "alert";
         }
         else {
 
@@ -70,9 +80,12 @@ export default function LoginForm() {
 
             }
             catch {
-                showMessage.innerText = "Entered User Name or Password is incorrect. Please Try Again";
-                showMessage.className = "alert alert-danger";
-                showMessage.role = "alert";
+
+                setshowMessage({
+                    innerText: "Entered User Name or Password is incorrect. Please Try Again.",
+                    className: "alert alert-danger",
+                    role: "alert"
+                });
 
                 setEmailTxt('');
                 setPasswordTxt('');
@@ -85,16 +98,19 @@ export default function LoginForm() {
     }
 
     const ClearBtnOnClick = (e) => {
+
         e.preventDefault();
 
-        let showMessage = document.getElementById("showMessage");
+        setCount(count + 1);
 
         setEmailTxt('');
         setPasswordTxt('');
 
-        showMessage.innerText = "";
-        showMessage.className = "";
-        showMessage.role = "";
+        setshowMessage({
+            innerText: "",
+            className: "",
+            role: ""
+        });
     }
 
 
@@ -120,9 +136,8 @@ export default function LoginForm() {
                                     <button id="LoginBtn" className="btn btn-primary" type="submit" onClick={(e) => LoginBtnOnClick(e)}>Login</button>
                                     <button id="ClearBtn" className="btn btn-primary" type="reset" onClick={(e) => ClearBtnOnClick(e)}>Clear</button>
                                     <br />
-                                    <br />                                                                            
-                                     {/* <ShowMessagediv props={showMessage} /> */}
-                                    <div id="showMessage"></div>
+                                    <br />
+                                    <ShowMessagediv key={count} props={showMessage} />
                                 </div>
                             </div>
                         </div>
