@@ -24,7 +24,7 @@ export default function LoginForm(props) {
 
         if (props.Message !== null && props.Message) {
 
-            setCount(count + 1);
+            setCount(count=> count + 1);
             
             setshowMessage({
                 innerText: "LogOut Successfull.",
@@ -35,9 +35,9 @@ export default function LoginForm(props) {
 
         const unsubscribe = auth.onAuthStateChanged((user) => {
 
-            if (sessionStorage.getItem('AuthToken') !== null
+            if (localStorage.getItem('AuthToken') !== null
                 && user !== null
-                && sessionStorage.getItem('AuthToken') === user.accessToken) {
+                && localStorage.getItem('AuthToken') === user.accessToken) {
 
                 setUser(user);
                 navigate('/Home');
@@ -59,7 +59,7 @@ export default function LoginForm(props) {
 
         e.preventDefault();
 
-        setCount(count + 1);
+        setCount(count=> count + 1);
 
         if (EmailTxt == "" || PasswordTxt == "") {
 
@@ -75,7 +75,7 @@ export default function LoginForm(props) {
             try {
 
                 let response = await signInWithEmailAndPassword(auth, EmailTxt, PasswordTxt);
-                sessionStorage.setItem('AuthToken', response.user.accessToken);
+                localStorage.setItem('AuthToken', response.user.accessToken);
                 navigate('/Home');
 
             }
@@ -87,7 +87,6 @@ export default function LoginForm(props) {
                     role: "alert"
                 });
 
-                setEmailTxt('');
                 setPasswordTxt('');
                 navigate('/');
 
@@ -101,7 +100,7 @@ export default function LoginForm(props) {
 
         e.preventDefault();
 
-        setCount(count + 1);
+        setCount(count=> count + 1);
 
         setEmailTxt('');
         setPasswordTxt('');
@@ -124,7 +123,7 @@ export default function LoginForm(props) {
                                 <div className="card-body p-5 text-center">
                                     <h1 id="hText" className="mb-4">Welcome to PAI</h1>
                                     <p className="mb-4 pText">Please Log In to continue</p>
-
+                                    <form onSubmit={LoginBtnOnClick}>
                                     <div className="form-outline mb-4">
                                         <input type="email" id="EmailTxt" value={EmailTxt} placeholder='Email' className="form-control form-control-lg" onChange={(e) => setEmailTxt(e.target.value)} />
                                     </div>
@@ -133,10 +132,11 @@ export default function LoginForm(props) {
                                         <input type="password" id="PasswordTxt" value={PasswordTxt} placeholder='Password' className="form-control form-control-lg" onChange={(e) => setPasswordTxt(e.target.value)} />
                                     </div>
 
-                                    <button id="LoginBtn" className="btn btn-primary" type="submit" onClick={(e) => LoginBtnOnClick(e)}>Login</button>
+                                    <button id="LoginBtn" className="btn btn-primary" type="submit">Login</button>
                                     <button id="ClearBtn" className="btn btn-primary" type="reset" onClick={(e) => ClearBtnOnClick(e)}>Clear</button>
                                     <br />
                                     <br />
+                                    </form>
                                     <ShowMessagediv key={count} props={showMessage} />
                                 </div>
                             </div>
