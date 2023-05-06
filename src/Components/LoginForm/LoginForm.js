@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { auth } from '../FirebaseConfig.js';
 import { signInWithEmailAndPassword } from 'firebase/auth'
 import { useNavigate } from 'react-router-dom';
@@ -7,9 +7,8 @@ import ShowMessagediv from '../../Components/ShowMessagediv.js'
 
 export default function LoginForm(props) {
 
-    const [EmailTxt, setEmailTxt] = useState("");
-    const [PasswordTxt, setPasswordTxt] = useState("");
-    const [user, setUser] = useState(null);
+    const emailRef = useRef();
+    const passwordRef = useRef();
     const [count, setCount] = useState(0);
 
     const [showMessage, setshowMessage] = useState({
@@ -24,8 +23,8 @@ export default function LoginForm(props) {
 
         if (props.Message !== null && props.Message) {
 
-            setCount(count=> count + 1);
-            
+            setCount(count => count + 1);
+
             setshowMessage({
                 innerText: "LogOut Successfull.",
                 className: "alert alert-danger",
@@ -38,8 +37,7 @@ export default function LoginForm(props) {
             if (localStorage.getItem('AuthToken') !== null
                 && user !== null
                 && localStorage.getItem('AuthToken') === user.accessToken) {
-
-                setUser(user);
+                    
                 navigate('/Home');
 
             }
@@ -59,7 +57,10 @@ export default function LoginForm(props) {
 
         e.preventDefault();
 
-        setCount(count=> count + 1);
+        setCount(count => count + 1);
+
+        let EmailTxt = emailRef.current.value;
+        let PasswordTxt = passwordRef.current.value;
 
         if (EmailTxt == "" || PasswordTxt == "") {
 
@@ -87,7 +88,7 @@ export default function LoginForm(props) {
                     role: "alert"
                 });
 
-                setPasswordTxt('');
+                passwordRef.current.value = "";
                 navigate('/');
 
             }
@@ -100,10 +101,10 @@ export default function LoginForm(props) {
 
         e.preventDefault();
 
-        setCount(count=> count + 1);
+        setCount(count => count + 1);
 
-        setEmailTxt('');
-        setPasswordTxt('');
+        emailRef.current.value = "";
+        passwordRef.current.value = "";
 
         setshowMessage({
             innerText: "",
@@ -124,18 +125,18 @@ export default function LoginForm(props) {
                                     <h1 id="hText" className="mb-4">Welcome to PAI</h1>
                                     <p className="mb-4 pText">Please Log In to continue</p>
                                     <form onSubmit={LoginBtnOnClick}>
-                                    <div className="form-outline mb-4">
-                                        <input type="email" id="EmailTxt" value={EmailTxt} placeholder='Email' className="form-control form-control-lg" onChange={(e) => setEmailTxt(e.target.value)} />
-                                    </div>
+                                        <div className="form-outline mb-4">
+                                            <input type="email" id="EmailTxt" ref={emailRef} placeholder='Email' className="form-control form-control-lg" />
+                                        </div>
 
-                                    <div className="form-outline mb-4">
-                                        <input type="password" id="PasswordTxt" value={PasswordTxt} placeholder='Password' className="form-control form-control-lg" onChange={(e) => setPasswordTxt(e.target.value)} />
-                                    </div>
+                                        <div className="form-outline mb-4">
+                                            <input type="password" id="PasswordTxt" ref={passwordRef} placeholder='Password' className="form-control form-control-lg" />
+                                        </div>
 
-                                    <button id="LoginBtn" className="btn btn-primary" type="submit">Login</button>
-                                    <button id="ClearBtn" className="btn btn-primary" type="reset" onClick={(e) => ClearBtnOnClick(e)}>Clear</button>
-                                    <br />
-                                    <br />
+                                        <button id="LoginBtn" className="btn btn-primary" type="submit">Login</button>
+                                        <button id="ClearBtn" className="btn btn-primary" type="reset" onClick={(e) => ClearBtnOnClick(e)}>Clear</button>
+                                        <br />
+                                        <br />
                                     </form>
                                     <ShowMessagediv key={count} props={showMessage} />
                                 </div>
