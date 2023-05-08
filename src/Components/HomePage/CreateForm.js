@@ -45,7 +45,6 @@ const CreateForm = (props) => {
 
         e.preventDefault();
 
-        console.log(formsTxts);
         const studentDetailsCollection = collection(db, 'StudentDetails');
 
         // asynchronously add a document to the collection

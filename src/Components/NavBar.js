@@ -15,6 +15,7 @@ const NavBar = (props) => {
     const LogoutBtnOnClick = async () => {
         let response = await auth.signOut();
         if (response !== null) {
+            localStorage.clear();
             setisLogout(true);
         }
     }

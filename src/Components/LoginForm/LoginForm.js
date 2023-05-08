@@ -2,8 +2,10 @@ import React, { useState, useEffect, useRef } from 'react';
 import { auth } from '../FirebaseConfig.js';
 import { signInWithEmailAndPassword } from 'firebase/auth'
 import { useNavigate } from 'react-router-dom';
-import '../../ComponetsStyles/LoginForm.css'
-import ShowMessagediv from '../../Components/ShowMessagediv.js'
+import Button from '@mui/material/Button';
+import '../../ComponetsStyles/LoginForm.css';
+import { MdOutlineReplay } from "react-icons/md";
+import ShowMessagediv from '../../Components/ShowMessagediv.js';
 
 export default function LoginForm(props) {
 
@@ -26,22 +28,23 @@ export default function LoginForm(props) {
             setCount(count => count + 1);
 
             setshowMessage({
-                innerText: "LogOut Successfull.",
+                innerText: "Logout Successfull.",
                 className: "alert alert-danger",
                 role: "alert"
             });
         }
 
         const unsubscribe = auth.onAuthStateChanged((user) => {
-
+  
             if (localStorage.getItem('AuthToken') !== null
                 && user !== null
                 && localStorage.getItem('AuthToken') === user.accessToken) {
-                    
+
                 navigate('/Home');
 
             }
             else {
+                
                 navigate('/');
             }
         });
@@ -132,9 +135,9 @@ export default function LoginForm(props) {
                                         <div className="form-outline mb-4">
                                             <input type="password" id="PasswordTxt" ref={passwordRef} placeholder='Password' className="form-control form-control-lg" />
                                         </div>
-
-                                        <button id="LoginBtn" className="btn btn-primary" type="submit">Login</button>
-                                        <button id="ClearBtn" className="btn btn-primary" type="reset" onClick={(e) => ClearBtnOnClick(e)}>Clear</button>
+                                        <br/>
+                                        <Button variant="contained" id="LoginBtn" className="btn btn-primary" type="submit">Login</Button>
+                                        <Button variant="contained" id="ClearBtn" className="btn btn-primary" type="reset" onClick={(e) => ClearBtnOnClick(e)}><MdOutlineReplay />  Clear</Button>
                                         <br />
                                         <br />
                                     </form>

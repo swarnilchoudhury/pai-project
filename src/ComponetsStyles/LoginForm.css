@@ -1,5 +1,5 @@
 body{
-    background-color: #508bfc;
+    background: linear-gradient(135deg, #d476eb, #5c5ab6);
 }
 
 .p-5 {
@@ -13,13 +13,13 @@ body{
 
 #LoginBtn{
  width:46%;
- height: 60px;
+ height: 55px;
  margin-right: 14px;
 }
 
 #ClearBtn{
     width:45%;
-    height: 60px;
+    height: 55px;
     margin-left: 10px;
 }
 

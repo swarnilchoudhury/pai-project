@@ -16,7 +16,7 @@ const HomePage = () => {
     useEffect(() => {
 
         const unsubscribe = auth.onAuthStateChanged(async (user) => {
-
+  
             if (localStorage.getItem('AuthToken') === null
                 || user === null) {
 
