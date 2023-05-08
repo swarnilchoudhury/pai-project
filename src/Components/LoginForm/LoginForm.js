@@ -1,15 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { auth } from '../FirebaseConfig.js';
 import { signInWithEmailAndPassword } from 'firebase/auth'
 import { useNavigate } from 'react-router-dom';
-import '../../ComponetsStyles/LoginForm.css'
-import ShowMessagediv from '../../Components/ShowMessagediv.js'
+import Button from '@mui/material/Button';
+import '../../ComponetsStyles/LoginForm.css';
+import { MdOutlineReplay } from "react-icons/md";
+import ShowMessagediv from '../../Components/ShowMessagediv.js';
 
 export default function LoginForm(props) {
 
-    const [EmailTxt, setEmailTxt] = useState("");
-    const [PasswordTxt, setPasswordTxt] = useState("");
-    const [user, setUser] = useState(null);
+    const emailRef = useRef();
+    const passwordRef = useRef();
     const [count, setCount] = useState(0);
 
     const [showMessage, setshowMessage] = useState({
@@ -24,26 +25,26 @@ export default function LoginForm(props) {
 
         if (props.Message !== null && props.Message) {
 
-            setCount(count + 1);
-            
+            setCount(count => count + 1);
+
             setshowMessage({
-                innerText: "LogOut Successfull.",
+                innerText: "Logout Successfull.",
                 className: "alert alert-danger",
                 role: "alert"
             });
         }
 
         const unsubscribe = auth.onAuthStateChanged((user) => {
-
-            if (sessionStorage.getItem('AuthToken') !== null
+  
+            if (localStorage.getItem('AuthToken') !== null
                 && user !== null
-                && sessionStorage.getItem('AuthToken') === user.accessToken) {
+                && localStorage.getItem('AuthToken') === user.accessToken) {
 
-                setUser(user);
                 navigate('/Home');
 
             }
             else {
+                
                 navigate('/');
             }
         });
@@ -59,7 +60,10 @@ export default function LoginForm(props) {
 
         e.preventDefault();
 
-        setCount(count + 1);
+        setCount(count => count + 1);
+
+        let EmailTxt = emailRef.current.value;
+        let PasswordTxt = passwordRef.current.value;
 
         if (EmailTxt == "" || PasswordTxt == "") {
 
@@ -75,7 +79,7 @@ export default function LoginForm(props) {
             try {
 
                 let response = await signInWithEmailAndPassword(auth, EmailTxt, PasswordTxt);
-                sessionStorage.setItem('AuthToken', response.user.accessToken);
+                localStorage.setItem('AuthToken', response.user.accessToken);
                 navigate('/Home');
 
             }
@@ -87,8 +91,7 @@ export default function LoginForm(props) {
                     role: "alert"
                 });
 
-                setEmailTxt('');
-                setPasswordTxt('');
+                passwordRef.current.value = "";
                 navigate('/');
 
             }
@@ -101,10 +104,10 @@ export default function LoginForm(props) {
 
         e.preventDefault();
 
-        setCount(count + 1);
+        setCount(count => count + 1);
 
-        setEmailTxt('');
-        setPasswordTxt('');
+        emailRef.current.value = "";
+        passwordRef.current.value = "";
 
         setshowMessage({
             innerText: "",
@@ -124,19 +127,20 @@ export default function LoginForm(props) {
                                 <div className="card-body p-5 text-center">
                                     <h1 id="hText" className="mb-4">Welcome to PAI</h1>
                                     <p className="mb-4 pText">Please Log In to continue</p>
+                                    <form onSubmit={LoginBtnOnClick}>
+                                        <div className="form-outline mb-4">
+                                            <input type="email" id="EmailTxt" ref={emailRef} placeholder='Email' className="form-control form-control-lg" />
+                                        </div>
 
-                                    <div className="form-outline mb-4">
-                                        <input type="email" id="EmailTxt" value={EmailTxt} placeholder='Email' className="form-control form-control-lg" onChange={(e) => setEmailTxt(e.target.value)} />
-                                    </div>
-
-                                    <div className="form-outline mb-4">
-                                        <input type="password" id="PasswordTxt" value={PasswordTxt} placeholder='Password' className="form-control form-control-lg" onChange={(e) => setPasswordTxt(e.target.value)} />
-                                    </div>
-
-                                    <button id="LoginBtn" className="btn btn-primary" type="submit" onClick={(e) => LoginBtnOnClick(e)}>Login</button>
-                                    <button id="ClearBtn" className="btn btn-primary" type="reset" onClick={(e) => ClearBtnOnClick(e)}>Clear</button>
-                                    <br />
-                                    <br />
+                                        <div className="form-outline mb-4">
+                                            <input type="password" id="PasswordTxt" ref={passwordRef} placeholder='Password' className="form-control form-control-lg" />
+                                        </div>
+                                        <br/>
+                                        <Button variant="contained" id="LoginBtn" className="btn btn-primary" type="submit">Login</Button>
+                                        <Button variant="contained" id="ClearBtn" className="btn btn-primary" type="reset" onClick={(e) => ClearBtnOnClick(e)}><MdOutlineReplay />  Clear</Button>
+                                        <br />
+                                        <br />
+                                    </form>
                                     <ShowMessagediv key={count} props={showMessage} />
                                 </div>
                             </div>

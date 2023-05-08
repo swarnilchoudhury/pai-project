@@ -1,13 +1,28 @@
 body{
-    background-color: #508bfc;
+    background: linear-gradient(135deg, #d476eb, #5c5ab6);
 }
 
 .p-5 {
     padding: 2rem !important;
 }
 
-#LoginBtn,
-#ClearBtn,
+.py-5 {
+    padding-top: 6rem!important;
+    padding-bottom: 3rem!important;
+}
+
+#LoginBtn{
+ width:46%;
+ height: 55px;
+ margin-right: 14px;
+}
+
+#ClearBtn{
+    width:45%;
+    height: 55px;
+    margin-left: 10px;
+}
+
 #EmailTxt,
 #PasswordTxt {
     width: 100%;
