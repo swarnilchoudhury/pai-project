@@ -2,13 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getDoc, doc } from 'firebase/firestore';
 import { auth, db } from '../../Components/FirebaseConfig.js';
+import Spinner from '../Spinner.js';
 import NavBar from '../NavBar.js';
 import CreateForm from './CreateForm.js';
 
 const HomePage = () => {
 
     const [userName, setUserName] = useState("");
-    const [IsUser, setIsUser] = useState(false);
+    const [IsPageLoads, setIsPageLoads] = useState(false);
 
     let navigate = useNavigate();
 
@@ -23,12 +24,12 @@ const HomePage = () => {
 
             }
             else {
-                setIsUser(true);
 
                 let userNameResponse = doc(db, 'UserName', user.email);
                 let userNameDocResponse = await getDoc(userNameResponse);
                 if (userNameDocResponse.exists()) {
                     setUserName(userNameDocResponse.data().Name);
+                    setIsPageLoads(true);
                 }
             }
         });
@@ -40,14 +41,19 @@ const HomePage = () => {
     }, []);
 
     return (
-        <>
-            {IsUser && <div>
-                <NavBar UserName={userName} />
-                <CreateForm UserName={userName}/>
-            </div>}
-        </>
-
-    )
+        <div>
+            <NavBar UserName={userName} />
+            {!IsPageLoads ? (
+                <>
+                <div className='spinnerDiv'>
+                   <Spinner/>
+                    </div>
+                </>
+            ) : (
+                <CreateForm UserName={userName} />
+            )}
+        </div>
+    );
 }
 
 export default HomePage
