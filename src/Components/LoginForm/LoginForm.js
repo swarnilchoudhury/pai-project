@@ -44,7 +44,7 @@ export default function LoginForm(props) {
 
             }
             else {
-                
+
                 navigate('/');
             }
         });
@@ -65,7 +65,7 @@ export default function LoginForm(props) {
         let EmailTxt = emailRef.current.value;
         let PasswordTxt = passwordRef.current.value;
 
-        if (EmailTxt == "" || PasswordTxt == "") {
+        if (EmailTxt === "" || PasswordTxt === "") {
 
             setshowMessage({
                 innerText: "Please Enter User Name and Password to Login.",
