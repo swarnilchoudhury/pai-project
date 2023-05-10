@@ -129,7 +129,7 @@ const NavBar = (props) => {
                                     fontFamily: "monospace",
                                     fontWeight: 700,
                                     color: "inherit",
-                                    fontSize: 17,
+                                    fontSize: 16,
                                     marginRight:4,
                                     textDecoration: "none"
                                 }}
