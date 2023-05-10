@@ -5,8 +5,10 @@ import { auth, db } from '../../Components/FirebaseConfig.js';
 import Spinner from '../Spinner.js';
 import NavBar from '../NavBar.tsx';
 import CreateForm from './CreateForm.js';
+import SearchPage from '../SearchPage/SearchPage.js';
 
-const HomePage = () => {
+
+const HomePage = (props) => {
 
     const [userName, setUserName] = useState("");
     const [IsPageLoads, setIsPageLoads] = useState(false);
@@ -18,7 +20,8 @@ const HomePage = () => {
         const unsubscribe = auth.onAuthStateChanged(async (user) => {
   
             if (localStorage.getItem('AuthToken') === null
-                || user === null) {
+                || user === null 
+                || localStorage.getItem('AuthToken') !== user.accessToken) {
 
                 navigate('/');
 
@@ -50,7 +53,8 @@ const HomePage = () => {
                     </div>
                 </>
             ) : (
-                <CreateForm UserName={userName} />
+                props.pageName === 'Create' && <CreateForm UserName={userName} /> ||
+                props.pageName === 'Search' && <SearchPage UserName={userName} />
             )}
         </div>
     );
