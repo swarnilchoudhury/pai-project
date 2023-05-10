@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { getDoc, doc } from 'firebase/firestore';
 import { auth, db } from '../../Components/FirebaseConfig.js';
 import Spinner from '../Spinner.js';
-import NavBar from '../NavBar.js';
+import NavBar from '../NavBar.tsx';
 import CreateForm from './CreateForm.js';
 
 const HomePage = () => {
