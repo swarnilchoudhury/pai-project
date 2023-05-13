@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../../Components/FirebaseConfig.js';
 import DialogBoxes from '../DialogBoxes.js';
@@ -40,6 +40,22 @@ const CreateForm = (props) => {
     const [showMessage, setshowMessage] = useState({});
 
     const [count, setCount] = useState(0);
+
+    
+
+    useEffect(() => {
+
+        let AbacusNumber = (!isNaN(Number(formsTxts.Abacus)) ? Number(formsTxts.Abacus) : 0);;
+        let FingerNumber = (!isNaN(Number(formsTxts.Finger)) ? Number(formsTxts.Finger) : 0);
+        let MentalviewingNumber = (!isNaN(Number(formsTxts.Mentalviewing)) ? Number(formsTxts.Mentalviewing) : 0);
+        let MentalhearingNumber = (!isNaN(Number(formsTxts.Mentalhearing)) ? Number(formsTxts.Mentalhearing) : 0);
+
+        let TotalNumber = AbacusNumber + FingerNumber + MentalviewingNumber + MentalhearingNumber;
+        setformsTxts({ ...formsTxts, Total: TotalNumber });
+
+    }, [formsTxts.Abacus, formsTxts.Finger, formsTxts.Mentalviewing, formsTxts.Mentalhearing]);
+
+
 
     const CreateHomeBtnOnClick = (e) => {
 
