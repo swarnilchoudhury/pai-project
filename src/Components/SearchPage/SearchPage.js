@@ -8,6 +8,7 @@ import { MobileDatePicker } from '@mui/x-date-pickers/MobileDatePicker';
 import { collection, getDocs, query, where, Timestamp } from 'firebase/firestore';
 import { db } from '../../Components/FirebaseConfig.js';
 import Tables from './Table.tsx';
+import Spinner from '../Spinner.js';
 import '../../ComponetsStyles/SearchPage.css';
 
 
@@ -29,10 +30,10 @@ const SearchPage = () => {
 
         const StudentDetailsCollection = collection(db, 'StudentDetails');
 
-        const q = query(StudentDetailsCollection, where('CreatedDateTime', '>=', StartDate), where('CreatedDateTime', '<=', ToDate));
+        let StudentDetailsCollectionquery = query(StudentDetailsCollection, where('CreatedDateTime', '>=', StartDate), where('CreatedDateTime', '<=', ToDate));
 
         let StudentDetailsArray = [];
-        const querySnapshot = await getDocs(q);
+        const querySnapshot = await getDocs(StudentDetailsCollectionquery);
         querySnapshot.docs.map((doc) => {
             StudentDetailsArray.push(({ ...doc.data(), id: doc.id }));
         });

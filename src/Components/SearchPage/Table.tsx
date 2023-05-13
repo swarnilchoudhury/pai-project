@@ -54,7 +54,8 @@ const Tables = (props) => {
             <StyledTableCell align="left">s.writing</StyledTableCell>           
             <StyledTableCell align="left">Abacus (no. of sums /min)</StyledTableCell>           
             <StyledTableCell align="left">Finger (no. of sums /min)</StyledTableCell>           
-            <StyledTableCell align="left">M.Hearing (no. of sums /min)</StyledTableCell>           
+            <StyledTableCell align="left">M.Hearing (no. of sums /min)</StyledTableCell>          
+            <StyledTableCell align="left">Institute Name</StyledTableCell>          
           </TableRow>
         </TableHead>
         <TableBody>
@@ -77,6 +78,7 @@ const Tables = (props) => {
               <StyledTableCell align="left">{row.Abacus_no_of_sums_min}</StyledTableCell>
               <StyledTableCell align="left">{row.Finger_no_of_sums_min}</StyledTableCell>
               <StyledTableCell align="left">{row.MHearing_no_of_sums_min}</StyledTableCell>
+              <StyledTableCell align="left">{row.InstituteName}</StyledTableCell>
             </StyledTableRow>
           ))}
         </TableBody>
