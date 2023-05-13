@@ -1,0 +1,13 @@
+.css-1wvnaxz-MuiTableCell-root {
+    font-family: "Roboto","Helvetica","Arial",sans-serif;
+    font-weight: 500;
+    font-size: 0.875rem;
+    line-height: 1.5rem;
+    letter-spacing: 0.01071em;
+    display: table-cell;
+    vertical-align: inherit;
+    border-bottom: 1px solid rgba(224, 224, 224, 1);
+    text-align: left;
+    padding: 30px;
+    color: rgba(0, 0, 0, 0.87);
+}

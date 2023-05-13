@@ -136,8 +136,8 @@ export default function LoginForm(props) {
                                             <input type="password" id="PasswordTxt" ref={passwordRef} placeholder='Password' className="form-control form-control-lg" />
                                         </div>
                                         <br/>
-                                        <Button variant="contained" id="LoginBtn" className="btn btn-primary" type="submit">Login</Button>
-                                        <Button variant="contained" id="ClearBtn" className="btn btn-primary" type="reset" onClick={(e) => ClearBtnOnClick(e)}><MdOutlineReplay />  Clear</Button>
+                                        <Button variant="contained" id="LoginBtn" type="submit">Login</Button>
+                                        <Button variant="contained" id="ClearBtn" type="reset" onClick={(e) => ClearBtnOnClick(e)}><MdOutlineReplay />  Clear</Button>
                                         <br />
                                         <br />
                                     </form>
