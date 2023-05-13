@@ -1,17 +1,23 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { auth } from '../FirebaseConfig.js';
 import { signInWithEmailAndPassword } from 'firebase/auth'
 import { useNavigate } from 'react-router-dom';
 import Button from '@mui/material/Button';
-import '../../ComponetsStyles/LoginForm.css';
 import { MdOutlineReplay } from "react-icons/md";
 import ShowMessagediv from '../../Components/ShowMessagediv.js';
+import IconButton from '@mui/material/IconButton';
+import OutlinedInput from '@mui/material/OutlinedInput';
+import InputLabel from '@mui/material/InputLabel';
+import InputAdornment from '@mui/material/InputAdornment';
+import FormControl from '@mui/material/FormControl';
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import '../../ComponetsStyles/LoginForm.css';
 
 export default function LoginForm(props) {
 
-    const emailRef = useRef();
-    const passwordRef = useRef();
     const [count, setCount] = useState(0);
+    const [showPassword, setShowPassword] = useState(false);
 
     const [showMessage, setshowMessage] = useState({
         innerText: "",
@@ -35,7 +41,7 @@ export default function LoginForm(props) {
         }
 
         const unsubscribe = auth.onAuthStateChanged((user) => {
-  
+
             if (localStorage.getItem('AuthToken') !== null
                 && user !== null
                 && localStorage.getItem('AuthToken') === user.accessToken) {
@@ -62,10 +68,10 @@ export default function LoginForm(props) {
 
         setCount(count => count + 1);
 
-        let EmailTxt = emailRef.current.value;
-        let PasswordTxt = passwordRef.current.value;
+        let EmailTxt = document.getElementById('EmailTxt');
+        let PasswordTxt = document.getElementById('PasswordTxt');       
 
-        if (EmailTxt === "" || PasswordTxt === "") {
+        if (EmailTxt.value === "" || PasswordTxt.value === "") {
 
             setshowMessage({
                 innerText: "Please Enter User Name and Password to Login.",
@@ -78,7 +84,7 @@ export default function LoginForm(props) {
 
             try {
 
-                let response = await signInWithEmailAndPassword(auth, EmailTxt, PasswordTxt);
+                let response = await signInWithEmailAndPassword(auth, EmailTxt.value, PasswordTxt.value);
                 localStorage.setItem('AuthToken', response.user.accessToken);
                 navigate('/Home');
 
@@ -91,7 +97,7 @@ export default function LoginForm(props) {
                     role: "alert"
                 });
 
-                passwordRef.current.value = "";
+                PasswordTxt.value = "";
                 navigate('/');
 
             }
@@ -106,8 +112,11 @@ export default function LoginForm(props) {
 
         setCount(count => count + 1);
 
-        emailRef.current.value = "";
-        passwordRef.current.value = "";
+        let EmailTxtOnClearBtn = document.getElementById('EmailTxt');
+        let PasswordTxtOnClearBtn = document.getElementById('PasswordTxt');
+
+        EmailTxtOnClearBtn.value = "";
+        PasswordTxtOnClearBtn.value = "";
 
         setshowMessage({
             innerText: "",
@@ -115,6 +124,14 @@ export default function LoginForm(props) {
             role: ""
         });
     }
+
+    
+
+    const handleClickShowPassword = () => setShowPassword((show) => !show);
+
+    const handleMouseDownPassword = (e) => {
+        e.preventDefault();
+    };
 
 
     return (
@@ -129,13 +146,38 @@ export default function LoginForm(props) {
                                     <p className="mb-4 pText">Please Log In to continue</p>
                                     <form onSubmit={LoginBtnOnClick}>
                                         <div className="form-outline mb-4">
-                                            <input type="email" id="EmailTxt" ref={emailRef} placeholder='Email' className="form-control form-control-lg" />
-                                        </div>
-
+                                        <FormControl sx={{ width: '100%' }} variant="outlined">
+                                                <InputLabel htmlFor="EmailTxt">Email</InputLabel>
+                                                <OutlinedInput
+                                                    id="EmailTxt"
+                                                    type="text"                                                  
+                                                    label="Email"
+                                                />
+                                            </FormControl>                                                                                       
+                                        </div>                                       
                                         <div className="form-outline mb-4">
-                                            <input type="password" id="PasswordTxt" ref={passwordRef} placeholder='Password' className="form-control form-control-lg" />
+                                            <FormControl sx={{ width: '100%' }} variant="outlined">
+                                                <InputLabel htmlFor="PasswordTxt">Password</InputLabel>
+                                                <OutlinedInput
+                                                    id="PasswordTxt"
+                                                    type={showPassword ? 'text' : 'password'}
+                                                    endAdornment={
+                                                        <InputAdornment position="start">
+                                                            <IconButton
+                                                                aria-label="toggle password visibility"
+                                                                onClick={handleClickShowPassword}
+                                                                onMouseDown={handleMouseDownPassword}
+                                                                edge="start"
+                                                            >
+                                                                {showPassword ? <VisibilityOff /> : <Visibility />}
+                                                            </IconButton>
+                                                        </InputAdornment>
+                                                    }
+                                                    label="Password"
+                                                />
+                                            </FormControl>
                                         </div>
-                                        <br/>
+                                        <br />
                                         <Button variant="contained" id="LoginBtn" type="submit">Login</Button>
                                         <Button variant="contained" id="ClearBtn" type="reset" onClick={(e) => ClearBtnOnClick(e)}><MdOutlineReplay />  Clear</Button>
                                         <br />

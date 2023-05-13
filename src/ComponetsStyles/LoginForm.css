@@ -23,16 +23,6 @@ body{
     margin-left: 10px;
 }
 
-#EmailTxt,
-#PasswordTxt {
-    width: 100%;
-    margin-top: 1rem;
-    padding-top: 1rem;
-    padding-bottom: 1rem;
-    font-size: 0.875rem;
-
-}
-
 .pText {
     font-size: 24px;
     font-family: 'Open Sans', sans-serif;
