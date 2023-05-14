@@ -98,6 +98,7 @@ const CreateForm = (props) => {
 
                 let form = document.getElementById('create-form');
                 form.scrollTop = 0;
+                
             });
 
 
