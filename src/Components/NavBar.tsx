@@ -1,6 +1,5 @@
 import React, { useState } from 'react'
 import { auth } from './FirebaseConfig.js';
-import LoginForm from './LoginForm/LoginForm.js';
 import { useNavigate } from 'react-router-dom';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
@@ -20,7 +19,7 @@ import MenuItem from '@mui/material/MenuItem';
 
 
 const NavBar = (props) => {
-    const [isLogout, setisLogout] = useState(false);
+
     const [open, setOpen] = useState(false);
 
     const pages = ['Home', 'Search', 'Records'];
@@ -40,8 +39,10 @@ const NavBar = (props) => {
     const LogoutBtnOnClick = async () => {
         let response = await auth.signOut();
         if (response !== null) {
+
+            sessionStorage.setItem('Logout','Success');
             localStorage.clear();
-            setisLogout(true);
+            
         }
     }
 
@@ -61,7 +62,7 @@ const NavBar = (props) => {
 
     return (
         <>
-            {!isLogout ? <div>
+             <div>
                 <AppBar position="static">
                     <Container maxWidth="xl">
                         <Toolbar disableGutters>
@@ -176,10 +177,7 @@ const NavBar = (props) => {
                         </Toolbar>
                     </Container>
                 </AppBar>
-
             </div>
-
-                : <> <LoginForm Message={true} /> </>}
         </>
     )
 }

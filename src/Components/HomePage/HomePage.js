@@ -18,10 +18,12 @@ const HomePage = (props) => {
     useEffect(() => {
 
         const unsubscribe = auth.onAuthStateChanged(async (user) => {
-  
+
             if (localStorage.getItem('AuthToken') === null
-                || user === null 
+                || user === null
                 || localStorage.getItem('AuthToken') !== user.accessToken) {
+
+                sessionStorage.setItem("Login","Logintocontinue");
 
                 navigate('/');
 
@@ -48,8 +50,8 @@ const HomePage = (props) => {
             <NavBar UserName={userName} />
             {!IsPageLoads ? (
                 <>
-                <div className='spinnerDiv'>
-                   <Spinner/>
+                    <div className='spinnerDiv'>
+                        <Spinner/>
                     </div>
                 </>
             ) : (

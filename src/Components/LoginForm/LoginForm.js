@@ -31,21 +31,33 @@ export default function LoginForm(props) {
     let navigate = useNavigate();
 
     useEffect(() => {
-        console.log(props);
 
-        if (props.Message !== null && props.Message) {
-
-            console.log('Hi')
-
-            setCount(count => count + 1);
+        if (sessionStorage.getItem('Logout') !== null
+            && sessionStorage.getItem('Logout') === 'Success') {
 
             setshowDialogBox({
                 dialogContent: "Logout Successfull.",
                 dialogTitle: "Success",
                 CloseButtonName: "OK"
             });
-            
-            setisShowDialogBox(true);       
+
+            setisShowDialogBox(true);
+
+            sessionStorage.clear();
+        }
+
+        else if (sessionStorage.getItem('Login') !== null
+            && sessionStorage.getItem('Login') === 'Logintocontinue') {
+
+            setshowDialogBox({
+                dialogContent: "Please Login to Continue.",
+                dialogTitle: "Login",
+                CloseButtonName: "OK"
+            });
+
+            setisShowDialogBox(true);
+
+            sessionStorage.clear();
         }
 
         const unsubscribe = auth.onAuthStateChanged((user) => {
@@ -77,7 +89,7 @@ export default function LoginForm(props) {
         setCount(count => count + 1);
 
         let EmailTxt = document.getElementById('EmailTxt');
-        let PasswordTxt = document.getElementById('PasswordTxt');       
+        let PasswordTxt = document.getElementById('PasswordTxt');
 
         if (EmailTxt.value === "" || PasswordTxt.value === "") {
 
@@ -133,7 +145,7 @@ export default function LoginForm(props) {
         });
     }
 
-    
+
 
     const handleClickShowPassword = () => setShowPassword((show) => !show);
 
@@ -154,15 +166,15 @@ export default function LoginForm(props) {
                                     <p className="mb-4 pText">Please Log In to continue</p>
                                     <form onSubmit={LoginBtnOnClick}>
                                         <div className="form-outline mb-4">
-                                        <FormControl sx={{ width: '100%' }} variant="outlined">
+                                            <FormControl sx={{ width: '100%' }} variant="outlined">
                                                 <InputLabel htmlFor="EmailTxt">Email</InputLabel>
                                                 <OutlinedInput
                                                     id="EmailTxt"
-                                                    type="text"                                                  
+                                                    type="text"
                                                     label="Email"
                                                 />
-                                            </FormControl>                                                                                       
-                                        </div>                                       
+                                            </FormControl>
+                                        </div>
                                         <div className="form-outline mb-4">
                                             <FormControl sx={{ width: '100%' }} variant="outlined">
                                                 <InputLabel htmlFor="PasswordTxt">Password</InputLabel>
@@ -192,7 +204,7 @@ export default function LoginForm(props) {
                                         <br />
                                     </form>
                                     <ShowMessagediv key={count} props={showMessage} />
-                                    {isShowDialogBox &&  <DialogBoxes key={count} props={showDialogBox} />}
+                                    {isShowDialogBox && <DialogBoxes props={showDialogBox} />}
                                 </div>
                             </div>
                         </div>
