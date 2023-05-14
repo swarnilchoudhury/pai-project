@@ -12,12 +12,15 @@ import InputAdornment from '@mui/material/InputAdornment';
 import FormControl from '@mui/material/FormControl';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import DialogBoxes from '../DialogBoxes.js';
 import '../../ComponetsStyles/LoginForm.css';
 
 export default function LoginForm(props) {
 
     const [count, setCount] = useState(0);
     const [showPassword, setShowPassword] = useState(false);
+    const [isShowDialogBox, setisShowDialogBox] = useState(false);
+    const [showDialogBox, setshowDialogBox] = useState({});
 
     const [showMessage, setshowMessage] = useState({
         innerText: "",
@@ -28,16 +31,21 @@ export default function LoginForm(props) {
     let navigate = useNavigate();
 
     useEffect(() => {
+        console.log(props);
 
         if (props.Message !== null && props.Message) {
 
+            console.log('Hi')
+
             setCount(count => count + 1);
 
-            setshowMessage({
-                innerText: "Logout Successfull.",
-                className: "alert alert-danger",
-                role: "alert"
+            setshowDialogBox({
+                dialogContent: "Logout Successfull.",
+                dialogTitle: "Success",
+                CloseButtonName: "OK"
             });
+            
+            setisShowDialogBox(true);       
         }
 
         const unsubscribe = auth.onAuthStateChanged((user) => {
@@ -137,7 +145,7 @@ export default function LoginForm(props) {
     return (
         <>
             <section className="vh-200">
-                <div className="container py-5 h-100">
+                <div className="container py-6 h-100">
                     <div className="row d-flex justify-content-center align-items-center h-100">
                         <div className="col-12 col-md-8 col-lg-6 col-xl-5">
                             <div className="card shadow-2-strong" style={{ "borderRadius": "1rem" }}>
@@ -184,6 +192,7 @@ export default function LoginForm(props) {
                                         <br />
                                     </form>
                                     <ShowMessagediv key={count} props={showMessage} />
+                                    {isShowDialogBox &&  <DialogBoxes key={count} props={showDialogBox} />}
                                 </div>
                             </div>
                         </div>
