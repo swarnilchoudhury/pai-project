@@ -15,7 +15,7 @@ import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import DialogBoxes from '../DialogBoxes.js';
 import '../../ComponetsStyles/LoginForm.css';
 
-export default function LoginForm(props) {
+export default function LoginForm() {
 
     const [count, setCount] = useState(0);
     const [showPassword, setShowPassword] = useState(false);
