@@ -31,11 +31,8 @@ export default function LoginForm(props) {
     let navigate = useNavigate();
 
     useEffect(() => {
-        console.log(props);
-
+        
         if (props.Message !== null && props.Message) {
-
-            console.log('Hi')
 
             setCount(count => count + 1);
 

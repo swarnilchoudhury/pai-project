@@ -4,6 +4,8 @@
     left: 45%;
 }
 
-.spinner {
-    color: black !important;
+.spinnerSearchDiv{
+    position: absolute;
+    top: 96%;
+    left: 45%;
 }
