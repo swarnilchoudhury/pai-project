@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import dayjs from 'dayjs';
 import Button from '@mui/material/Button';
 import { DemoContainer, DemoItem } from '@mui/x-date-pickers/internals/demo';
@@ -7,7 +7,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { MobileDatePicker } from '@mui/x-date-pickers/MobileDatePicker';
 import { saveAs } from 'file-saver';
 import * as XLSX from 'xlsx';
-import { collection, getDocs, query, where, Timestamp } from 'firebase/firestore';
+import { collection, getDocs, query, where, Timestamp, orderBy } from 'firebase/firestore';
 import { db } from '../../Components/FirebaseConfig.js';
 import Tables from './Table.tsx';
 import { MdDownload } from "react-icons/md";
@@ -48,24 +48,24 @@ const SearchPage = () => {
         if (StudentNameTxt.value !== null && StudentNameTxt.value.trim() !== ''
             && (LevelTxt.value === null || LevelTxt.value.trim() === '')) {
 
-            StudentDetailsCollectionquery = query(StudentDetailsCollection, where('studentName', '==', StudentNameTxt.value), where('CreatedDateTime', '>=', StartDate), where('CreatedDateTime', '<=', ToDate));
+            StudentDetailsCollectionquery = query(StudentDetailsCollection, where('studentName', '==', StudentNameTxt.value.toUpperCase()), where('CreatedDateTime', '>=', StartDate), where('CreatedDateTime', '<=', ToDate), orderBy('CreatedDateTime', 'desc'));
 
         }
         else if (LevelTxt.value !== null && LevelTxt.value.trim() !== ''
             && (StudentNameTxt.value === null || StudentNameTxt.value.trim() === '')) {
 
-            StudentDetailsCollectionquery = query(StudentDetailsCollection, where('Level', '==', LevelTxt.value), where('CreatedDateTime', '>=', StartDate), where('CreatedDateTime', '<=', ToDate));
+            StudentDetailsCollectionquery = query(StudentDetailsCollection, where('Level', '==', LevelTxt.value.toUpperCase()), where('CreatedDateTime', '>=', StartDate), where('CreatedDateTime', '<=', ToDate), orderBy('CreatedDateTime', 'desc'));
 
         }
         else if (StudentNameTxt.value !== null && StudentNameTxt.value.trim() !== ''
             && (LevelTxt.value !== null || LevelTxt.value.trim() !== '')) {
 
-            StudentDetailsCollectionquery = query(StudentDetailsCollection, where('studentName', '==', StudentNameTxt.value), where('Level', '==', LevelTxt.value), where('CreatedDateTime', '>=', StartDate), where('CreatedDateTime', '<=', ToDate));
+            StudentDetailsCollectionquery = query(StudentDetailsCollection, where('studentName', '==', StudentNameTxt.value.toUpperCase()), where('Level', '==', LevelTxt.value.toUpperCase()), where('CreatedDateTime', '>=', StartDate), where('CreatedDateTime', '<=', ToDate), orderBy('CreatedDateTime', 'desc'));
 
         }
 
         else {
-            StudentDetailsCollectionquery = query(StudentDetailsCollection, where('CreatedDateTime', '>=', StartDate), where('CreatedDateTime', '<=', ToDate));
+            StudentDetailsCollectionquery = query(StudentDetailsCollection, where('CreatedDateTime', '>=', StartDate), where('CreatedDateTime', '<=', ToDate), orderBy('CreatedDateTime', 'desc'));
         }
 
         let StudentDetailsArray = [];
