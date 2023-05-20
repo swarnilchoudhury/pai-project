@@ -23,8 +23,6 @@ const HomePage = (props) => {
                 || user === null
                 || localStorage.getItem('AuthToken') !== user.accessToken) {
 
-                sessionStorage.setItem("Login","Logintocontinue");
-
                 navigate('/');
 
             }

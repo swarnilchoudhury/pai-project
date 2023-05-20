@@ -46,20 +46,6 @@ export default function LoginForm() {
             sessionStorage.clear();
         }
 
-        else if (sessionStorage.getItem('Login') !== null
-            && sessionStorage.getItem('Login') === 'Logintocontinue') {
-
-            setshowDialogBox({
-                dialogContent: "Please Login to Continue.",
-                dialogTitle: "Login",
-                CloseButtonName: "OK"
-            });
-
-            setisShowDialogBox(true);
-
-            sessionStorage.clear();
-        }
-
         const unsubscribe = auth.onAuthStateChanged((user) => {
 
             if (localStorage.getItem('AuthToken') !== null
