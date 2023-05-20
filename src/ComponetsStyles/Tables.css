@@ -8,6 +8,32 @@
     vertical-align: inherit;
     border-bottom: 1px solid rgba(224, 224, 224, 1);
     text-align: left;
-    padding: 30px;
+    padding: 12px;
     color: rgba(0, 0, 0, 0.87);
 }
+
+.Table{
+    max-height: 97vh;
+}
+
+.tableBody{
+    overflow-y: scroll;
+}
+
+.tableHeader {
+    position: sticky;
+    top: 0;
+    background-color: #fff;
+    font-weight: bold;
+  }
+
+  #totalNumberOfRecords{
+    background-color: rgba(224, 224, 224, 1);
+    font-weight: bold;
+    text-align: center;
+  }
+
+  #NoRecords{
+    font-weight: bold;
+    text-align: center;
+  }
