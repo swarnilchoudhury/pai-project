@@ -137,28 +137,28 @@ const CreateForm = (props) => {
                                         <div className="form-group row">
                                             <label htmlFor='studentNameTxt' className="col-sm-2 col-form-label">Student Name</label>
                                             <div className="col-sm-10">
-                                                <input type="text" className="form-control" id="studentNameTxt" value={formsTxts.studentName} onChange={(e) => setformsTxts({ ...formsTxts, studentName: e.target.value })} required />
+                                                <input type="text" className="form-control" id="studentNameTxt" value={formsTxts.studentName} onChange={(e) => setformsTxts({ ...formsTxts, studentName: e.target.value.toUpperCase() })} required />
                                             </div>
                                         </div>
                                         <br />
                                         <div className="form-group row">
                                             <label htmlFor='guardianNameTxt' className="col-sm-2 col-form-label">Guardian Name</label>
                                             <div className="col-sm-10">
-                                                <input type="text" className="form-control" id="guardianNameTxt" value={formsTxts.guardianName} onChange={(e) => setformsTxts({ ...formsTxts, guardianName: e.target.value })} required />
+                                                <input type="text" className="form-control" id="guardianNameTxt" value={formsTxts.guardianName} onChange={(e) => setformsTxts({ ...formsTxts, guardianName: e.target.value.toUpperCase() })} required />
                                             </div>
                                         </div>
                                         <br />
                                         <div className="form-group row">
                                             <label htmlFor='LevelTxt' className="col-sm-2 col-form-label">Level</label>
                                             <div className="col-sm-10">
-                                                <input type="text" className="form-control" id="LevelTxt" value={formsTxts.Level} onChange={(e) => setformsTxts({ ...formsTxts, Level: e.target.value })} required />
+                                                <input type="text" className="form-control" id="LevelTxt" value={formsTxts.Level} onChange={(e) => setformsTxts({ ...formsTxts, Level: e.target.value.toUpperCase() })} required />
                                             </div>
                                         </div>
                                         <br />
                                         <div className="form-group row">
                                             <label htmlFor='StudentCodeTxt' className="col-sm-2 col-form-label">Student Code</label>
                                             <div className="col-sm-10">
-                                                <input type="text" className="form-control" id="StudentCodeTxt" value={formsTxts.studentCode} onChange={(e) => setformsTxts({ ...formsTxts, studentCode: e.target.value })} required />
+                                                <input type="text" className="form-control" id="StudentCodeTxt" value={formsTxts.studentCode} onChange={(e) => setformsTxts({ ...formsTxts, studentCode: e.target.value.toUpperCase() })} required />
                                             </div>
                                         </div>
                                         <br />
