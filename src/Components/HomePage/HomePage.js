@@ -53,8 +53,8 @@ const HomePage = (props) => {
                     </div>
                 </>
             ) : (
-                props.pageName === 'Create' && <CreateForm UserName={userName} /> ||
-                props.pageName === 'Search' && <SearchPage UserName={userName} />
+                (props.pageName === 'Create' && <CreateForm UserName={userName} /> ) ||
+                (props.pageName === 'Search' && <SearchPage UserName={userName} /> )
             )}
         </div>
     );
