@@ -36,7 +36,7 @@ export default function LoginForm() {
             && sessionStorage.getItem('Logout') === 'Success') {
 
             setshowDialogBox({
-                dialogContent: "Logout Successfull.",
+                dialogContent: "Logout Successful.",
                 dialogTitle: "Success",
                 CloseButtonName: "OK"
             });
