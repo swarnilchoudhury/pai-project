@@ -1,0 +1,21 @@
+.page-not-found {
+    text-align: center;
+    margin-top: 30vh;
+    height: 50vh;
+  }
+  
+  .page-not-found h1 {
+    font-size: 40px;
+  }
+  
+  .page-not-found p {
+    font-size: 18px;
+  }
+
+  .page-not-found a {
+    display: inline-block;
+    margin-top: 20px;
+    font-size: 22px;
+    text-decoration: underline;
+    color: black;
+  }

@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { auth } from './FirebaseConfig.js';
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -24,8 +24,6 @@ const NavBar = (props) => {
 
     const pages = ['Home', 'Search', 'Records'];
 
-    let navigate = useNavigate();
-
     const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
 
     const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
@@ -40,15 +38,11 @@ const NavBar = (props) => {
         let response = await auth.signOut();
         if (response !== null) {
 
-            sessionStorage.setItem('Logout','Success');
+            sessionStorage.setItem('Logout', 'Success');
             localStorage.clear();
-            
+
         }
     }
-
-    const onPageClick = (page) => {
-        navigate("/".concat(page));
-    };
 
     const handleClickOpen = () => {
         setOpen(true);
@@ -62,7 +56,7 @@ const NavBar = (props) => {
 
     return (
         <>
-             <div>
+            <div>
                 <AppBar position="static">
                     <Container maxWidth="xl">
                         <Toolbar disableGutters>
@@ -112,7 +106,11 @@ const NavBar = (props) => {
                                 >
                                     {pages.map((page) => (
                                         <MenuItem key={page} onClick={handleCloseNavMenu}>
-                                            <Typography textAlign="center" onClick={() => onPageClick(page)}>{page}</Typography>
+                                            <Typography textAlign="center"  
+                                            key={page}
+                                            component={Link}
+                                            to={"/".concat(page)}
+                                            sx={{ textDecoration:"none",color:"black" }}>{page}</Typography>
                                         </MenuItem>
                                     ))}
                                 </Menu>
@@ -131,7 +129,7 @@ const NavBar = (props) => {
                                     fontWeight: 700,
                                     color: "inherit",
                                     fontSize: 16,
-                                    marginRight:4,
+                                    marginRight: 4,
                                     textDecoration: "none"
                                 }}
                             >
@@ -140,11 +138,12 @@ const NavBar = (props) => {
 
                             <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
                                 {pages.map((page) => (
+
                                     <Button
                                         key={page}
-                                        href={"/".concat(page)}
-                                        sx={{ my: 2, color: 'white', display: 'block' }}
-                                    >
+                                        component={Link}
+                                        to={"/".concat(page)}
+                                        sx={{ my: 2, color: 'white', display: 'block' }}>
                                         {page}
                                     </Button>
                                 ))}
