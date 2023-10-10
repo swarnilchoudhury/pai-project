@@ -7,6 +7,7 @@ import NavBar from './NavBar.tsx';
 import SearchPage from './SearchPage/SearchPage.js';
 import HomePage from './HomePage/HomePage.js';
 import PageNotFound from './PageNotFound.jsx';
+import RecordsPage from './RecordsPage/RecordsPage.js';
 
 const Authentication = (props) => {
 
@@ -69,6 +70,10 @@ const Authentication = (props) => {
 
         if (IsPageLoads && props.pageName === 'Search') {
             return <SearchPage UserName={userName} />;
+        }
+
+        if (IsPageLoads && props.pageName === 'Records') {
+            return <RecordsPage UserName={userName} />;
         }
 
         return <PageNotFound/>;

@@ -191,7 +191,7 @@ const SearchPage = () => {
             </section>
             {isNoRecords && <div id='totalNumberOfRecords'>No Records Found.</div>}
             {isLoadingShow && <div className='spinnerSearchDiv'><Spinner /></div>}
-            {isTableShow && <Tables key={count} props={TableData} isNoRecords={isNoRecords}/>}
+            {isTableShow && <Tables key={count} props={TableData} showAdditionalData={false}/>}
         </div>
     )
 }

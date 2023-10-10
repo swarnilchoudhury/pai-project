@@ -59,6 +59,14 @@ const Tables = (props) => {
               <StyledTableCell className='tableHeader' align="center">Finger&nbsp;(no. of sums /min)</StyledTableCell>
               <StyledTableCell className='tableHeader' align="center">M.Hearing&nbsp;(no. of sums /min)</StyledTableCell>
               <StyledTableCell className='tableHeader' align="center">Institute&nbsp;Name</StyledTableCell>
+              {props.showAdditionalData ? (
+                <>
+                  <StyledTableCell className='tableHeader' align="center">Created&nbsp;By</StyledTableCell>
+                  <StyledTableCell className='tableHeader' align="center">Created&nbsp;Date</StyledTableCell>
+                </>
+              ) : (
+                <></>
+              )}
             </TableRow>
           </TableHead>
           <TableBody className='tableBody'>
@@ -82,12 +90,20 @@ const Tables = (props) => {
                 <StyledTableCell align="center">{row.Finger_no_of_sums_min}</StyledTableCell>
                 <StyledTableCell align="center">{row.MHearing_no_of_sums_min}</StyledTableCell>
                 <StyledTableCell align="center">{row.InstituteName}</StyledTableCell>
+                {props.showAdditionalData ? (
+                  <>
+                    <StyledTableCell align="center">{row.CreatedBy}</StyledTableCell>
+                    <StyledTableCell align="center">{row.CreatedDateTime.toDate().toLocaleString("en-US", { weekday: "short", year: "numeric", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit", second: "2-digit" })}</StyledTableCell>
+                  </>
+                ) : (
+                  <></>
+                )}
               </StyledTableRow>
             ))}
           </TableBody>
         </Table>
       </TableContainer>
-    </div>
+    </div >
   )
 }
 
