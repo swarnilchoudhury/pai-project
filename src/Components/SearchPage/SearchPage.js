@@ -48,19 +48,19 @@ const SearchPage = () => {
         if (StudentNameTxt.value !== null && StudentNameTxt.value.trim() !== ''
             && (LevelTxt.value === null || LevelTxt.value.trim() === '')) {
 
-            StudentDetailsCollectionquery = query(StudentDetailsCollection, where('studentName', '==', StudentNameTxt.value.toUpperCase()), where('CreatedDateTime', '>=', StartDate), where('CreatedDateTime', '<=', ToDate), orderBy('CreatedDateTime', 'desc'));
+            StudentDetailsCollectionquery = query(StudentDetailsCollection, where('studentName', '==', StudentNameTxt.value.toUpperCase()), orderBy('CreatedDateTime', 'desc'));
 
         }
         else if (LevelTxt.value !== null && LevelTxt.value.trim() !== ''
             && (StudentNameTxt.value === null || StudentNameTxt.value.trim() === '')) {
 
-            StudentDetailsCollectionquery = query(StudentDetailsCollection, where('Level', '==', LevelTxt.value.toUpperCase()), where('CreatedDateTime', '>=', StartDate), where('CreatedDateTime', '<=', ToDate), orderBy('CreatedDateTime', 'desc'));
+            StudentDetailsCollectionquery = query(StudentDetailsCollection, where('Level', '==', LevelTxt.value.toUpperCase()), orderBy('CreatedDateTime', 'desc'));
 
         }
         else if (StudentNameTxt.value !== null && StudentNameTxt.value.trim() !== ''
             && (LevelTxt.value !== null || LevelTxt.value.trim() !== '')) {
 
-            StudentDetailsCollectionquery = query(StudentDetailsCollection, where('studentName', '==', StudentNameTxt.value.toUpperCase()), where('Level', '==', LevelTxt.value.toUpperCase()), where('CreatedDateTime', '>=', StartDate), where('CreatedDateTime', '<=', ToDate), orderBy('CreatedDateTime', 'desc'));
+            StudentDetailsCollectionquery = query(StudentDetailsCollection, where('studentName', '==', StudentNameTxt.value.toUpperCase()), where('Level', '==', LevelTxt.value.toUpperCase()), orderBy('CreatedDateTime', 'desc'));
 
         }
 
