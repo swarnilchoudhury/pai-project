@@ -48,7 +48,7 @@ const SearchPage = () => {
         if (StudentNameTxt.value !== null && StudentNameTxt.value.trim() !== ''
             && (LevelTxt.value === null || LevelTxt.value.trim() === '')) {
 
-            StudentDetailsCollectionquery = query(StudentDetailsCollection, where('studentName', '==', StudentNameTxt.value.toUpperCase()), orderBy('CreatedDateTime', 'desc'));
+            StudentDetailsCollectionquery = query(StudentDetailsCollection, where('studentName', '>=', StudentNameTxt.value.toUpperCase()), where('studentName', '<=', StudentNameTxt.value.toUpperCase() + '\uf8ff'), orderBy('studentName'), orderBy('CreatedDateTime', 'desc'));
 
         }
         else if (LevelTxt.value !== null && LevelTxt.value.trim() !== ''
@@ -82,7 +82,7 @@ const SearchPage = () => {
             setisNoRecords(false);
 
         }
-        else{
+        else {
             setCount(count => count + 1);
             setisNoRecords(true);
         }
@@ -180,10 +180,10 @@ const SearchPage = () => {
                                         <Button variant="contained" id="SearchBtnOnSearch" type="submit">Search</Button>
                                         <Button variant="contained" id="ClearBtnOnSearch" onClick={(e) => ClearBtnOnClick(e)}><MdOutlineReplay /> Clear</Button>
                                         <br />
-                                        <br />                                       
+                                        <br />
                                         {isTableShow && <Button variant="contained" onClick={DownloadExcelBtn}><MdDownload style={{ marginRight: '.5rem' }} />Download Excel</Button>}
-                                    </form>                                    
-                               </div>                              
+                                    </form>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -191,7 +191,7 @@ const SearchPage = () => {
             </section>
             {isNoRecords && <div id='totalNumberOfRecords'>No Records Found.</div>}
             {isLoadingShow && <div className='spinnerSearchDiv'><Spinner /></div>}
-            {isTableShow && <Tables key={count} props={TableData} showAdditionalData={false}/>}
+            {isTableShow && <Tables key={count} props={TableData} showAdditionalData={false} />}
         </div>
     )
 }
