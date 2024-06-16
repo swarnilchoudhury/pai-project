@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { auth } from '../FirebaseConfig.js';
+import { auth, db } from '../Configs/FirebaseConfig.js';
 import { signInWithEmailAndPassword } from 'firebase/auth'
 import { useNavigate } from 'react-router-dom';
 import Button from '@mui/material/Button';
 import { MdOutlineReplay } from "react-icons/md";
-import ShowMessagediv from '../../Components/ShowMessagediv.js';
+import ShowMessagediv from '../ShowMessage/ShowMessagediv.js';
 import IconButton from '@mui/material/IconButton';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import InputLabel from '@mui/material/InputLabel';
@@ -12,8 +12,10 @@ import InputAdornment from '@mui/material/InputAdornment';
 import FormControl from '@mui/material/FormControl';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
-import DialogBoxes from '../DialogBoxes.js';
+import DialogBoxes from '../DialogBoxes/DialogBoxes.js';
 import '../../ComponetsStyles/LoginForm.css';
+import axios from 'axios';
+import { doc, getDoc } from 'firebase/firestore';
 
 export default function LoginForm() {
 
@@ -31,40 +33,32 @@ export default function LoginForm() {
     let navigate = useNavigate();
 
     useEffect(() => {
+        let userNameFromLocalStorage = localStorage.getItem('UserName');
 
-        if (sessionStorage.getItem('Logout') !== null
-            && sessionStorage.getItem('Logout') === 'Success') {
+        if (userNameFromLocalStorage !== null
+            && userNameFromLocalStorage !== undefined
+            && userNameFromLocalStorage !== '') {
 
-            setshowDialogBox({
-                dialogContent: "Logout Successful.",
-                dialogTitle: "Success",
-                CloseButtonName: "OK"
-            });
+            axios.post(process.env.REACT_APP_VERIFY_TOKEN_API_URL);
+            navigate('/Home');
 
-            setisShowDialogBox(true);
-
-            sessionStorage.clear();
         }
+        //     && sessionStorage.getItem('Logout') === 'Success') {
 
-        const unsubscribe = auth.onAuthStateChanged((user) => {
 
-            if (localStorage.getItem('AuthToken') !== null
-                && user !== null
-                && localStorage.getItem('AuthToken') === user.accessToken) {
+        // if (sessionStorage.getItem('Logout') !== null
+        //     && sessionStorage.getItem('Logout') === 'Success') {
 
-                navigate('/Home');
+        //     setshowDialogBox({
+        //         dialogContent: "Logout Successful.",
+        //         dialogTitle: "Success",
+        //         CloseButtonName: "OK"
+        //     });
 
-            }
-            else {
+        //     setisShowDialogBox(true);
 
-                navigate('/');
-            }
-        });
-
-        return () => {
-            unsubscribe();
-        }
-
+        //     sessionStorage.clear();
+        // }
     }, []);
 
 
@@ -90,10 +84,16 @@ export default function LoginForm() {
 
             try {
 
-                let response = await signInWithEmailAndPassword(auth, EmailTxt.value, PasswordTxt.value);
-                localStorage.setItem('AuthToken', response.user.accessToken);
-                navigate('/Home');
+                let signinResponse = await signInWithEmailAndPassword(auth, EmailTxt.value, PasswordTxt.value);
+                let response = await axios.post(process.env.REACT_APP_LOGIN_API_URL, { "emailId": signinResponse.user.email }, {
+                    headers: {
+                        Authorization: `Bearer ${signinResponse.user.accessToken}`
+                    }
+                });
 
+                localStorage.setItem("UserName", response.data.Name);
+
+                navigate("/Home");
             }
             catch {
 
@@ -104,34 +104,12 @@ export default function LoginForm() {
                 });
 
                 PasswordTxt.value = "";
-                navigate('/');
 
             }
 
 
         }
     }
-
-    const ClearBtnOnClick = (e) => {
-
-        e.preventDefault();
-
-        setCount(count => count + 1);
-
-        let EmailTxtOnClearBtn = document.getElementById('EmailTxt');
-        let PasswordTxtOnClearBtn = document.getElementById('PasswordTxt');
-
-        EmailTxtOnClearBtn.value = "";
-        PasswordTxtOnClearBtn.value = "";
-
-        setshowMessage({
-            innerText: "",
-            className: "",
-            role: ""
-        });
-    }
-
-
 
     const handleClickShowPassword = () => setShowPassword((show) => !show);
 
@@ -185,7 +163,6 @@ export default function LoginForm() {
                                         </div>
                                         <br />
                                         <Button variant="contained" id="LoginBtn" type="submit">Login</Button>
-                                        <Button variant="contained" id="ClearBtn" type="reset" onClick={(e) => ClearBtnOnClick(e)}><MdOutlineReplay />  Clear</Button>
                                         <br />
                                         <br />
                                     </form>

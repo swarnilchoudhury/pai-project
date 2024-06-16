@@ -1,40 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
-import { db } from '../FirebaseConfig.js';
-import DialogBoxes from '../DialogBoxes.js';
+import { db } from '../Configs/FirebaseConfig.js';
+import DialogBoxes from '../DialogBoxes/DialogBoxes.js';
 import { MdOutlineReplay } from "react-icons/md";
 import Button from '@mui/material/Button';
 import '../../ComponetsStyles/CreateForm.css';
+import axios from 'axios';
 
-const HomePage = (props) => {
-
-    const CreatedBy = props.UserName;
-
-    let defaultformsTxts = {
-
-        studentName: "",
-        guardianName: "",
-        Level: "",
-        studentCode: "PAI-",
-        Abacus: "",
-        Finger: "",
-        Mentalviewing: "",
-        Mentalhearing: "",
-        Total: "",
-        Attendence: "100%",
-        CW: "Regular",
-        HW: "Regular",
-        Braingym: "Regular",
-        swriting: "Regular",
-        Abacus_no_of_sums_min: "",
-        Finger_no_of_sums_min: "",
-        MHearing_no_of_sums_min: "",
-        InstituteName: "Purbasa Activity Instititute",
-        CreatedDateTime: serverTimestamp(),
-        CreatedBy: CreatedBy
-    }
-
-    const [formsTxts, setformsTxts] = useState(defaultformsTxts);
+const HomePage = () => {
 
     const [showDialogBox, setshowDialogBox] = useState(false);
     const [showMessage, setshowMessage] = useState({});
@@ -45,80 +18,79 @@ const HomePage = (props) => {
 
     useEffect(() => {
 
-        let AbacusNumber = (!isNaN(Number(formsTxts.Abacus)) ? Number(formsTxts.Abacus) : 0);;
-        let FingerNumber = (!isNaN(Number(formsTxts.Finger)) ? Number(formsTxts.Finger) : 0);
-        let MentalviewingNumber = (!isNaN(Number(formsTxts.Mentalviewing)) ? Number(formsTxts.Mentalviewing) : 0);
-        let MentalhearingNumber = (!isNaN(Number(formsTxts.Mentalhearing)) ? Number(formsTxts.Mentalhearing) : 0);
+        const homeURL = async() =>{
+            let response = await axios.post(process.env.REACT_APP_HOME_API_URL);
+            console.log();
+        }
 
-        let TotalNumber = AbacusNumber + FingerNumber + MentalviewingNumber + MentalhearingNumber;
-        setformsTxts({ ...formsTxts, Total: TotalNumber });
+        homeURL();
 
-    }, [formsTxts.Abacus, formsTxts.Finger, formsTxts.Mentalviewing, formsTxts.Mentalhearing]);
-
+    }, []);
 
 
-    const CreateHomeBtnOnClick = (e) => {
 
-        e.preventDefault();
+    // const CreateHomeBtnOnClick = (e) => {
 
-        const studentDetailsCollection = collection(db, 'StudentDetails');
+    //     e.preventDefault();
 
-        // asynchronously add a document to the collection
-        addDoc(studentDetailsCollection, {
-            ...formsTxts
-        })
-            .then(() => {
+    //     const studentDetailsCollection = collection(db, 'StudentDetails');
 
-                setCount(count => count + 1);
+    //     // asynchronously add a document to the collection
+    //     addDoc(studentDetailsCollection, {
+    //         ...formsTxts
+    //     })
+    //         .then(() => {
 
-                setshowMessage({
-                    dialogContent: "Inserted " + formsTxts.studentName + "," + " " + formsTxts.studentCode + " details Successfully",
-                    dialogTitle: "Success",
-                    CloseButtonName: "OK"
-                });
+    //             setCount(count => count + 1);
 
-                setformsTxts(defaultformsTxts);
-                setshowDialogBox(true);
+    //             setshowMessage({
+    //                 dialogContent: "Inserted " + formsTxts.studentName + "," + " " + formsTxts.studentCode + " details Successfully",
+    //                 dialogTitle: "Success",
+    //                 CloseButtonName: "OK"
+    //             });
 
-                let form = document.getElementById('create-form');
-                form.scrollTop = 0;
+    //             setformsTxts(defaultformsTxts);
+    //             setshowDialogBox(true);
 
-            })
-            .catch(() => {
+    //             let form = document.getElementById('create-form');
+    //             form.scrollTop = 0;
 
-                setCount(count => count + 1);
+    //         })
+    //         .catch(() => {
 
-                setshowMessage({
-                    dialogContent: "Failed to Insert " + formsTxts.studentName + "," + " " + formsTxts.studentCode + " details",
-                    dialogTitle: "Error",
-                    CloseButtonName: "OK"
-                });
+    //             setCount(count => count + 1);
 
-                setshowDialogBox(true);
+    //             setshowMessage({
+    //                 dialogContent: "Failed to Insert " + formsTxts.studentName + "," + " " + formsTxts.studentCode + " details",
+    //                 dialogTitle: "Error",
+    //                 CloseButtonName: "OK"
+    //             });
 
-                let form = document.getElementById('create-form');
-                form.scrollTop = 0;
+    //             setshowDialogBox(true);
+
+    //             let form = document.getElementById('create-form');
+    //             form.scrollTop = 0;
                 
-            });
+    //         });
 
 
 
-    }
+    // }
 
 
-    const ClearHomeBtnOnClick = (e) => {
+    // const ClearHomeBtnOnClick = (e) => {
 
-        e.preventDefault();
+    //     e.preventDefault();
 
-        setCount(count => count + 1);
-        setformsTxts(defaultformsTxts);
-        setshowDialogBox(false);
+    //     setCount(count => count + 1);
+    //     setformsTxts(defaultformsTxts);
+    //     setshowDialogBox(false);
 
-    }
+    // }
 
     return (
         <div>
-            <section className="vh-200">
+            {/* <section className="vh-200">
                 <div className="container py-5 h-100">
                     <div className="row d-flex justify-content-center align-items-center h-100">
                         <div className="formDiv">
@@ -265,7 +237,7 @@ const HomePage = (props) => {
                         </div>
                     </div>
                 </div>
-            </section>
+            </section> */}
         </div>
     )
 }

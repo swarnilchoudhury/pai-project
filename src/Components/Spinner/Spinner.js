@@ -1,6 +1,6 @@
 import React from 'react';
 import LoadingSpin from "react-loading-spin";
-import '../ComponetsStyles/Spinner.css';
+import '../../ComponetsStyles/Spinner.css';
 
 const Spinner = () => {
   return (

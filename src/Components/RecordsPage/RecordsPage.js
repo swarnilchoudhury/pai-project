@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import dayjs from 'dayjs';
-import Tables from '../SearchPage/Table.tsx';
+import Tables from '../Table/Table.tsx';
 import { collection, getDocs, query, where, Timestamp, orderBy } from 'firebase/firestore';
-import { db } from '../../Components/FirebaseConfig.js';
+import { db } from '../Configs/FirebaseConfig.js';
 import Button from '@mui/material/Button';
 import { MdOutlineReplay } from "react-icons/md";
 import '../../ComponetsStyles/SearchPage.css';

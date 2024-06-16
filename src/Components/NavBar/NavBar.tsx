@@ -1,5 +1,4 @@
-import React, { useState } from 'react'
-import { auth } from './FirebaseConfig.js';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
@@ -16,6 +15,7 @@ import Menu from '@mui/material/Menu';
 import MenuIcon from '@mui/icons-material/Menu';
 import Container from '@mui/material/Container';
 import MenuItem from '@mui/material/MenuItem';
+import { auth } from '../Configs/FirebaseConfig';
 
 
 const NavBar = (props) => {

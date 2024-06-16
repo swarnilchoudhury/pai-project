@@ -12,15 +12,9 @@ body{
 }
 
 #LoginBtn{
- width:46%;
+ width:85%;
  height: 55px;
  margin-right: 14px;
-}
-
-#ClearBtn{
-    width:45%;
-    height: 55px;
-    margin-left: 10px;
 }
 
 .pText {
