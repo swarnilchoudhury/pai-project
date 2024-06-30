@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { auth, db } from '../Configs/FirebaseConfig.js';
 import { signInWithEmailAndPassword } from 'firebase/auth'
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import Button from '@mui/material/Button';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import { MdOutlineReplay } from "react-icons/md";
+import CircularProgress from '@mui/material/CircularProgress';
+import Box from '@mui/material/Box';
 import ShowMessagediv from '../ShowMessage/ShowMessagediv.js';
 import IconButton from '@mui/material/IconButton';
 import OutlinedInput from '@mui/material/OutlinedInput';
@@ -21,6 +24,7 @@ export default function LoginForm() {
 
     const [count, setCount] = useState(0);
     const [showPassword, setShowPassword] = useState(false);
+    const [loggingIn, setLoggingIn] = useState(false);
     const [isShowDialogBox, setisShowDialogBox] = useState(false);
     const [showDialogBox, setshowDialogBox] = useState({});
 
@@ -32,35 +36,39 @@ export default function LoginForm() {
 
     let navigate = useNavigate();
 
+    let location = useLocation();
+
     useEffect(() => {
-        let userNameFromLocalStorage = localStorage.getItem('UserName');
+        console.log(location.state);
+        const session_expired = () => {
+            sessionStorage.clear();
+            setshowMessage({
+                innerText: "Session Expired. Please Log In.",
+                className: "alert alert-danger",
+                role: "alert"
+            });
+        }
 
-        if (userNameFromLocalStorage !== null
-            && userNameFromLocalStorage !== undefined
-            && userNameFromLocalStorage !== '') {
-
-            axios.post(process.env.REACT_APP_VERIFY_TOKEN_API_URL);
-            navigate('/Home');
+        if (sessionStorage.getItem("session_expired")) {
+            session_expired();
 
         }
-        //     && sessionStorage.getItem('Logout') === 'Success') {
+        else if (location.state != null) {
+            if (location.state.session_expired) {
 
+                session_expired();
+            }
+            else if (location.state.loginIn) {
 
-        // if (sessionStorage.getItem('Logout') !== null
-        //     && sessionStorage.getItem('Logout') === 'Success') {
+                setshowMessage({
+                    innerText: "Please Log In to continue",
+                    className: "alert alert-danger",
+                    role: "alert"
+                });
 
-        //     setshowDialogBox({
-        //         dialogContent: "Logout Successful.",
-        //         dialogTitle: "Success",
-        //         CloseButtonName: "OK"
-        //     });
-
-        //     setisShowDialogBox(true);
-
-        //     sessionStorage.clear();
-        // }
+            }
+        }
     }, []);
-
 
     const LoginBtnOnClick = async (e) => {
 
@@ -85,12 +93,17 @@ export default function LoginForm() {
             try {
 
                 let signinResponse = await signInWithEmailAndPassword(auth, EmailTxt.value, PasswordTxt.value);
+                setLoggingIn(true);
+
+                let token = signinResponse.user.accessToken;
                 let response = await axios.post(process.env.REACT_APP_LOGIN_API_URL, { "emailId": signinResponse.user.email }, {
                     headers: {
-                        Authorization: `Bearer ${signinResponse.user.accessToken}`
+                        Authorization: `Bearer ${token}`
                     }
                 });
 
+                localStorage.setItem("authToken", response.data.authToken);
+                localStorage.setItem("expiresAt", response.data.expiry);
                 localStorage.setItem("UserName", response.data.Name);
 
                 navigate("/Home");
@@ -104,6 +117,8 @@ export default function LoginForm() {
                 });
 
                 PasswordTxt.value = "";
+
+                setLoggingIn(false);
 
             }
 
@@ -120,17 +135,22 @@ export default function LoginForm() {
 
     return (
         <>
+            <div className="main-menu">
+                <img src="https://mindmantraabacus.co.in/cs/logo.png"
+                    style={{ width: '185px', margin: "1rem", backgroundColor: "white" }} alt="logo" />
+            </div>
             <section className="vh-200">
                 <div className="container py-6 h-100">
                     <div className="row d-flex justify-content-center align-items-center h-100">
-                        <div className="col-12 col-md-8 col-lg-6 col-xl-5">
+                        <div className="col-12 col-md-8 col-lg-6 col-xl-6">
                             <div className="card shadow-2-strong" style={{ "borderRadius": "1rem" }}>
-                                <div className="card-body p-5 text-center">
-                                    <h1 id="hText" className="mb-4">Welcome to PAI</h1>
-                                    <p className="mb-4 pText">Please Log In to continue</p>
+                                <div className="card-body text-center">
+                                    <h1 id="hText" className="mb-4">Welcome to Purbasa Activity Institute</h1>
+                                    <p className="mb-4 pText"><AccountCircleIcon sx={{ fontSize: 70 }} /></p>
+                                    <p id="lText" className="mb-2">Please Login to continue</p>
                                     <form onSubmit={LoginBtnOnClick}>
                                         <div className="form-outline mb-4">
-                                            <FormControl sx={{ width: '100%' }} variant="outlined">
+                                            <FormControl sx={{ marginTop: '1.5rem', width: '100%' }} variant="outlined">
                                                 <InputLabel htmlFor="EmailTxt">Email</InputLabel>
                                                 <OutlinedInput
                                                     id="EmailTxt"
@@ -162,7 +182,10 @@ export default function LoginForm() {
                                             </FormControl>
                                         </div>
                                         <br />
-                                        <Button variant="contained" id="LoginBtn" type="submit">Login</Button>
+                                        {!loggingIn ?
+                                            <Button variant="contained" id="LoginBtn" type="submit">Login</Button>
+                                            : <Button variant="contained" id="LogingInBtn" disabled={true}><CircularProgress disableShrink style={{ color: "grey", marginRight: "1rem" }} />Logging In...</Button>
+                                        }
                                         <br />
                                         <br />
                                     </form>

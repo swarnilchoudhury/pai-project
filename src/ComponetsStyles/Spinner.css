@@ -1,11 +1,15 @@
-.spinnerDiv {
-    position: absolute;
-    top: 50%;
-    left: 45%;
-}
-
-.spinnerSearchDiv{
-    position: absolute;
-    top: 96%;
-    left: 45%;
-}
+.spinner-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh; /* Full viewport height */
+    text-align: center;
+  }
+  
+  .spinner-text {
+    font-family: 'Open Sans', 'sans-serif';
+    font-size: 18px;
+    margin-top: 20px; /* Adjust the spacing between the spinner and the text */
+  }
+  

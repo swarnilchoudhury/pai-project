@@ -1,28 +1,36 @@
 body{
-    background: linear-gradient(135deg, #d476eb, #5c5ab6);
-}
-
-.p-5 {
-    padding: 2rem !important;
+    background: linear-gradient(135deg, #667fd1, #667fd1);
 }
 
 .py-6 {
-    padding-top: 6rem!important;
-    padding-bottom: 3rem!important;
+    padding-top: 10vh!important;
 }
 
-#LoginBtn{
- width:85%;
+#LoginBtn,#LogingInBtn{
+ width:90%;
  height: 55px;
- margin-right: 14px;
 }
 
 .pText {
-    font-size: 24px;
+    font-size: 20px;
     font-family: 'Open Sans', sans-serif;
 }
 
 #hText {
+    font-size: 24px;
     font-weight: bold;
     font-family: 'Open Sans', sans-serif;
+}
+
+#lText{
+    font-size: 20px;
+    margin-top: -1rem;
+    font-weight: bold;
+    font-family: 'Open Sans', sans-serif;
+}
+
+.main-menu {
+    position: relative;
+    background-color: #fff;
+    z-index: 12;
 }

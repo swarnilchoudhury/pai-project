@@ -90,13 +90,13 @@ const HomePage = () => {
 
     return (
         <div>
-            {/* <section className="vh-200">
+            <section className="vh-200">
                 <div className="container py-5 h-100">
                     <div className="row d-flex justify-content-center align-items-center h-100">
                         <div className="formDiv">
                             <div className="card shadow-2-strong" style={{ "borderRadius": "1rem" }}>
                                 <div className="card-body p-5 text-center">
-                                    <p className="mb-4 pText">Create Form</p>
+                                    {/* <p className="mb-4 pText">Create Form</p>
                                     <div className='dash'>
                                         Create Record
                                         <Button variant="contained" id="ClearHomeBtn" type="reset" onClick={(e) => ClearHomeBtnOnClick(e)}><MdOutlineReplay /> Clear</Button>
@@ -225,7 +225,7 @@ const HomePage = () => {
                                             </div>
                                         </div>
                                     </form>
-                                    <br />
+                                    <br /> */}
                                     <div className='dash'>
                                         ---------------------------------------------------------
                                     </div>
@@ -237,7 +237,7 @@ const HomePage = () => {
                         </div>
                     </div>
                 </div>
-            </section> */}
+            </section>
         </div>
     )
 }
