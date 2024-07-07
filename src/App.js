@@ -31,7 +31,7 @@ function App() {
       const handleAuthSuccess = () => {
         setIsAuthenticated(true);
         setShowLoadingSpin(false);
-        if (location.pathname.includes("/Login") || location.pathname.endsWith('/')) {
+        if (location.pathname.includes("/Login") || location.pathname.endsWith('/login') || location.pathname.endsWith('/')) {
           navigate("/Home");
         } else {
           navigate(location.pathname);
