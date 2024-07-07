@@ -9,10 +9,10 @@ const SetupInterceptors = () => {
 
     axios.defaults.baseURL = process.env.REACT_APP_BASE_URL;
 
-    const sessionExpired = () =>{
+    const sessionExpired = () => {
         localStorage.clear();
-        navigate("/login");  
-        sessionStorage.setItem("session_expired","session_expired");
+        navigate("/login");
+        sessionStorage.setItem("session_expired", "session_expired");
         return Promise.reject(new Error('Session expired'));
     }
 
@@ -45,13 +45,13 @@ const SetupInterceptors = () => {
                                 }
                             });
 
-                            if(response.data.customToken != undefined && response.data.customToken != null){
-                                let customToken = await signInWithCustomToken(auth,response.customToken);
+                            if (response.data.customToken != undefined && response.data.customToken != null) {
+                                let customToken = await signInWithCustomToken(auth, response.customToken);
                                 let newToken = customToken.user.getIdToken(true);
                                 localStorage.setItem("authToken", newToken);
                             }
                         }
-                        
+
                         // Add Authorization header with Bearer token
                         config.headers.Authorization = `Bearer ${token}`;
                     }

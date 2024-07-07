@@ -1,11 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Button from '@mui/material/Button';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
@@ -15,44 +10,57 @@ import Menu from '@mui/material/Menu';
 import MenuIcon from '@mui/icons-material/Menu';
 import Container from '@mui/material/Container';
 import MenuItem from '@mui/material/MenuItem';
-import { auth } from '../Configs/FirebaseConfig';
+import Avatar from '@mui/material/Avatar';
+import Tooltip from '@mui/material/Tooltip';
+import "../../ComponetsStyles/NavBar.css"
+import DialogBoxes from '../DialogBoxes/DialogBoxes';
 
 
 const NavBar = (props) => {
 
-    const [open, setOpen] = useState(false);
+    const [openDialog, setOpenDialog] = useState(false);
 
     const pages = ['Home', 'Search', 'Records'];
+    const settings = ['Logout'];
 
-    const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
+    const [anchorElNav, setAnchorElNav] = useState(null);
+    const [anchorElUser, setAnchorElUser] = useState(null);
+    const [showMessage, setshowMessage] = useState({
+        TextDialogContent: "",
+        TextDialogTitle: "",
+        TextDialogButton: ""
+    });
+    const [count, setCount] = useState(0);
 
-    const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
+    const handleOpenNavMenu = (event) => {
         setAnchorElNav(event.currentTarget);
+    };
+
+    const handleOpenUserMenu = (event) => {
+        setOpenDialog(false);
+        setAnchorElUser(event.currentTarget);
     };
 
     const handleCloseNavMenu = () => {
         setAnchorElNav(null);
     };
 
-    const LogoutBtnOnClick = async () => {
-        let response = await auth.signOut();
-        if (response !== null) {
+    const handleCloseUserMenu = () => {
+        setAnchorElUser(null);
+    };
 
-            sessionStorage.setItem('Logout', 'Success');
-            localStorage.clear();
-
+    const handleClickOpen = (e, setting) => {
+        if (setting === "Logout") {
+            setOpenDialog(true);
+            setCount(count => count + 1)
+            setshowMessage({
+                TextDialogContent: "Are you sure you want to logout?",
+                TextDialogTitle: "Logout",
+                TextDialogButton: "YES"
+            });
         }
-    }
 
-    const handleClickOpen = () => {
-        setOpen(true);
     };
-
-    const handleClose = () => {
-        setOpen(false);
-    };
-
-
 
     return (
         <>
@@ -106,11 +114,11 @@ const NavBar = (props) => {
                                 >
                                     {pages.map((page) => (
                                         <MenuItem key={page} onClick={handleCloseNavMenu}>
-                                            <Typography textAlign="center"  
-                                            key={page}
-                                            component={Link}
-                                            to={"/".concat(page)}
-                                            sx={{ textDecoration:"none",color:"black" }}>{page}</Typography>
+                                            <Typography textAlign="center"
+                                                key={page}
+                                                component={Link}
+                                                to={"/".concat(page)}
+                                                sx={{ textDecoration: "none", color: "black" }}>{page}</Typography>
                                         </MenuItem>
                                     ))}
                                 </Menu>
@@ -148,31 +156,36 @@ const NavBar = (props) => {
                                     </Button>
                                 ))}
                             </Box>
-
-                            <Button variant="contained" color="error" onClick={handleClickOpen}>
-                                LOGOUT
-                            </Button>
-                            <Dialog
-                                open={open}
-                                onClose={handleClose}
-                                aria-labelledby="alert-dialog-title"
-                                aria-describedby="alert-dialog-description"
-                            >
-                                <DialogTitle id="alert-dialog-title">
-                                    {"Logout"}
-                                </DialogTitle>
-                                <DialogContent>
-                                    <DialogContentText id="alert-dialog-description">
-                                        Are you sure you want to logout?
-                                    </DialogContentText>
-                                </DialogContent>
-                                <DialogActions>
-                                    <Button onClick={handleClose}>Cancel</Button>
-                                    <Button onClick={LogoutBtnOnClick} autoFocus>
-                                        YES
-                                    </Button>
-                                </DialogActions>
-                            </Dialog>
+                            <Box sx={{ flexGrow: 0 }}>
+                                <Tooltip title="Open settings">
+                                    <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                                        <Avatar alt="Profile Image" src="" />
+                                    </IconButton>
+                                </Tooltip>
+                                <Menu
+                                    sx={{ mt: '45px' }}
+                                    id="menu-appbar"
+                                    anchorEl={anchorElUser}
+                                    anchorOrigin={{
+                                        vertical: 'top',
+                                        horizontal: 'right',
+                                    }}
+                                    keepMounted
+                                    transformOrigin={{
+                                        vertical: 'top',
+                                        horizontal: 'right',
+                                    }}
+                                    open={Boolean(anchorElUser)}
+                                    onClose={handleCloseUserMenu}
+                                >
+                                    {settings.map((setting) => (
+                                        <MenuItem key={setting} onClick={handleCloseUserMenu}>
+                                            <Typography textAlign="center" onClick={e => handleClickOpen(e, setting)}>{setting}</Typography>
+                                        </MenuItem>
+                                    ))}
+                                </Menu>
+                            </Box>
+                            {openDialog && <DialogBoxes key={count} {...showMessage} />}
                         </Toolbar>
                     </Container>
                 </AppBar>

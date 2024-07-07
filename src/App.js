@@ -7,6 +7,7 @@ import PageNotFound from "./Components/PageNotFound/PageNotFound.jsx";
 import HomePage from "./Components/HomePage/HomePage.js";
 import RecordsPage from "./Components/RecordsPage/RecordsPage.js";
 import Spinner from "./Components/Spinner/Spinner.js";
+import NavBar from "./Components/NavBar/NavBar.js";
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -85,6 +86,7 @@ function App() {
   return (
     <>
       <SetupInterceptors />
+      {isAuthenticated ? <NavBar UserName={localStorage.getItem("UserName")}/> : <></>}
       {showLoadingSpin ? (
         <Spinner Text="Please Wait..." />
       ) : (

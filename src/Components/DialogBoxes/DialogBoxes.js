@@ -5,10 +5,30 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
+import { auth } from '../Configs/FirebaseConfig';
+import { useNavigationInterceptor } from '../AxiosInterceptor/Navigate';
 
-const DialogBoxes = (props) => {
+const DialogBoxes = ({ TextDialogContent, TextDialogTitle, TextDialogButton }) => {
+    
+    const navigate = useNavigationInterceptor();
 
     const [open, setOpen] = useState(true);
+
+    const BtnOnClick = async (e, buttonText) => {
+        if (buttonText === "YES") {
+            await LogoutBtnOnClick();
+        }
+    }
+
+    const LogoutBtnOnClick = async () => {
+
+        let response = await auth.signOut();
+        if (response !== null) {
+            sessionStorage.setItem("Logout", "Logout");
+            navigate("/login");
+            localStorage.clear();
+        }
+    }
 
     const handleClose = () => {
         setOpen(false);
@@ -16,7 +36,7 @@ const DialogBoxes = (props) => {
 
     return (
         <div>
-          
+
             <Dialog
                 open={open}
                 onClose={handleClose}
@@ -24,16 +44,17 @@ const DialogBoxes = (props) => {
                 aria-describedby="alert-dialog-description"
             >
                 <DialogTitle id="alert-dialog-title">
-                    {props.props.dialogTitle}
+                    {TextDialogTitle}
                 </DialogTitle>
                 <DialogContent>
                     <DialogContentText id="alert-dialog-description">
-                    {props.props.dialogContent}
+                        {TextDialogContent}
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleClose} autoFocus>
-                    {props.props.CloseButtonName}
+                    <Button onClick={handleClose}>Cancel</Button>
+                    <Button onClick={e => BtnOnClick(e, TextDialogButton)} autoFocus>
+                        {TextDialogButton}
                     </Button>
                 </DialogActions>
             </Dialog>
