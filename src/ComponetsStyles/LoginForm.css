@@ -1,12 +1,12 @@
 body{
-    background: linear-gradient(135deg, #667fd1, #667fd1);
+    background: linear-gradient(135deg, #a9c9f4, #a9c9f4);
 }
 
 .py-6 {
     padding-top: 10vh!important;
 }
 
-#LoginBtn,#LogingInBtn{
+#LoginBtn{
  width:90%;
  height: 55px;
 }

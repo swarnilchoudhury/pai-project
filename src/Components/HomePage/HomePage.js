@@ -18,12 +18,12 @@ const HomePage = () => {
 
     useEffect(() => {
 
-        // const homeURL = async() =>{
-        //     let response = await axios.post(process.env.REACT_APP_HOME_API_URL);
-        //     console.log();
-        // }
+        const homeURL = async() =>{
+            let response = await axios.post(process.env.REACT_APP_HOME_API_URL);
+            console.log(response);
+        }
 
-        // homeURL();
+        homeURL();
 
     }, []);
 

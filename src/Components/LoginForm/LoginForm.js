@@ -4,7 +4,6 @@ import { signInWithEmailAndPassword } from 'firebase/auth'
 import { useLocation, useNavigate } from 'react-router-dom';
 import Button from '@mui/material/Button';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import CircularProgress from '@mui/material/CircularProgress';
 import ShowMessagediv from '../ShowMessage/ShowMessagediv.js';
 import IconButton from '@mui/material/IconButton';
 import OutlinedInput from '@mui/material/OutlinedInput';
@@ -15,6 +14,7 @@ import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import '../../ComponetsStyles/LoginForm.css';
 import axios from 'axios';
+import CircularProgressButton from '../CircularProgressButton/CircularProgressButton.js';
 
 export default function LoginForm() {
 
@@ -205,7 +205,7 @@ export default function LoginForm() {
                                         <br />
                                         {!loggingIn ?
                                             <Button variant="contained" id="LoginBtn" type="submit">Login</Button>
-                                            : <Button variant="contained" id="LogingInBtn" disabled={true}><CircularProgress disableShrink style={{ color: "grey", marginRight: "1rem" }} />Logging In...</Button>
+                                            : <CircularProgressButton Text="Logging In..." id="LoggingInBtn" />
                                         }
                                         <br />
                                         <br />

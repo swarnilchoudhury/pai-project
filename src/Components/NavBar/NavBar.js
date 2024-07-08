@@ -66,7 +66,7 @@ const NavBar = (props) => {
         <>
             <div>
                 <AppBar position="static">
-                    <Container maxWidth="xl">
+                    <Container maxWidth="xl" className="container-NavBar">
                         <Toolbar disableGutters>
                             <Typography
                                 variant="h6"
