@@ -11,7 +11,7 @@ import Table from '../Table/Table.js';
 const HomePage = () => {
 
     const [showDialogBox, setshowDialogBox] = useState(false);
-    const [showMessage, setshowMessage] = useState({});
+    const [showForm, setshowForm] = useState(false);
     const [approvedData, setapprovedData] = useState({});
     const [isLoading, setisLoading] = useState(true);
 
@@ -51,49 +51,13 @@ const HomePage = () => {
 
 
 
-    // const CreateHomeBtnOnClick = (e) => {
+    const AddStudent = (e) => {
 
-    //     e.preventDefault();
+        e.preventDefault();
 
-    //     const studentDetailsCollection = collection(db, 'StudentDetails');
+        setshowForm(true);
 
-    //     // asynchronously add a document to the collection
-    //     addDoc(studentDetailsCollection, {
-    //         ...formsTxts
-    //     })
-    //         .then(() => {
-
-    //             setCount(count => count + 1);
-
-    //             setshowMessage({
-    //                 dialogContent: "Inserted " + formsTxts.studentName + "," + " " + formsTxts.studentCode + " details Successfully",
-    //                 dialogTitle: "Success",
-    //                 CloseButtonName: "OK"
-    //             });
-
-    //             setformsTxts(defaultformsTxts);
-    //             setshowDialogBox(true);
-
-    //             let form = document.getElementById('create-form');
-    //             form.scrollTop = 0;
-
-    //         })
-    //         .catch(() => {
-
-    //             setCount(count => count + 1);
-
-    //             setshowMessage({
-    //                 dialogContent: "Failed to Insert " + formsTxts.studentName + "," + " " + formsTxts.studentCode + " details",
-    //                 dialogTitle: "Error",
-    //                 CloseButtonName: "OK"
-    //             });
-
-    //             setshowDialogBox(true);
-
-    //             let form = document.getElementById('create-form');
-    //             form.scrollTop = 0;
-
-    //         });
+    };
 
 
 
@@ -112,9 +76,16 @@ const HomePage = () => {
 
     return (
         <div>
-
-            <Table columnsProps={homePageHeader} dataProps={approvedData} isLoadingState={isLoading}/>
-            {/* <p className="mb-4 pText">Create Form</p>
+            {
+                !showForm ?
+                    <>
+                        <Button variant="contained" id="submitHomeBtn" onClick={(e) => AddStudent(e)}>+ ADD NEW STUDENT</Button>
+                        <Table columnsProps={homePageHeader} dataProps={approvedData} isLoadingState={isLoading} />
+                    </>
+                    :
+                    <>
+                    <Button variant="contained" id="submitHomeBtn" onClick={(e) => AddStudent(e)}>BACK TO TABLE</Button>
+                    {/* <p className="mb-4 pText">Create Form</p>
                                     <div className='dash'>
                                         Create Record
                                         <Button variant="contained" id="ClearHomeBtn" type="reset" onClick={(e) => ClearHomeBtnOnClick(e)}><MdOutlineReplay /> Clear</Button>
@@ -244,6 +215,9 @@ const HomePage = () => {
                                         </div>
                                     </form>
                                     <br /> */}
+                                    </>
+
+            }
 
         </div>
     )
