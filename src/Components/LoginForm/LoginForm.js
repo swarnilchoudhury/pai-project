@@ -33,6 +33,7 @@ export default function LoginForm() {
     let location = useLocation();
 
     useEffect(() => {
+        document.title = 'Welcome to Purbasa Activity Institute';
         const session_expired = () => {
             sessionStorage.clear();
             setshowMessage({

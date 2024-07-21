@@ -9,7 +9,7 @@ import { auth } from '../Configs/FirebaseConfig';
 import { useNavigationInterceptor } from '../AxiosInterceptor/Navigate';
 
 const DialogBoxes = ({ TextDialogContent, TextDialogTitle, TextDialogButton }) => {
-    
+
     const navigate = useNavigationInterceptor();
 
     const [open, setOpen] = useState(true);
@@ -24,6 +24,7 @@ const DialogBoxes = ({ TextDialogContent, TextDialogTitle, TextDialogButton }) =
 
         let response = await auth.signOut();
         if (response !== null) {
+            sessionStorage.clear();
             sessionStorage.setItem("Logout", "Logout");
             navigate("/login");
             localStorage.clear();

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import dayjs from 'dayjs';
-import Tables from '../Table/Table.tsx';
+import Tables from '../Table/Table.js';
 import { collection, getDocs, query, where, Timestamp, orderBy } from 'firebase/firestore';
 import { db } from '../Configs/FirebaseConfig.js';
 import Button from '@mui/material/Button';

@@ -6,21 +6,43 @@ import { MdOutlineReplay } from "react-icons/md";
 import Button from '@mui/material/Button';
 import '../../ComponetsStyles/CreateForm.css';
 import axios from 'axios';
+import Table from '../Table/Table.js';
 
 const HomePage = () => {
 
     const [showDialogBox, setshowDialogBox] = useState(false);
     const [showMessage, setshowMessage] = useState({});
+    const [approvedData, setapprovedData] = useState({});
+    const [isLoading, setisLoading] = useState(true);
 
     const [count, setCount] = useState(0);
+
+    const homePageHeader =
+        [
+            {
+                accessorKey: 'Name',
+                header: 'Name',
+            },
+            {
+                accessorKey: 'Age',
+                header: 'Age',
+            },
+            {
+                accessorKey: 'CreatedDateTime',
+                header: 'Created Date Time',
+            }
+        ]
 
 
 
     useEffect(() => {
-
-        const homeURL = async() =>{
+        document.title = 'Home Page';
+        const homeURL = async () => {
             let response = await axios.post(process.env.REACT_APP_HOME_API_URL);
-            console.log(response);
+            setTimeout(() => {
+                setisLoading(false);
+            }, 2000);
+            setapprovedData(response.data);
         }
 
         homeURL();
@@ -70,7 +92,7 @@ const HomePage = () => {
 
     //             let form = document.getElementById('create-form');
     //             form.scrollTop = 0;
-                
+
     //         });
 
 
@@ -90,13 +112,9 @@ const HomePage = () => {
 
     return (
         <div>
-            <section className="vh-200">
-                <div className="container py-5 h-100">
-                    <div className="row d-flex justify-content-center align-items-center h-100">
-                        <div className="formDiv">
-                            <div className="card shadow-2-strong" style={{ "borderRadius": "1rem" }}>
-                                <div className="card-body p-5 text-center">
-                                    {/* <p className="mb-4 pText">Create Form</p>
+
+            <Table columnsProps={homePageHeader} dataProps={approvedData} isLoadingState={isLoading}/>
+            {/* <p className="mb-4 pText">Create Form</p>
                                     <div className='dash'>
                                         Create Record
                                         <Button variant="contained" id="ClearHomeBtn" type="reset" onClick={(e) => ClearHomeBtnOnClick(e)}><MdOutlineReplay /> Clear</Button>
@@ -226,18 +244,7 @@ const HomePage = () => {
                                         </div>
                                     </form>
                                     <br /> */}
-                                    <div className='dash'>
-                                        ---------------------------------------------------------
-                                    </div>
-                                    <Button variant="contained" id="submitHomeBtn" form="create-form" type="submit">Save</Button>
-                                    {showDialogBox && <DialogBoxes key={count} props={showMessage} />}
 
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
         </div>
     )
 }

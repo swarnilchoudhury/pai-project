@@ -12,6 +12,7 @@ const SetupInterceptors = () => {
     const sessionExpired = () => {
         localStorage.clear();
         navigate("/login");
+        sessionStorage.clear();
         sessionStorage.setItem("session_expired", "session_expired");
         return Promise.reject(new Error('Session expired'));
     }
