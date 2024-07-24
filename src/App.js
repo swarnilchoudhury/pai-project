@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import LoginForm from "./Components/LoginForm/LoginForm.js";
 import SetupInterceptors from "./Components/AxiosInterceptor/axiosInterceptor.js";
-import PageNotFound from "./Components/PageNotFound/PageNotFound.jsx";
+import PageNotFound from "./Components/PageNotFound/PageNotFound.js";
 import HomePage from "./Components/HomePage/HomePage.js";
 import RecordsPage from "./Components/RecordsPage/RecordsPage.js";
 import Spinner from "./Components/Spinner/Spinner.js";

@@ -3,10 +3,13 @@ import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../Configs/FirebaseConfig.js';
 import DialogBoxes from '../DialogBoxes/DialogBoxes.js';
 import { MdOutlineReplay } from "react-icons/md";
+import AddIcon from '@mui/icons-material/Add';
 import Button from '@mui/material/Button';
-import '../../ComponetsStyles/CreateForm.css';
+// import '../../ComponetsStyles/CreateForm.css';
 import axios from 'axios';
 import Table from '../Table/Table.js';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import '../../ComponetsStyles/HomePage.css'
 
 const HomePage = () => {
 
@@ -51,11 +54,11 @@ const HomePage = () => {
 
 
 
-    const AddStudent = (e) => {
+    const ToggleForm = (e) => {
 
         e.preventDefault();
 
-        setshowForm(true);
+        setshowForm(state => !state);
 
     };
 
@@ -76,15 +79,19 @@ const HomePage = () => {
 
     return (
         <div>
+            <br/>
             {
                 !showForm ?
                     <>
-                        <Button variant="contained" id="submitHomeBtn" onClick={(e) => AddStudent(e)}>+ ADD NEW STUDENT</Button>
+                    
+                        <Button variant="contained" className="HomePageButttons" onClick={(e) => ToggleForm(e)}><AddIcon/>&nbsp;ADD NEW STUDENT</Button>
+                        <br/>
+                        <br/>
                         <Table columnsProps={homePageHeader} dataProps={approvedData} isLoadingState={isLoading} />
                     </>
                     :
                     <>
-                    <Button variant="contained" id="submitHomeBtn" onClick={(e) => AddStudent(e)}>BACK TO TABLE</Button>
+                    <Button variant="contained" className="HomePageButttons" onClick={(e) => ToggleForm(e)}><ArrowBackIcon/>&nbsp;BACK TO TABLE</Button>
                     {/* <p className="mb-4 pText">Create Form</p>
                                     <div className='dash'>
                                         Create Record

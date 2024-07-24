@@ -1,10 +1,7 @@
 import axios from 'axios';
-import { auth } from '../Configs/FirebaseConfig';
 import { useNavigationInterceptor } from './Navigate';
-import { signInWithCustomToken } from 'firebase/auth';
 
 const SetupInterceptors = () => {
-
     const navigate = useNavigationInterceptor();
 
     axios.defaults.baseURL = process.env.REACT_APP_BASE_URL;
@@ -17,53 +14,62 @@ const SetupInterceptors = () => {
         return Promise.reject(new Error('Session expired'));
     }
 
-    //Send Requests
+    const refreshToken = async (currentToken) => {
+        try {
+            let response = await fetch(process.env.REACT_APP_BASE_URL + process.env.REACT_APP_REFRESH_TOKEN_API_URL, { //To stop infinite axios call
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${currentToken}`
+                }
+            });
+
+            let responseJSON = await response.json();
+
+            if (responseJSON) {
+                localStorage.setItem("authToken", responseJSON.authToken);
+                localStorage.setItem("authTokenTime", responseJSON.authTokenTime);
+                return responseJSON.authToken;
+            } else {
+                throw new Error('Token refresh failed');
+            }
+        } catch (error) {
+            throw new Error('Token refresh failed');
+        }
+    };
+
+    // Request interceptor
     axios.interceptors.request.use(
         async (config) => {
             if (!config.url.includes("login")) {
                 try {
-                    // Get the current date and time
-                    const currentDate = new Date();
-
-                    // Get the token from localStorage
                     let token = localStorage.getItem('authToken');
-
-                    let authTokenTime = localStorage.getItem("expiresAt");
+                    let authTokenTime = localStorage.getItem("authTokenTime");
 
                     if (authTokenTime && token) {
-                        // Calculate the difference in milliseconds between futureDate and currentDate
-                        const differenceInMilliseconds = authTokenTime ? (authTokenTime - currentDate.getTime()) : 0;
 
-                        // Calculate the equivalent of 5 minutes in milliseconds
-                        const minutesInMilliseconds = 5 * 60 * 1000;
+                        let currentDate = new Date();
 
-                        //Check if the difference is within 5 minutes
-                        if (differenceInMilliseconds <= minutesInMilliseconds) {
+                        // Calculate time difference in milliseconds
+                        let time_difference = new Date(authTokenTime).getTime() - currentDate.getTime();
 
-                            let response = await axios.get(process.env.REACT_APP_REFRESH_TOKEN_API_URL, {
-                                headers: {
-                                    Authorization: `Bearer ${token}`
-                                }
-                            });
+                        // Calculate days difference by dividing total milliseconds in a day
+                        let days_difference = time_difference / (1000 * 60 * 60 * 24);
 
-                            if (response.data.customToken != undefined && response.data.customToken != null) {
-                                let customToken = await signInWithCustomToken(auth, response.customToken);
-                                let newToken = customToken.user.getIdToken(true);
-                                localStorage.setItem("authToken", newToken);
-                            }
+                        if (days_difference >= 0 && days_difference <= 0.5) {
+                            token = await refreshToken(token);
+                        }
+                        else if (days_difference < 0) {
+                            throw new Error('sessionExpired');
                         }
 
-                        // Add Authorization header with Bearer token
                         config.headers.Authorization = `Bearer ${token}`;
+                    } else {
+                        throw new Error('No token found');
                     }
-                    else {
-                        throw new Error();
-                    }
+                } catch (error) {
+                    return sessionExpired();
                 }
-                catch {
-                    sessionExpired();
-                }
-
             }
 
             return config;
@@ -75,13 +81,16 @@ const SetupInterceptors = () => {
         }
     );
 
-    //Receive Response
+    // Response interceptor
     axios.interceptors.response.use(
         (response) => response,
-        (e) => {
-            sessionExpired();
+        (error) => {
+            if (error.response && error.response.status === 401) {
+                return sessionExpired();
+            }
+            return Promise.reject(error);
         }
-    )
+    );
 }
 
 export default SetupInterceptors;

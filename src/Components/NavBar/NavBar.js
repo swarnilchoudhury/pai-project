@@ -16,11 +16,11 @@ import "../../ComponetsStyles/NavBar.css"
 import DialogBoxes from '../DialogBoxes/DialogBoxes';
 
 
-const NavBar = (props) => {
+const NavBar = ({ UserName }) => {
 
     const [openDialog, setOpenDialog] = useState(false);
 
-    const pages = ['Home', 'Search', 'Records'];
+    const pages = ['Home'];
     const settings = ['Logout'];
 
     const [anchorElNav, setAnchorElNav] = useState(null);
@@ -81,7 +81,7 @@ const NavBar = (props) => {
                                     textDecoration: 'none',
                                 }}
                             >
-                                Welcome,{props.UserName}
+                                Welcome,{UserName}
                             </Typography>
 
                             <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
@@ -141,7 +141,7 @@ const NavBar = (props) => {
                                     textDecoration: "none"
                                 }}
                             >
-                                Welcome,{props.UserName}
+                                Welcome,{UserName}
                             </Typography>
 
                             <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>

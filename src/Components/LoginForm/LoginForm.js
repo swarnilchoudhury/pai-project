@@ -107,7 +107,6 @@ export default function LoginForm() {
                 { headers: { Authorization: `Bearer ${token}` } }
             );
 
-            localStorage.setItem("authToken", token);
             saveUserSession(response.data);
             navigate("/Home");
         } catch {
@@ -137,8 +136,9 @@ export default function LoginForm() {
         setLoggingIn(false);
     };
 
-    const saveUserSession = ({ expiry, Name }) => {
-        localStorage.setItem("expiresAt", expiry);
+    const saveUserSession = ({ authToken, authTokenTime, Name }) => {
+        localStorage.setItem("authToken", authToken);
+        localStorage.setItem("authTokenTime", authTokenTime);
         localStorage.setItem("UserName", Name);
     };
 
