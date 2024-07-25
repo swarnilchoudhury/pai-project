@@ -8,10 +8,9 @@ const SetupInterceptors = () => {
 
     const sessionExpired = () => {
         localStorage.clear();
-        navigate("/login");
         sessionStorage.clear();
+        navigate("/login");
         sessionStorage.setItem("session_expired", "session_expired");
-        return Promise.reject(new Error('Session expired'));
     }
 
     const refreshToken = async (currentToken) => {
@@ -85,8 +84,11 @@ const SetupInterceptors = () => {
     axios.interceptors.response.use(
         (response) => response,
         (error) => {
-            if (error.response && error.response.status === 401) {
-                return sessionExpired();
+            if (error.response && error.response.status === 400) {
+                alert("Something went wrong.Please try again.");
+            }
+            else {
+                sessionExpired();
             }
             return Promise.reject(error);
         }
