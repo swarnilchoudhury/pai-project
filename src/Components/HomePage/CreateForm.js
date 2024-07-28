@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { serverTimestamp } from 'firebase/firestore';
 import DialogBoxes from '../DialogBoxes/DialogBoxes';
 import { MdOutlineReplay } from "react-icons/md";
 import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
@@ -11,6 +10,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import dayjs from 'dayjs';
 import Button from '@mui/material/Button';
 import '../../ComponetsStyles/CreateForm.css';
+import axios from 'axios';
 
 const CreateForm = () => {
 
@@ -26,9 +26,7 @@ const CreateForm = () => {
         studentCode: "",
         phoneNumber: "",
         DOB: "",
-        AdmissionDate: "",
-        Status: "Active",
-        CreatedDateTime: serverTimestamp()
+        AdmissionDate: ""
     }
 
 
@@ -58,65 +56,52 @@ const CreateForm = () => {
         }));
     }, [dates]);
 
-    const SearchButton = (e) => {
+
+    const SearchButton = async (e) => {
         e.preventDefault();
-        setshowFullForm(true);
+        let response = await axios.post(process.env.REACT_APP_SEARCH_CODE_API_URL,
+            { "studentCode": formsTxts.studentCode });
+
+        if (response.data) {
+            if (response.data.returnCode === 1) {
+                setshowDialogBox(true);
+                setCount(count => count + 1)
+                setshowMessage({
+                    TextDialogContent: formsTxts.studentCode + " already Exists.",
+                    TextDialogTitle: "",
+                    TextDialogButton: "OK"
+                });
+                setshowFullForm(false);
+            }
+            else {
+                setshowDialogBox(false);
+                setshowFullForm(true);
+            }
+        }
     }
 
-    const ResetButton = (e) =>{
+    const ResetButton = (e) => {
         e.preventDefault();
         setshowFullForm(false);
         setformsTxts(defaultformsTxts);
     }
 
-    const CreateHomeBtnOnClick = (e) => {
+    const CreateBtnOnClick = async (e) => {
 
         e.preventDefault();
 
-        console.log(formsTxts)
+        let response = await axios.post(process.env.REACT_APP_CREATE_API_URL,
+            formsTxts);
 
-        // const studentDetailsCollection = collection(db, 'StudentDetails');
+            setshowDialogBox(true);
+            setCount(count => count + 1)
+            setshowMessage({
+                TextDialogContent: response.data.message,
+                TextDialogTitle: "",
+                TextDialogButton: "OK"
+            });
 
-        // // asynchronously add a document to the collection
-        // addDoc(studentDetailsCollection, {
-        //     ...formsTxts
-        // })
-        //     .then(() => {
-
-        //         setCount(count => count + 1);
-
-        //         setshowMessage({
-        //             dialogContent: "Inserted " + formsTxts.studentName + "," + " " + formsTxts.studentCode + " details Successfully",
-        //             dialogTitle: "Success",
-        //             CloseButtonName: "OK"
-        //         });
-
-        //         setformsTxts(defaultformsTxts);
-        //         setshowDialogBox(true);
-
-        //         let form = document.getElementById('create-form');
-        //         form.scrollTop = 0;
-
-        //     })
-        //     .catch(() => {
-
-        //         setCount(count => count + 1);
-
-        //         setshowMessage({
-        //             dialogContent: "Failed to Insert " + formsTxts.studentName + "," + " " + formsTxts.studentCode + " details",
-        //             dialogTitle: "Error",
-        //             CloseButtonName: "OK"
-        //         });
-
-        //         setshowDialogBox(true);
-
-        //         let form = document.getElementById('create-form');
-        //         form.scrollTop = 0;
-
-        //     });
-
-
-
+            ResetButton(e);
     }
 
 
@@ -140,110 +125,108 @@ const CreateForm = () => {
                             <div className="formDiv">
                                 <div className="card shadow-2-strong" style={{ "borderRadius": "1rem" }}>
                                     <div className="card-body p-5 text-center">
-                                        <div className="form-group row">                                    
-                                                {
-                                                    !showFullForm
-                                                        ?
-                                                        <>
-                                                        <label htmlFor='StudentCodeTxt' className="col-sm-2 col-form-label">Student Code</label>
+                                        <div className="form-group row">
+                                        {showDialogBox && <DialogBoxes key={count} {...showMessage} />}
+                                            {
+                                                !showFullForm
+                                                    ?
+                                                    <>
+                                                        <label htmlFor='StudentCodeTxt' className="col-sm-2 col-form-label">Student Code <span className='required'>*</span></label>
                                                         <div className="col-sm-10">
-                                                            <input type="text" className="form-control" id="StudentCodeTxt" disabled={false} value={formsTxts.studentCode} onChange={(e) => setformsTxts({ ...formsTxts, studentCode: e.target.value.toUpperCase() })} />
+                                                            <input type="number" className="form-control" id="StudentCodeTxt" disabled={false} value={formsTxts.studentCode} onChange={(e) => setformsTxts({ ...formsTxts, studentCode: e.target.value.toUpperCase() })} />
                                                             <br />
-                                                        <Button variant="contained" onClick={(e) => SearchButton(e)}><SearchIcon />Search</Button>
-                                                        </div>
-                                                        </>
-                                                        :
-                                                        <>
-                                                        <label htmlFor='StudentCodeTxt' className="col-sm-2 col-form-label">Student Code</label>
+                                                            <Button variant="contained" disabled={!formsTxts.studentCode} onClick={(e) => SearchButton(e)}><SearchIcon />Search</Button>
+                                                        </div>   
+                                                    </>
+                                                    :
+                                                    <>
+                                                        <label htmlFor='StudentCodeTxt' className="col-sm-2 col-form-label">Student Code <span className='required'>*</span></label>
                                                         <div className="col-sm-10">
-                                                            <input type="text" className="form-control" id="StudentCodeTxt" disabled={true} value={formsTxts.studentCode} onChange={(e) => setformsTxts({ ...formsTxts, studentCode: e.target.value.toUpperCase() })} />
+                                                            <input type="number" className="form-control" id="StudentCodeTxt" disabled={true} value={formsTxts.studentCode} onChange={(e) => setformsTxts({ ...formsTxts, studentCode: e.target.value.toUpperCase() })} />
                                                             <br />
                                                         </div>
-                                                            <div className='dash'>
-                                                                <Button variant="contained" id="ClearHomeBtn" type="reset" onClick={(e) => ClearHomeBtnOnClick(e)}><MdOutlineReplay /> Clear</Button>
-                                                                <Button variant="contained" id="ClearHomeBtn" type="reset" onClick={(e) => ResetButton(e)}><CloseIcon /> Reset</Button>
-                                                            </div>
-                                                            <div className='dash'>
-                                                                ---------------------------------------------------------
-                                                            </div>
-                                                            <br />
-                                                            <form className="form" id="create-form" onSubmit={CreateHomeBtnOnClick}>
-                                                                {
-                                                                    showFullForm &&
-                                                                    <>
-                                                                        <div className="form-group row">
-                                                                            <label htmlFor='studentNameTxt' className="col-sm-2 col-form-label">Student Name</label>
-                                                                            <div className="col-sm-10">
-                                                                                <input type="text" className="form-control" id="studentNameTxt" value={formsTxts.studentName} onChange={(e) => setformsTxts({ ...formsTxts, studentName: e.target.value.toUpperCase() })} />
-                                                                            </div>
+                                                        <div className='buttons'>
+                                                            <Button variant="contained" id="ClearHomeBtn" type="reset" onClick={(e) => ClearHomeBtnOnClick(e)}><MdOutlineReplay /> Clear</Button>
+                                                            <Button variant="contained" id="ClearHomeBtn" type="reset" onClick={(e) => ResetButton(e)}><CloseIcon /> Reset</Button>
+                                                        </div>
+                                                        <div className='dash'>
+                                                            -----------------------------------------------------
+                                                        </div>
+                                                        <br />
+                                                        <form className="form" id="create-form" onSubmit={CreateBtnOnClick}>
+                                                            {
+                                                                showFullForm &&
+                                                                <>
+                                                                    <div className="form-group row">
+                                                                        <label htmlFor='studentNameTxt' className="col-sm-2 col-form-label">Student Name <span className='required'>*</span></label>
+                                                                        <div className="col-sm-10">
+                                                                            <input type="text" className="form-control" id="studentNameTxt" value={formsTxts.studentName} onChange={(e) => setformsTxts({ ...formsTxts, studentName: e.target.value.toUpperCase() })} required />
                                                                         </div>
-                                                                        <br />
-                                                                        <div className="form-group row">
-                                                                            <label htmlFor='guardianNameTxt' className="col-sm-2 col-form-label">Guardian Name</label>
-                                                                            <div className="col-sm-10">
-                                                                                <input type="text" className="form-control" id="guardianNameTxt" value={formsTxts.guardianName} onChange={(e) => setformsTxts({ ...formsTxts, guardianName: e.target.value.toUpperCase() })} />
-                                                                            </div>
+                                                                    </div>
+                                                                    <br />
+                                                                    <div className="form-group row">
+                                                                        <label htmlFor='guardianNameTxt' className="col-sm-2 col-form-label">Guardian Name <span className='required'>*</span></label>
+                                                                        <div className="col-sm-10">
+                                                                            <input type="text" className="form-control" id="guardianNameTxt" value={formsTxts.guardianName} onChange={(e) => setformsTxts({ ...formsTxts, guardianName: e.target.value.toUpperCase() })} required />
                                                                         </div>
-                                                                        <br />
+                                                                    </div>
+                                                                    <br />
+                                                                    <div className="form-group row">
+                                                                        <label htmlFor='LevelTxt' className="col-sm-2 col-form-label">Phone Number</label>
+                                                                        <div className="col-sm-10">
+                                                                            <input type="number" className="form-control" id="LevelTxt" value={formsTxts.phoneNumber} onChange={(e) => setformsTxts({ ...formsTxts, phoneNumber: e.target.value.toUpperCase() })} />
+                                                                        </div>
+                                                                    </div>
+                                                                    <br />
+                                                                    <div className="form-group row">
+                                                                        <label htmlFor='DateOfBirth' className="col-sm-2 col-form-label">Date of Birth</label>
+                                                                        <div className="col-sm-10">
+                                                                            <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                                                                <DemoContainer components={['DatePicker']}>
+                                                                                    <DatePicker label="Date of Birth"
+                                                                                        onChange={(e) => setDates({ ...dates, selectedDOBDate: e })}
+                                                                                        slotProps={{
+                                                                                            textField: {
+                                                                                                helperText: 'MM/DD/YYYY',
+                                                                                            },
+                                                                                        }} />
+                                                                                </DemoContainer>
+                                                                            </LocalizationProvider>
+                                                                        </div>
+                                                                    </div>
+                                                                    <br />
+                                                                    <div className="form-group row">
+                                                                        <label htmlFor='AdmissionDate' className="col-sm-2 col-form-label">Admission Date</label>
+                                                                        <div className="col-sm-10">
+                                                                            <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                                                                <DemoContainer components={['DatePicker']}>
+                                                                                    <DatePicker label="Admission Date"
+                                                                                        onChange={(e) => setDates({ ...dates, selectedAdmissionDate: e })}
+                                                                                        slotProps={{
+                                                                                            textField: {
+                                                                                                helperText: 'MM/DD/YYYY',
+                                                                                            },
+                                                                                        }} />
+                                                                                </DemoContainer>
+                                                                            </LocalizationProvider>
+                                                                        </div>
+                                                                    </div>
+                                                                </>
+                                                            }
 
-                                                                        <br />
-                                                                        <div className="form-group row">
-                                                                            <label htmlFor='LevelTxt' className="col-sm-2 col-form-label">Phone Number</label>
-                                                                            <div className="col-sm-10">
-                                                                                <input type="text" className="form-control" id="LevelTxt" value={formsTxts.phoneNumber} onChange={(e) => setformsTxts({ ...formsTxts, phoneNumber: e.target.value.toUpperCase() })} />
-                                                                            </div>
-                                                                        </div>
-                                                                        <br />
-                                                                        <div className="form-group row">
-                                                                            <label htmlFor='DateOfBirth' className="col-sm-2 col-form-label">Date of Birth</label>
-                                                                            <div className="col-sm-10">
-                                                                                <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                                                                    <DemoContainer components={['DatePicker']}>
-                                                                                        <DatePicker label="Date of Birth"
-                                                                                            onChange={(e) => setDates({ ...dates, selectedDOBDate: e })}
-                                                                                            slotProps={{
-                                                                                                textField: {
-                                                                                                    helperText: 'MM/DD/YYYY',
-                                                                                                },
-                                                                                            }} />
-                                                                                    </DemoContainer>
-                                                                                </LocalizationProvider>
-                                                                            </div>
-                                                                        </div>
-                                                                        <br />
-                                                                        <div className="form-group row">
-                                                                            <label htmlFor='AdmissionDate' className="col-sm-2 col-form-label">Admission Date</label>
-                                                                            <div className="col-sm-10">
-                                                                                <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                                                                    <DemoContainer components={['DatePicker']}>
-                                                                                        <DatePicker label="Admission Date"
-                                                                                            onChange={(e) => setDates({ ...dates, selectedAdmissionDate: e })}
-                                                                                            slotProps={{
-                                                                                                textField: {
-                                                                                                    helperText: 'MM/DD/YYYY',
-                                                                                                },
-                                                                                            }} />
-                                                                                    </DemoContainer>
-                                                                                </LocalizationProvider>
-                                                                            </div>
-                                                                        </div>
-                                                                    </>
-                                                                }
-
-                                                            </form>
-                                                            <div className='dash'>
-                                                                ---------------------------------------------------------
-                                                            </div>
-                                                            <Button variant="contained" id="submitHomeBtn" form="create-form" type="submit">Create</Button>
-                                                            {showDialogBox && <DialogBoxes key={count} props={showMessage} />}
-                                                        </>
-                                                }
-                                            </div>
-                                        </div >
+                                                        </form>
+                                                        <div className='dash'>
+                                                            -----------------------------------------------------
+                                                        </div>
+                                                        <Button variant="contained" id="submitHomeBtn" form="create-form" type="submit">Create</Button>
+                                                    </>
+                                            }
+                                        </div>
                                     </div >
                                 </div >
                             </div >
                         </div >
+                    </div >
                 </section >
             </div >
         </>

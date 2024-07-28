@@ -21,10 +21,16 @@
 .dash{
     display: flex;
     flex-wrap: wrap;
-    justify-content: space-between;
+    justify-content: center;
     font-weight:normal !important;
 }
 
+.buttons{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    font-weight:normal !important;
+}
 
 .col-form-label{
     margin: 0;
@@ -59,8 +65,11 @@
     padding-bottom: 3rem!important;
 }
 
+.required{
+color: red;
+}
 .formDiv{
-    max-width: 700px;
+    max-width: 60%;
     width: 100%;
     padding: 25px 30px;
     border-radius: 5px;

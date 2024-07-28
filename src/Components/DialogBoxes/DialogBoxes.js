@@ -18,6 +18,9 @@ const DialogBoxes = ({ TextDialogContent, TextDialogTitle, TextDialogButton }) =
         if (buttonText === "YES") {
             await LogoutBtnOnClick();
         }
+        else {
+            setOpen(false);
+        }
     }
 
     const LogoutBtnOnClick = async () => {
