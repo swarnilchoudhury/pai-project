@@ -1,21 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
-import { db } from '../Configs/FirebaseConfig.js';
-import DialogBoxes from '../DialogBoxes/DialogBoxes.js';
-import { MdOutlineReplay } from "react-icons/md";
 import AddIcon from '@mui/icons-material/Add';
 import Button from '@mui/material/Button';
-// import '../../ComponetsStyles/CreateForm.css';
-import axios from 'axios';
+import RefreshIcon from '@mui/icons-material/Refresh';
 import Table from '../Table/Table.js';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import '../../ComponetsStyles/HomePage.css'
 import CreateForm from './CreateForm.js';
+import axios from '../../Components/AxiosInterceptor/axiosInterceptor.js'
 
 const HomePage = () => {
 
-    const [showDialogBox, setshowDialogBox] = useState(false);
     const [showForm, setshowForm] = useState(false);
+    const [activeStatus, setActiveStatus] = useState(true);
     const [approvedData, setapprovedData] = useState({});
     const [isLoading, setisLoading] = useState(true);
 
@@ -24,12 +20,28 @@ const HomePage = () => {
     const homePageHeader =
         [
             {
-                accessorKey: 'Name',
-                header: 'Name',
+                accessorKey: 'studentName',
+                header: 'Sudent Name',
             },
             {
-                accessorKey: 'Age',
-                header: 'Age',
+                accessorKey: 'studentCode',
+                header: 'Code',
+            },
+            {
+                accessorKey: 'guardianName',
+                header: 'Guardian Name',
+            },
+            {
+                accessorKey: 'DOB',
+                header: 'Date of Birth',
+            },
+            {
+                accessorKey: 'AdmissionDate',
+                header: 'Admission Date',
+            },
+            {
+                accessorKey: 'phoneNumber',
+                header: 'Phone Number',
             },
             {
                 accessorKey: 'CreatedDateTime',
@@ -38,45 +50,48 @@ const HomePage = () => {
         ]
 
 
+    const homePageData = async (status) => {
+
+        let response = await axios.get(process.env.REACT_APP_HOME_API_URL,
+            {
+                headers:
+                    { 'x-status': status }
+            });
+
+        setisLoading(false);
+        setapprovedData(response.data);
+    }
+
 
     useEffect(() => {
         document.title = 'Home Page';
-        const homeURL = async () => {
-            let response = await axios.post(process.env.REACT_APP_HOME_API_URL);
-            setTimeout(() => {
-                setisLoading(false);
-            }, 2000);
-            setapprovedData(response.data);
-        }
-
-        homeURL();
-
+        homePageData('Active');
     }, []);
-
 
 
     const ToggleForm = (e) => {
 
         e.preventDefault();
-
         setshowForm(state => !state);
 
     };
 
+    const RefreshBtnOnClick = (e) => {
+        setisLoading(true);
 
+        let activeToggleBtn = document.getElementById('ActiveToggleBtn');
 
-    // }
+        if (activeToggleBtn.checked) {
+            setActiveStatus(true);
+            homePageData('Active');
+        }
+        else {
+            setActiveStatus(false);
+            homePageData('Deactive');
+        }
 
-
-    // const ClearHomeBtnOnClick = (e) => {
-
-    //     e.preventDefault();
-
-    //     setCount(count => count + 1);
-    //     setformsTxts(defaultformsTxts);
-    //     setshowDialogBox(false);
-
-    // }
+        setCount(count => count + 1);
+    }
 
     return (
         <div>
@@ -84,11 +99,11 @@ const HomePage = () => {
             {
                 !showForm ?
                     <>
-
                         <Button variant="contained" className="HomePageButttons" onClick={(e) => ToggleForm(e)}><AddIcon />&nbsp;ADD NEW STUDENT</Button>
+                        <Button variant="contained" id="RefreshBtn" onClick={(e) => RefreshBtnOnClick(e)}><RefreshIcon /></Button>
                         <br />
                         <br />
-                        <Table columnsProps={homePageHeader} dataProps={approvedData} isLoadingState={isLoading} />
+                        <Table key={count} columnsProps={homePageHeader} dataProps={approvedData} isLoadingState={isLoading} defaultCheckedProp={activeStatus} homePageData={homePageData} />
                     </>
                     :
                     <>

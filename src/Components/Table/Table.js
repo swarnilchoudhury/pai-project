@@ -4,13 +4,11 @@ import {
   useMaterialReactTable,
 } from 'material-react-table';
 import React from 'react';
-import { Button } from '@mui/material';
-import AddIcon from '@mui/icons-material/Add';
 import Switch from '@mui/material/Switch';
 
 const label = { inputProps: { 'aria-label': 'Switch demo' } };
 
-const Table = ({ columnsProps, dataProps, isLoadingState }) => {
+const Table = ({ columnsProps, dataProps, isLoadingState, defaultCheckedProp, homePageData }) => {
 
   const data = dataProps;
   const columns = useMemo(
@@ -18,8 +16,17 @@ const Table = ({ columnsProps, dataProps, isLoadingState }) => {
     () => [
       ...columnsProps
     ],
-    [], //end
+    [],
   );
+
+  const statusToggleOnClick = (e) =>{
+    if(e.target.checked){
+      homePageData('Active');
+    }
+    else{
+      homePageData('Deactive');
+    }
+  }
 
   //optionally, you can manage the row selection state yourself
   const [rowSelection, setRowSelection] = useState({});
@@ -53,24 +60,13 @@ const Table = ({ columnsProps, dataProps, isLoadingState }) => {
         border: '1px solid rgba(81, 81, 81, .5)',
       },
     },
-    //Adding a custom button to the bottom toolbar
     renderTopToolbarCustomActions: () => (
       <div>
-      <Switch {...label} />
-      {/* <Button
-      //extract all selected rows from the table instance and do something with them
-      // onClick={() => handleDownloadRows(table.getSelectedRowModel().rows)}
-      >
-        <AddIcon/>  ADD A NEW STUDENT
-      </Button> */}
+        <Switch {...label} defaultChecked={defaultCheckedProp} id='ActiveToggleBtn' onChange={statusToggleOnClick}/> <span style={{ fontWeight: 'bold' }}> Active </span>
+        <Switch {...label} defaultChecked={defaultCheckedProp} id='ApprovalToggleBtn' onChange={statusToggleOnClick}/> <span style={{ fontWeight: 'bold' }}> Approved </span>
       </div>
-    ),
+    )
   });
-
-  //do something when the row selection changes...
-  useEffect(() => {
-    console.info({ rowSelection }); //read your managed row selection state
-  }, [rowSelection]);
 
   return (
     <div>
