@@ -6,16 +6,12 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import { auth } from '../Configs/FirebaseConfig';
-import { useNavigationInterceptor } from '../AxiosInterceptor/Navigate';
 
 const DialogBoxes = ({ TextDialogContent, TextDialogTitle, TextDialogButton }) => {
-
-    const navigate = useNavigationInterceptor();
-
     const [open, setOpen] = useState(true);
 
-    const BtnOnClick = async (e, buttonText) => {
-        if (buttonText === "YES") {
+    const BtnOnClick = async () => {
+        if (TextDialogButton === "Logout") {
             await LogoutBtnOnClick();
         }
         else {
@@ -24,14 +20,9 @@ const DialogBoxes = ({ TextDialogContent, TextDialogTitle, TextDialogButton }) =
     }
 
     const LogoutBtnOnClick = async () => {
-
-        let response = await auth.signOut();
-        if (response !== null) {
-            sessionStorage.clear();
-            sessionStorage.setItem("Logout", "Logout");
-            navigate("/login");
-            localStorage.clear();
-        }
+        sessionStorage.clear();
+        sessionStorage.setItem("Logout", "Logout");
+        await auth.signOut();
     }
 
     const handleClose = () => {
@@ -57,7 +48,7 @@ const DialogBoxes = ({ TextDialogContent, TextDialogTitle, TextDialogButton }) =
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleClose}>Cancel</Button>
-                    <Button onClick={e => BtnOnClick(e, TextDialogButton)} autoFocus>
+                    <Button onClick={e => BtnOnClick(e)} autoFocus>
                         {TextDialogButton}
                     </Button>
                 </DialogActions>

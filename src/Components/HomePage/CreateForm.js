@@ -10,7 +10,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import dayjs from 'dayjs';
 import Button from '@mui/material/Button';
 import '../../ComponetsStyles/CreateForm.css';
-import axios from 'axios';
+import axios from '../AxiosInterceptor/axiosInterceptor';
 
 const CreateForm = () => {
 
@@ -43,7 +43,7 @@ const CreateForm = () => {
     const dateFormater = (datePrm) => {
 
         const date = dayjs(datePrm);
-        const formattedDate = date.format('MM/DD/YYYY');
+        const formattedDate = date.format('DD/MM/YYYY');
         return formattedDate;
 
     }
@@ -56,8 +56,26 @@ const CreateForm = () => {
         }));
     }, [dates]);
 
+    const handleStudentCodeInputChange = (e) => {
+        const { value } = e.target;
+        const maxLength = 4;
 
-    const SearchButton = async (e) => {
+        if (value.length <= maxLength) {
+            setformsTxts({ ...formsTxts, studentCode: value.toUpperCase() });
+        }
+    };
+
+    const handlePhoneNumberInputChange = (e) => {
+        const { value } = e.target;
+        const maxLength = 10;
+
+        if (value.length <= maxLength) {
+            setformsTxts({ ...formsTxts, phoneNumber: e.target.value.toUpperCase() });
+        }
+    };
+
+    const SearchButtonOnClick = async (e) => {
+
         e.preventDefault();
         let response = await axios.post(process.env.REACT_APP_SEARCH_CODE_API_URL,
             { "studentCode": formsTxts.studentCode });
@@ -67,7 +85,7 @@ const CreateForm = () => {
                 setshowDialogBox(true);
                 setCount(count => count + 1)
                 setshowMessage({
-                    TextDialogContent: formsTxts.studentCode + " already Exists.",
+                    TextDialogContent: formsTxts.studentCode + " already exists.",
                     TextDialogTitle: "",
                     TextDialogButton: "OK"
                 });
@@ -80,7 +98,8 @@ const CreateForm = () => {
         }
     }
 
-    const ResetButton = (e) => {
+    const ResetButtonOnClick = (e) => {
+
         e.preventDefault();
         setshowFullForm(false);
         setformsTxts(defaultformsTxts);
@@ -91,17 +110,20 @@ const CreateForm = () => {
         e.preventDefault();
 
         let response = await axios.post(process.env.REACT_APP_CREATE_API_URL,
-            formsTxts);
+            JSON.stringify(formsTxts), {
+                headers: {
+                  'Content-Type': 'application/json'
+                }});
 
-            setshowDialogBox(true);
-            setCount(count => count + 1)
-            setshowMessage({
-                TextDialogContent: response.data.message,
-                TextDialogTitle: "",
-                TextDialogButton: "OK"
-            });
+        setshowDialogBox(true);
+        setCount(count => count + 1)
+        setshowMessage({
+            TextDialogContent: response.data.message,
+            TextDialogTitle: "",
+            TextDialogButton: "OK"
+        });
 
-            ResetButton(e);
+        ResetButtonOnClick(e);
     }
 
 
@@ -126,17 +148,18 @@ const CreateForm = () => {
                                 <div className="card shadow-2-strong" style={{ "borderRadius": "1rem" }}>
                                     <div className="card-body p-5 text-center">
                                         <div className="form-group row">
-                                        {showDialogBox && <DialogBoxes key={count} {...showMessage} />}
+                                            {showDialogBox && <DialogBoxes key={count} {...showMessage} />}
                                             {
                                                 !showFullForm
                                                     ?
                                                     <>
                                                         <label htmlFor='StudentCodeTxt' className="col-sm-2 col-form-label">Student Code <span className='required'>*</span></label>
                                                         <div className="col-sm-10">
-                                                            <input type="number" className="form-control" id="StudentCodeTxt" disabled={false} value={formsTxts.studentCode} onChange={(e) => setformsTxts({ ...formsTxts, studentCode: e.target.value.toUpperCase() })} />
+                                                            <input type="number" className="form-control" id="StudentCodeTxt" disabled={false} value={formsTxts.studentCode}
+                                                                onChange={handleStudentCodeInputChange} />
                                                             <br />
-                                                            <Button variant="contained" disabled={!formsTxts.studentCode} onClick={(e) => SearchButton(e)}><SearchIcon />Search</Button>
-                                                        </div>   
+                                                            <Button variant="contained" disabled={!formsTxts.studentCode} onClick={(e) => SearchButtonOnClick(e)}><SearchIcon />Search</Button>
+                                                        </div>
                                                     </>
                                                     :
                                                     <>
@@ -147,7 +170,7 @@ const CreateForm = () => {
                                                         </div>
                                                         <div className='buttons'>
                                                             <Button variant="contained" id="ClearHomeBtn" type="reset" onClick={(e) => ClearHomeBtnOnClick(e)}><MdOutlineReplay /> Clear</Button>
-                                                            <Button variant="contained" id="ClearHomeBtn" type="reset" onClick={(e) => ResetButton(e)}><CloseIcon /> Reset</Button>
+                                                            <Button variant="contained" id="ClearHomeBtn" type="reset" onClick={(e) => ResetButtonOnClick(e)}><CloseIcon /> Reset</Button>
                                                         </div>
                                                         <div className='dash'>
                                                             -----------------------------------------------------
@@ -174,7 +197,7 @@ const CreateForm = () => {
                                                                     <div className="form-group row">
                                                                         <label htmlFor='LevelTxt' className="col-sm-2 col-form-label">Phone Number</label>
                                                                         <div className="col-sm-10">
-                                                                            <input type="number" className="form-control" id="LevelTxt" value={formsTxts.phoneNumber} onChange={(e) => setformsTxts({ ...formsTxts, phoneNumber: e.target.value.toUpperCase() })} />
+                                                                            <input type="number" className="form-control" id="LevelTxt" value={formsTxts.phoneNumber} onChange={handlePhoneNumberInputChange} />
                                                                         </div>
                                                                     </div>
                                                                     <br />
@@ -185,9 +208,10 @@ const CreateForm = () => {
                                                                                 <DemoContainer components={['DatePicker']}>
                                                                                     <DatePicker label="Date of Birth"
                                                                                         onChange={(e) => setDates({ ...dates, selectedDOBDate: e })}
+                                                                                        format="DD/MM/YYYY"
                                                                                         slotProps={{
                                                                                             textField: {
-                                                                                                helperText: 'MM/DD/YYYY',
+                                                                                                helperText: 'DD/MM/YYYY',
                                                                                             },
                                                                                         }} />
                                                                                 </DemoContainer>
@@ -202,9 +226,10 @@ const CreateForm = () => {
                                                                                 <DemoContainer components={['DatePicker']}>
                                                                                     <DatePicker label="Admission Date"
                                                                                         onChange={(e) => setDates({ ...dates, selectedAdmissionDate: e })}
+                                                                                        format="DD/MM/YYYY"
                                                                                         slotProps={{
                                                                                             textField: {
-                                                                                                helperText: 'MM/DD/YYYY',
+                                                                                                helperText: 'DD/MM/YYYY',
                                                                                             },
                                                                                         }} />
                                                                                 </DemoContainer>

@@ -13,7 +13,7 @@ import FormControl from '@mui/material/FormControl';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import '../../ComponetsStyles/LoginForm.css';
-import axios from 'axios';
+import axios from '../AxiosInterceptor/axiosInterceptor.js';
 import CircularProgressButton from '../CircularProgressButton/CircularProgressButton.js';
 
 export default function LoginForm() {
@@ -34,33 +34,15 @@ export default function LoginForm() {
 
     useEffect(() => {
         document.title = 'Welcome to Purbasa Activity Institute';
-        const session_expired = () => {
+
+        if (sessionStorage.getItem("somethingWrong")) {
             sessionStorage.clear();
             setshowMessage({
-                innerText: "Session Expired. Please Log In.",
+                innerText: "Something went wrong. Please Log In again.",
                 className: "alert alert-danger",
                 role: "alert"
             });
-        }
 
-        if (sessionStorage.getItem("session_expired")) {
-            session_expired();
-
-        }
-        else if (location.state != null) {
-            if (location.state.session_expired) {
-
-                session_expired();
-            }
-            else if (location.state.loginIn) {
-
-                setshowMessage({
-                    innerText: "Please Log In to continue",
-                    className: "alert alert-danger",
-                    role: "alert"
-                });
-
-            }
         }
         else if (sessionStorage.getItem("Logout")) {
             sessionStorage.clear();
@@ -100,14 +82,11 @@ export default function LoginForm() {
 
     const handleLoginSuccess = async (signinResponse) => {
         try {
-            const token = signinResponse.user.accessToken;
             const response = await axios.post(
                 process.env.REACT_APP_LOGIN_API_URL,
-                { emailId: signinResponse.user.email },
-                { headers: { Authorization: `Bearer ${token}` } }
+                { emailId: signinResponse.user.email }
             );
-
-            saveUserSession(response.data);
+            localStorage.setItem("UserName", response.data.Name);
             navigate("/Home");
         } catch {
             handleRequestError();
@@ -134,12 +113,6 @@ export default function LoginForm() {
 
         clearPasswordInput();
         setLoggingIn(false);
-    };
-
-    const saveUserSession = ({ authToken, authTokenTime, Name }) => {
-        localStorage.setItem("authToken", authToken);
-        localStorage.setItem("authTokenTime", authTokenTime);
-        localStorage.setItem("UserName", Name);
     };
 
     const clearPasswordInput = () => {
