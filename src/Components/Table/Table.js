@@ -4,11 +4,8 @@ import {
   useMaterialReactTable,
 } from 'material-react-table';
 import React from 'react';
-import Switch from '@mui/material/Switch';
 
-const label = { inputProps: { 'aria-label': 'Switch demo' } };
-
-const Table = ({ columnsProps, dataProps, isLoadingState, defaultCheckedProp, homePageData }) => {
+const Table = ({ columnsProps, dataProps, isLoadingState }) => {
 
   const data = dataProps;
   const columns = useMemo(
@@ -19,14 +16,7 @@ const Table = ({ columnsProps, dataProps, isLoadingState, defaultCheckedProp, ho
     [],
   );
 
-  const statusToggleOnClick = (e) =>{
-    if(e.target.checked){
-      homePageData('Active');
-    }
-    else{
-      homePageData('Deactive');
-    }
-  }
+  
 
   //optionally, you can manage the row selection state yourself
   const [rowSelection, setRowSelection] = useState({});
@@ -59,13 +49,7 @@ const Table = ({ columnsProps, dataProps, isLoadingState, defaultCheckedProp, ho
       sx: {
         border: '1px solid rgba(81, 81, 81, .5)',
       },
-    },
-    renderTopToolbarCustomActions: () => (
-      <div>
-        <Switch {...label} defaultChecked={defaultCheckedProp} id='ActiveToggleBtn' onChange={statusToggleOnClick}/> <span style={{ fontWeight: 'bold' }}> Active </span>
-        <Switch {...label} defaultChecked={defaultCheckedProp} id='ApprovalToggleBtn' onChange={statusToggleOnClick}/> <span style={{ fontWeight: 'bold' }}> Approved </span>
-      </div>
-    )
+    }
   });
 
   return (
