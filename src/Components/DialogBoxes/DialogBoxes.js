@@ -7,7 +7,7 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import { auth } from '../Configs/FirebaseConfig';
 
-const DialogBoxes = ({ TextDialogContent, TextDialogTitle, TextDialogButton }) => {
+const DialogBoxes = ({ TextDialogContent, TextDialogTitle, TextDialogButton, showCancelBtn }) => {
     const [open, setOpen] = useState(true);
 
     const BtnOnClick = async () => {
@@ -47,7 +47,7 @@ const DialogBoxes = ({ TextDialogContent, TextDialogTitle, TextDialogButton }) =
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleClose}>Cancel</Button>
+                    {showCancelBtn && <Button onClick={handleClose}>Cancel</Button>}
                     <Button onClick={e => BtnOnClick(e)} autoFocus>
                         {TextDialogButton}
                     </Button>

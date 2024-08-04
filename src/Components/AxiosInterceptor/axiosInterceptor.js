@@ -16,7 +16,6 @@ axios.interceptors.request.use(
     async (config) => {
         try {
             let token = await auth.currentUser.getIdToken();
-            console.log('from axios.js', token);
             config.headers.Authorization = `Bearer ${token}`;
         } catch {
             throw new Error();
@@ -35,9 +34,6 @@ axios.interceptors.response.use(
     async (error) => {
         if (error.response && error.response.status === 401) {
             await unauthorized();
-        }
-        else {
-            somethingWrong();
         }
         return Promise.reject(error);
     }

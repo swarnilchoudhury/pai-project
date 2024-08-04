@@ -56,7 +56,8 @@ const NavBar = ({ UserName }) => {
             setshowMessage({
                 TextDialogContent: "Are you sure you want to logout?",
                 TextDialogTitle: "Logout",
-                TextDialogButton: "Logout"
+                TextDialogButton: "Logout",
+                showCancelBtn: true
             });
         }
 
