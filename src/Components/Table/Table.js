@@ -4,8 +4,11 @@ import {
   useMaterialReactTable,
 } from 'material-react-table';
 import React from 'react';
+import { Button } from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
+import Done from '@mui/icons-material/Done';
 
-const Table = ({ columnsProps, dataProps, isLoadingState }) => {
+const Table = ({ columnsProps, dataProps, isLoadingState, isShowRowSelectionBtns,showRowSelectionBtns, rowSelection, setRowSelection, clickFunctions }) => {
 
   const data = dataProps;
   const columns = useMemo(
@@ -15,17 +18,11 @@ const Table = ({ columnsProps, dataProps, isLoadingState }) => {
     ],
     [],
   );
-
-  
-
-  //optionally, you can manage the row selection state yourself
-  const [rowSelection, setRowSelection] = useState({});
-
   const table = useMaterialReactTable({
     columns,
     data,
     enableRowSelection: true,
-    getRowId: (row) => row.Name, //give each row a more useful id
+    getRowId: (row) => row.StudentCode, //give each row a more useful id
     onRowSelectionChange: setRowSelection, //connect internal row selection state to your own
     state: { rowSelection, isLoading: isLoadingState }, //pass our managed row selection state to the table to use
     muiSkeletonProps: {
@@ -49,7 +46,13 @@ const Table = ({ columnsProps, dataProps, isLoadingState }) => {
       sx: {
         border: '1px solid rgba(81, 81, 81, .5)',
       },
-    }
+    },
+    renderTopToolbarCustomActions: () => (
+      <div>
+        {isShowRowSelectionBtns && showRowSelectionBtns.DeactiveButton && <Button variant="contained" color='error' id="deactiveBtn" onClick={clickFunctions}><CloseIcon />DEACTIVATE</Button>}
+        {isShowRowSelectionBtns && showRowSelectionBtns.ActiveButton && <Button variant="contained" color='success' id="activeBtn" onClick={clickFunctions}><Done />ACTIVATE</Button>}
+      </div>
+    )
   });
 
   return (

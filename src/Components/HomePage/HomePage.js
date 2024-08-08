@@ -9,6 +9,7 @@ import '../../ComponetsStyles/HomePage.css'
 import CreateForm from './CreateForm.js';
 import axios from '../../Components/AxiosInterceptor/axiosInterceptor.js'
 import DialogSomethingWrong from '../DialogBoxes/DialogSomethingWrong.js';
+import DialogBoxes from '../DialogBoxes/DialogBoxes.js';
 
 const HomePage = () => {
 
@@ -18,6 +19,21 @@ const HomePage = () => {
     const [approvedData, setApprovedData] = useState({});
     const [isLoading, setIsLoading] = useState(true);
     const [showSomethingWrongDialogBox, setShowSomethingWrongDialogBox] = useState(false);
+    const [showDialogBox, setShowDialogBox] = useState(false);
+    const [rowSelection, setRowSelection] = useState({});
+    const [showDialogBoxContent, setShowDialogBoxContent] = useState({
+        TextDialogTitle: "",
+        TextDialogContent: "",
+        TextDialogButtonOnConfirmId: "",
+        TextDialogButtonOnConfirm: "",
+        showCancelBtn: true
+    });
+    const [isShowRowSelectionBtns, setisShowRowSelectionBtns] = useState(false);
+    const [showRowSelectionBtns, setshowRowSelectionBtns] = useState({
+        DeactiveButton: false,
+        ActiveButton: false
+    });
+
     const [count, setCount] = useState(0);
 
     const homePageHeader =
@@ -61,18 +77,22 @@ const HomePage = () => {
                         { 'x-status': status }
                 });
 
-                setApprovedData(response.data);
+            setApprovedData(response.data);
         }
         catch {
             setShowSomethingWrongDialogBox(true);
         }
 
         setCount(count => count + 1);
-        setIsLoading(false); 
+        setIsLoading(false);
     }
 
     const statusToggleOnClick = async (e) => {
         setIsLoading(true);
+        setShowSomethingWrongDialogBox(false);
+        setRowSelection({});
+        setisShowRowSelectionBtns(false);
+        setShowDialogBox(false);
         setCount(count => count + 1);
 
         if (e.target.id === 'ActiveToggleBtn') {
@@ -102,17 +122,38 @@ const HomePage = () => {
         homePageData('Active');
     }, []);
 
+    useEffect(() => {
+        if (Object.keys(rowSelection).length > 0) {
+            let activeToggleBtn = document.getElementById('ActiveToggleBtn');
+
+            if (activeToggleBtn != null) {
+                setisShowRowSelectionBtns(true);
+                if (activeToggleBtn.checked) {
+                    setshowRowSelectionBtns({ DeactiveButton: true });
+                }
+                else if (!activeToggleBtn.checked) {
+                    setshowRowSelectionBtns({ ActiveButton: true });
+                }
+            }
+        }
+        else {
+            setisShowRowSelectionBtns(false);
+        }
+    }, [rowSelection])
+
 
     const ToggleForm = (e) => {
 
         e.preventDefault();
+        setRowSelection({});
+        setShowDialogBox(false);
         setShowForm(state => !state);
 
     };
 
     const RefreshBtnOnClick = async (e) => {
         setIsLoading(true);
-
+        setShowDialogBox(false);
         let activeToggleBtn = document.getElementById('ActiveToggleBtn');
 
         if (activeToggleBtn != null) {
@@ -133,21 +174,103 @@ const HomePage = () => {
         setCount(count => count + 1);
     }
 
+    const clickFunctions = async (e) => {
+        setCount(count => count + 1);
+        if (e.target.id === 'deactiveBtn') {
+
+            setShowDialogBoxContent({
+                TextDialogTitle: "Deactivate",
+                TextDialogContent: "Are you Sure to Deactivate?",
+                TextDialogButtonOnConfirmId: "deactiveBtn",
+                TextDialogButtonOnConfirm: "Deactivate"
+            });
+            setShowDialogBox(true);
+        }
+        else if (e.target.id === 'activeBtn') {
+            setShowDialogBoxContent({
+                TextDialogTitle: "Activate",
+                TextDialogContent: "Are you Sure to Activate?",
+                TextDialogButtonOnConfirmId: "activeBtn",
+                TextDialogButtonOnConfirm: "Activate"
+            });
+            setShowDialogBox(true);
+        }
+    }
+
+    const clickFunctionsOnConfirm = async (e) => {
+        if (e.target.id === 'OK') {
+            setShowDialogBox(false);
+            return;
+        }
+
+        setShowDialogBox(false);
+        let header = "";
+        if (e.target.id === 'deactiveBtn') {
+            header = 'deactive'
+        }
+        else if (e.target.id === 'activeBtn') {
+            header = 'active'
+        }
+
+        try {
+            const keysArray = Object.keys(rowSelection);
+
+            let response = await axios.post(process.env.REACT_APP_UPDATE_API_URL, { data: keysArray },
+                {
+                    headers: { 'Content-Type': 'application/json', 'x-update': header }
+
+                });
+
+            if (response.status === 200) {
+                setisShowRowSelectionBtns(false);
+                setRowSelection({});
+                RefreshBtnOnClick(e);
+                setCount(count => count + 1);
+
+                if (header === 'deactive') {
+                    setShowDialogBoxContent({
+                        TextDialogTitle: "Success",
+                        TextDialogContent: "Deactivated Successfully",
+                        TextDialogButtonOnConfirmId: "OK",
+                        TextDialogButtonOnConfirm: "OK",
+                        showCancelBtn: false
+                    });
+                }
+                else if (header === 'active') {
+                    setShowDialogBoxContent({
+                        TextDialogTitle: "Success",
+                        TextDialogContent: "Activated Successfully",
+                        TextDialogButtonOnConfirmId: "OK",
+                        TextDialogButtonOnConfirm: "OK",
+                        showCancelBtn: false
+                    });
+                }
+
+                setShowDialogBox(true);
+            }
+
+        }
+        catch {
+            setCount(count => count + 1);
+            setShowSomethingWrongDialogBox(true);
+        }
+    }
+
     return (
         <div>
             {showSomethingWrongDialogBox && <DialogSomethingWrong key={count} />}
+            {showDialogBox && <DialogBoxes key={count} showDefaultTextDialogButton={false} TextDialogTitle={showDialogBoxContent.TextDialogTitle} TextDialogContent={showDialogBoxContent.TextDialogContent} TextDialogButtonOnConfirm={showDialogBoxContent.TextDialogButtonOnConfirm} TextDialogButtonOnConfirmId={showDialogBoxContent.TextDialogButtonOnConfirmId} showCancelBtn={showDialogBoxContent.showCancelBtn} clickFunctionsOnConfirm={clickFunctionsOnConfirm} />}
             <br />
             {
                 !showForm ?
                     <>
-
                         <Button variant="contained" className="HomePageButttons" onClick={(e) => ToggleForm(e)}><AddIcon />&nbsp;ADD NEW</Button>
                         <Button variant="contained" id="RefreshBtn" onClick={(e) => RefreshBtnOnClick(e)}><RefreshIcon /></Button>
                         <div style={{ marginTop: "2rem" }}>
                             <Switch defaultChecked={false} id='ApprovedToggleBtn' onChange={statusToggleOnClick} /> <span style={{ fontWeight: 'bold' }}>Unapproved</span>
-                            {showActiveStatus && <span style={{ marginLeft: "1.5rem" }} ><Switch defaultChecked={activeStatus} id='ActiveToggleBtn' onChange={statusToggleOnClick} /> <span style={{ fontWeight: 'bold' }}>Active</span></span>}
+                            {showActiveStatus && <span><Switch defaultChecked={activeStatus} id='ActiveToggleBtn' onChange={statusToggleOnClick} /> <span style={{ fontWeight: 'bold' }}>Active</span></span>}
                         </div>
-                        <Table key={count} columnsProps={homePageHeader} dataProps={approvedData} isLoadingState={isLoading} />
+                        <Table key={count} columnsProps={homePageHeader} dataProps={approvedData} isLoadingState={isLoading} isShowRowSelectionBtns={isShowRowSelectionBtns} showRowSelectionBtns={showRowSelectionBtns} rowSelection={rowSelection} setRowSelection={setRowSelection} clickFunctions={clickFunctions} />
                     </>
                     :
                     <>

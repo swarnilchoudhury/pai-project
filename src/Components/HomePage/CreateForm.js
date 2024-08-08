@@ -20,9 +20,7 @@ const CreateForm = () => {
         StudentName: "",
         GuardianName: "",
         StudentCode: "",
-        PhoneNumber: "",
-        DOB: "",
-        AdmissionDate: ""
+        PhoneNumber: "-"
     }
 
     const [isBtnLoading, setisBtnLoading] = useState(false);
@@ -52,8 +50,8 @@ const CreateForm = () => {
     useEffect(() => {
         setformsTxts(prevFormsTxts => ({
             ...prevFormsTxts,
-            DOB: dates.selectedDOBDate ? dateFormater(dates.selectedDOBDate) : "",
-            AdmissionDate: dates.selectedAdmissionDate ? dateFormater(dates.selectedAdmissionDate) : ""
+            DOB: dates.selectedDOBDate ? dateFormater(dates.selectedDOBDate) : "-",
+            AdmissionDate: dates.selectedAdmissionDate ? dateFormater(dates.selectedAdmissionDate) : "-"
         }));
     }, [dates]);
 
