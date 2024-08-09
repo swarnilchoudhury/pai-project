@@ -22,7 +22,7 @@ const Table = ({ columnsProps, dataProps, isLoadingState, isShowRowSelectionBtns
     columns,
     data,
     enableRowSelection: true,
-    getRowId: (row) => row.StudentCode, //give each row a more useful id
+    getRowId: (row) => row.studentCode, //give each row a more useful id
     onRowSelectionChange: setRowSelection, //connect internal row selection state to your own
     state: { rowSelection, isLoading: isLoadingState }, //pass our managed row selection state to the table to use
     muiSkeletonProps: {
@@ -49,8 +49,9 @@ const Table = ({ columnsProps, dataProps, isLoadingState, isShowRowSelectionBtns
     },
     renderTopToolbarCustomActions: () => (
       <div>
-        {isShowRowSelectionBtns && showRowSelectionBtns.DeactiveButton && <Button variant="contained" color='error' id="deactiveBtn" onClick={clickFunctions}><CloseIcon />DEACTIVATE</Button>}
-        {isShowRowSelectionBtns && showRowSelectionBtns.ActiveButton && <Button variant="contained" color='success' id="activeBtn" onClick={clickFunctions}><Done />ACTIVATE</Button>}
+        {isShowRowSelectionBtns && showRowSelectionBtns.DeactiveButton && <Button variant="contained" color='error' id="deactiveBtn" onClick={clickFunctions}><CloseIcon />DEACTIVE</Button>}
+        {isShowRowSelectionBtns && showRowSelectionBtns.ActiveButton && <Button variant="contained" color='success' id="activeBtn" onClick={clickFunctions}><Done />ACTIVE</Button>}
+        {isShowRowSelectionBtns && showRowSelectionBtns.ApproveButton && <Button variant="contained" color='success' id="approveBtn" onClick={clickFunctions}><Done />APPROVE</Button>}
       </div>
     )
   });

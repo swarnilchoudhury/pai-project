@@ -31,7 +31,8 @@ const HomePage = () => {
     const [isShowRowSelectionBtns, setisShowRowSelectionBtns] = useState(false);
     const [showRowSelectionBtns, setshowRowSelectionBtns] = useState({
         DeactiveButton: false,
-        ActiveButton: false
+        ActiveButton: false,
+        ApproveButton: false
     });
 
     const [count, setCount] = useState(0);
@@ -39,31 +40,31 @@ const HomePage = () => {
     const homePageHeader =
         [
             {
-                accessorKey: 'StudentName',
+                accessorKey: 'studentName',
                 header: 'Student Name',
             },
             {
-                accessorKey: 'StudentCode',
+                accessorKey: 'studentCode',
                 header: 'Code',
             },
             {
-                accessorKey: 'GuardianName',
+                accessorKey: 'guardianName',
                 header: 'Guardian Name',
             },
             {
-                accessorKey: 'DOB',
+                accessorKey: 'dob',
                 header: 'Date of Birth',
             },
             {
-                accessorKey: 'AdmissionDate',
+                accessorKey: 'admissionDate',
                 header: 'Admission Date',
             },
             {
-                accessorKey: 'PhoneNumber',
+                accessorKey: 'phoneNumber',
                 header: 'Phone Number',
             },
             {
-                accessorKey: 'CreatedDateTimeFormatted',
+                accessorKey: 'createdDateTimeFormatted',
                 header: 'Created Date Time',
             }
         ]
@@ -88,6 +89,7 @@ const HomePage = () => {
     }
 
     const statusToggleOnClick = async (e) => {
+        
         setIsLoading(true);
         setShowSomethingWrongDialogBox(false);
         setRowSelection({});
@@ -125,15 +127,18 @@ const HomePage = () => {
     useEffect(() => {
         if (Object.keys(rowSelection).length > 0) {
             let activeToggleBtn = document.getElementById('ActiveToggleBtn');
+            setisShowRowSelectionBtns(true);
 
             if (activeToggleBtn != null) {
-                setisShowRowSelectionBtns(true);
                 if (activeToggleBtn.checked) {
                     setshowRowSelectionBtns({ DeactiveButton: true });
                 }
                 else if (!activeToggleBtn.checked) {
                     setshowRowSelectionBtns({ ActiveButton: true });
                 }
+            }
+            else{   
+                setshowRowSelectionBtns({ ApproveButton: true });
             }
         }
         else {
@@ -184,7 +189,6 @@ const HomePage = () => {
                 TextDialogButtonOnConfirmId: "deactiveBtn",
                 TextDialogButtonOnConfirm: "Deactivate"
             });
-            setShowDialogBox(true);
         }
         else if (e.target.id === 'activeBtn') {
             setShowDialogBoxContent({
@@ -193,23 +197,33 @@ const HomePage = () => {
                 TextDialogButtonOnConfirmId: "activeBtn",
                 TextDialogButtonOnConfirm: "Activate"
             });
-            setShowDialogBox(true);
         }
+        else if (e.target.id === 'approveBtn') {
+            setShowDialogBoxContent({
+                TextDialogTitle: "Approve",
+                TextDialogContent: "Are you Sure to Approve?",
+                TextDialogButtonOnConfirmId: "approveBtn",
+                TextDialogButtonOnConfirm: "Approve"
+            });
+        }
+        setShowDialogBox(true);
     }
 
     const clickFunctionsOnConfirm = async (e) => {
+        setShowDialogBox(false);
         if (e.target.id === 'OK') {
-            setShowDialogBox(false);
             return;
         }
 
-        setShowDialogBox(false);
         let header = "";
         if (e.target.id === 'deactiveBtn') {
             header = 'deactive'
         }
         else if (e.target.id === 'activeBtn') {
             header = 'active'
+        }
+        else if (e.target.id === 'approveBtn') {
+            header = 'approve'
         }
 
         try {
@@ -240,6 +254,15 @@ const HomePage = () => {
                     setShowDialogBoxContent({
                         TextDialogTitle: "Success",
                         TextDialogContent: "Activated Successfully",
+                        TextDialogButtonOnConfirmId: "OK",
+                        TextDialogButtonOnConfirm: "OK",
+                        showCancelBtn: false
+                    });
+                }
+                else if (header === 'approve') {
+                    setShowDialogBoxContent({
+                        TextDialogTitle: "Success",
+                        TextDialogContent: "Approved Successfully",
                         TextDialogButtonOnConfirmId: "OK",
                         TextDialogButtonOnConfirm: "OK",
                         showCancelBtn: false

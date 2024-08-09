@@ -4,7 +4,7 @@ import { MdOutlineReplay } from "react-icons/md";
 import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
 import SearchIcon from '@mui/icons-material/Search';
 import CloseIcon from '@mui/icons-material/Close';
 import dayjs from 'dayjs';
@@ -17,10 +17,10 @@ const CreateForm = () => {
 
     let defaultformsTxts = {
 
-        StudentName: "",
-        GuardianName: "",
-        StudentCode: "",
-        PhoneNumber: "-"
+        studentName: "",
+        guardianName: "",
+        studentCode: "",
+        phoneNumber: "-"
     }
 
     const [isBtnLoading, setisBtnLoading] = useState(false);
@@ -50,8 +50,8 @@ const CreateForm = () => {
     useEffect(() => {
         setformsTxts(prevFormsTxts => ({
             ...prevFormsTxts,
-            DOB: dates.selectedDOBDate ? dateFormater(dates.selectedDOBDate) : "-",
-            AdmissionDate: dates.selectedAdmissionDate ? dateFormater(dates.selectedAdmissionDate) : "-"
+            dob: dates.selectedDOBDate ? dateFormater(dates.selectedDOBDate) : "-",
+            admissionDate: dates.selectedAdmissionDate ? dateFormater(dates.selectedAdmissionDate) : "-"
         }));
     }, [dates]);
 
@@ -60,7 +60,7 @@ const CreateForm = () => {
         const maxLength = 4;
 
         if (value.length <= maxLength) {
-            setformsTxts({ ...formsTxts, StudentCode: value.toUpperCase() });
+            setformsTxts({ ...formsTxts, studentCode: value.toUpperCase() });
         }
     };
 
@@ -69,7 +69,7 @@ const CreateForm = () => {
         const maxLength = 10;
 
         if (value.length <= maxLength) {
-            setformsTxts({ ...formsTxts, PhoneNumber: e.target.value.toUpperCase() });
+            setformsTxts({ ...formsTxts, phoneNumber: e.target.value.toUpperCase() });
         }
     };
 
@@ -80,13 +80,13 @@ const CreateForm = () => {
 
         try {
             let response = await axios.post(process.env.REACT_APP_SEARCH_CODE_API_URL,
-                { "StudentCode": formsTxts.StudentCode });
+                { "studentCode": formsTxts.studentCode });
 
             if (response.data) {
                 if (response.data.returnCode === 1) {
                     setshowDialogBox(true);
                     setshowMessage({
-                        TextDialogContent: formsTxts.StudentCode + " already exists.",
+                        TextDialogContent: formsTxts.studentCode + " already exists.",
                         TextDialogTitle: "",
                         TextDialogButton: "OK",
                         showCancelBtn: false
@@ -152,7 +152,7 @@ const CreateForm = () => {
         e.preventDefault();
 
         setCount(count => count + 1);
-        setformsTxts({ ...defaultformsTxts, StudentCode: formsTxts.StudentCode });
+        setformsTxts({ ...defaultformsTxts, studentCode: formsTxts.studentCode });
         setshowDialogBox(false);
 
     }
@@ -174,13 +174,13 @@ const CreateForm = () => {
                                                 <>
                                                     <label htmlFor='StudentCodeTxt' className="col-sm-2 col-form-label">Student Code <span className='required'>*</span></label>
                                                     <div className="col-sm-10">
-                                                        <input type="number" className="form-control" id="StudentCodeTxt" disabled={false} value={formsTxts.StudentCode}
+                                                        <input type="number" className="form-control" id="StudentCodeTxt" disabled={false} value={formsTxts.studentCode}
                                                             onChange={handleStudentCodeInputChange} />
                                                     </div>
                                                     <br />
                                                     {
                                                         !isBtnLoading ?
-                                                            <Button variant="contained" id="searchtHomeBtn" disabled={!formsTxts.StudentCode} onClick={(e) => SearchButtonOnClick(e)}><SearchIcon />Search</Button>
+                                                            <Button variant="contained" id="searchtHomeBtn" disabled={!formsTxts.studentCode} onClick={(e) => SearchButtonOnClick(e)}><SearchIcon />Search</Button>
                                                             : <Button variant="contained" id="searchtHomeBtn" disabled={true} ><SearchIcon />Searching...</Button>
                                                     }
                                                 </>
@@ -188,7 +188,7 @@ const CreateForm = () => {
                                                 <>
                                                     <label htmlFor='StudentCodeTxt' className="col-sm-2 col-form-label">Student Code <span className='required'>*</span></label>
                                                     <div className="col-sm-10">
-                                                        <input type="number" className="form-control" id="StudentCodeTxt" disabled={true} value={formsTxts.StudentCode} onChange={(e) => setformsTxts({ ...formsTxts, StudentCode: e.target.value.toUpperCase() })} />
+                                                        <input type="number" className="form-control" id="StudentCodeTxt" disabled={true} value={formsTxts.studentCode} onChange={(e) => setformsTxts({ ...formsTxts, studentCode: e.target.value.toUpperCase() })} />
                                                         <br />
                                                     </div>
                                                     <div className='buttons'>
@@ -203,24 +203,24 @@ const CreateForm = () => {
                                                             <>
                                                                 <div className="form-group row">
                                                                     <label htmlFor='studentNameTxt' className="col-sm-2 col-form-label">Student Name <span className='required'>*</span></label>
-                                                                    <input type="text" className="form-control" id="studentNameTxt" value={formsTxts.StudentName} onChange={(e) => setformsTxts({ ...formsTxts, StudentName: e.target.value.toUpperCase() })} required />
+                                                                    <input type="text" className="form-control" id="studentNameTxt" value={formsTxts.studentName} onChange={(e) => setformsTxts({ ...formsTxts, studentName: e.target.value.toUpperCase() })} required />
                                                                 </div>
                                                                 <br />
                                                                 <div className="form-group row">
                                                                     <label htmlFor='guardianNameTxt' className="col-sm-2 col-form-label">Guardian Name <span className='required'>*</span></label>
-                                                                    <input type="text" className="form-control" id="guardianNameTxt" value={formsTxts.GuardianName} onChange={(e) => setformsTxts({ ...formsTxts, GuardianName: e.target.value.toUpperCase() })} required />
+                                                                    <input type="text" className="form-control" id="guardianNameTxt" value={formsTxts.guardianName} onChange={(e) => setformsTxts({ ...formsTxts, guardianName: e.target.value.toUpperCase() })} required />
                                                                 </div>
                                                                 <br />
                                                                 <div className="form-group row">
                                                                     <label htmlFor='LevelTxt' className="col-sm-2 col-form-label">Phone Number</label>
-                                                                    <input type="number" className="form-control" id="LevelTxt" value={formsTxts.PhoneNumber} onChange={handlePhoneNumberInputChange} />
+                                                                    <input type="number" className="form-control" id="LevelTxt" value={formsTxts.phoneNumber} onChange={handlePhoneNumberInputChange} />
                                                                 </div>
                                                                 <br />
                                                                 <div className="datePicker">
                                                                     <label htmlFor='DateOfBirth' className="col-sm-2 col-form-label">Date of Birth</label>
                                                                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                                                                         <DemoContainer components={['DatePicker']}>
-                                                                            <DatePicker label="Date of Birth"
+                                                                            <DesktopDatePicker label="Date of Birth"
                                                                                 onChange={(e) => setDates({ ...dates, selectedDOBDate: e })}
                                                                                 format="DD/MM/YYYY"
                                                                                 slotProps={{
@@ -236,7 +236,7 @@ const CreateForm = () => {
                                                                     <label htmlFor='AdmissionDate' className="col-sm-2 col-form-label">Admission Date</label>
                                                                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                                                                         <DemoContainer components={['DatePicker']}>
-                                                                            <DatePicker label="Admission Date"
+                                                                            <DesktopDatePicker label="Admission Date"
                                                                                 onChange={(e) => setDates({ ...dates, selectedAdmissionDate: e })}
                                                                                 format="DD/MM/YYYY"
                                                                                 slotProps={{

@@ -86,7 +86,7 @@ export default function LoginForm() {
                 process.env.REACT_APP_LOGIN_API_URL,
                 { emailId: signinResponse.user.email }
             );
-            localStorage.setItem("UserName", response.data.Name);
+            localStorage.setItem("UserName", response.data.name);
             navigate("/Home");
         } catch {
             handleRequestError();
