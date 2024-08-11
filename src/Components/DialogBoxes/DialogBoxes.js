@@ -47,11 +47,11 @@ const DialogBoxes = ({ TextDialogContent, TextDialogTitle, TextDialogButton, sho
                 </DialogContent>
                 <DialogActions>
                     {showCancelBtn && <Button onClick={handleClose}>Cancel</Button>}
-                    {showDefaultTextDialogButton ? <Button onClick={e => BtnOnClick(e)} autoFocus>
+                    {showDefaultTextDialogButton ? <Button onClick={BtnOnClick} autoFocus>
                         {TextDialogButton}
                     </Button>
                         :
-                        <Button id={TextDialogButtonOnConfirmId} onClick={e => clickFunctionsOnConfirm(e)} autoFocus>
+                        <Button id={TextDialogButtonOnConfirmId} onClick={clickFunctionsOnConfirm} autoFocus>
                             {TextDialogButtonOnConfirm}
                         </Button>
                     }

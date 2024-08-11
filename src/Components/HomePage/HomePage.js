@@ -19,17 +19,18 @@ const HomePage = () => {
     const [approvedData, setApprovedData] = useState({});
     const [isLoading, setIsLoading] = useState(true);
     const [showSomethingWrongDialogBox, setShowSomethingWrongDialogBox] = useState(false);
-    const [showDialogBox, setShowDialogBox] = useState(false);
     const [rowSelection, setRowSelection] = useState({});
     const [showDialogBoxContent, setShowDialogBoxContent] = useState({
+        ShowDialogBox: false,
         TextDialogTitle: "",
         TextDialogContent: "",
         TextDialogButtonOnConfirmId: "",
         TextDialogButtonOnConfirm: "",
-        showCancelBtn: true
+        ShowCancelBtn: true
     });
-    const [isShowRowSelectionBtns, setisShowRowSelectionBtns] = useState(false);
-    const [showRowSelectionBtns, setshowRowSelectionBtns] = useState({
+
+    const [showRowSelectionBtns, setShowRowSelectionBtns] = useState({
+        isShowRowSelectionBtns: false,
         DeactiveButton: false,
         ActiveButton: false,
         ApproveButton: false
@@ -89,12 +90,12 @@ const HomePage = () => {
     }
 
     const statusToggleOnClick = async (e) => {
-        
+
         setIsLoading(true);
         setShowSomethingWrongDialogBox(false);
         setRowSelection({});
-        setisShowRowSelectionBtns(false);
-        setShowDialogBox(false);
+        setShowRowSelectionBtns(prevState => ({ ...prevState, isShowRowSelectionBtns: true }));
+        setShowDialogBoxContent(prevState => ({ ...prevState, ShowDialogBox: true }));
         setCount(count => count + 1);
 
         if (e.target.id === 'ActiveToggleBtn') {
@@ -127,22 +128,21 @@ const HomePage = () => {
     useEffect(() => {
         if (Object.keys(rowSelection).length > 0) {
             let activeToggleBtn = document.getElementById('ActiveToggleBtn');
-            setisShowRowSelectionBtns(true);
 
             if (activeToggleBtn != null) {
                 if (activeToggleBtn.checked) {
-                    setshowRowSelectionBtns({ DeactiveButton: true });
+                    setShowRowSelectionBtns(prevState => ({ ...prevState, isShowRowSelectionBtns: true, DeactiveButton: true }));
                 }
                 else if (!activeToggleBtn.checked) {
-                    setshowRowSelectionBtns({ ActiveButton: true });
+                    setShowRowSelectionBtns(prevState => ({ ...prevState, isShowRowSelectionBtns: true, ActiveButton: true }));
                 }
             }
-            else{   
-                setshowRowSelectionBtns({ ApproveButton: true });
+            else {
+                setShowRowSelectionBtns(prevState => ({ ...prevState, isShowRowSelectionBtns: true, ApproveButton: true }));
             }
         }
         else {
-            setisShowRowSelectionBtns(false);
+            setShowRowSelectionBtns(prevState => ({ ...prevState, isShowRowSelectionBtns: false }));
         }
     }, [rowSelection])
 
@@ -151,14 +151,13 @@ const HomePage = () => {
 
         e.preventDefault();
         setRowSelection({});
-        setShowDialogBox(false);
+        setShowDialogBoxContent(prevState => ({ ...prevState, ShowDialogBox: false }));
         setShowForm(state => !state);
 
     };
 
-    const RefreshBtnOnClick = async (e) => {
+    const RefreshTable = async () => {
         setIsLoading(true);
-        setShowDialogBox(false);
         let activeToggleBtn = document.getElementById('ActiveToggleBtn');
 
         if (activeToggleBtn != null) {
@@ -179,38 +178,49 @@ const HomePage = () => {
         setCount(count => count + 1);
     }
 
+    const RefreshBtnOnClick = async () => {  
+        setShowDialogBoxContent(prevState => ({ ...prevState, ShowDialogBox: false }));
+        RefreshTable();     
+    }
+
     const clickFunctions = async (e) => {
         setCount(count => count + 1);
         if (e.target.id === 'deactiveBtn') {
 
             setShowDialogBoxContent({
+                ShowDialogBox: true,
                 TextDialogTitle: "Deactivate",
                 TextDialogContent: "Are you Sure to Deactivate?",
                 TextDialogButtonOnConfirmId: "deactiveBtn",
-                TextDialogButtonOnConfirm: "Deactivate"
+                TextDialogButtonOnConfirm: "Deactivate",
+                ShowCancelBtn: true
             });
         }
         else if (e.target.id === 'activeBtn') {
             setShowDialogBoxContent({
+                ShowDialogBox: true,
                 TextDialogTitle: "Activate",
                 TextDialogContent: "Are you Sure to Activate?",
                 TextDialogButtonOnConfirmId: "activeBtn",
-                TextDialogButtonOnConfirm: "Activate"
+                TextDialogButtonOnConfirm: "Activate",
+                ShowCancelBtn: true
             });
         }
         else if (e.target.id === 'approveBtn') {
             setShowDialogBoxContent({
+                ShowDialogBox: true,
                 TextDialogTitle: "Approve",
                 TextDialogContent: "Are you Sure to Approve?",
                 TextDialogButtonOnConfirmId: "approveBtn",
-                TextDialogButtonOnConfirm: "Approve"
+                TextDialogButtonOnConfirm: "Approve",
+                ShowCancelBtn: true
             });
         }
-        setShowDialogBox(true);
+        setShowDialogBoxContent(prevState => ({ ...prevState, ShowDialogBox: true }));
     }
 
     const clickFunctionsOnConfirm = async (e) => {
-        setShowDialogBox(false);
+        setShowDialogBoxContent(prevState => ({ ...prevState, ShowDialogBox: false }));
         if (e.target.id === 'OK') {
             return;
         }
@@ -236,40 +246,42 @@ const HomePage = () => {
                 });
 
             if (response.status === 200) {
-                setisShowRowSelectionBtns(false);
+                setShowRowSelectionBtns(prevState => ({ ...prevState, isShowRowSelectionBtns: false }));
                 setRowSelection({});
-                RefreshBtnOnClick(e);
+                RefreshTable();
                 setCount(count => count + 1);
 
                 if (header === 'deactive') {
                     setShowDialogBoxContent({
+                        ShowDialogBox: true,
                         TextDialogTitle: "Success",
                         TextDialogContent: "Deactivated Successfully",
                         TextDialogButtonOnConfirmId: "OK",
                         TextDialogButtonOnConfirm: "OK",
-                        showCancelBtn: false
+                        ShowCancelBtn: false
                     });
                 }
                 else if (header === 'active') {
                     setShowDialogBoxContent({
+                        ShowDialogBox: true,
                         TextDialogTitle: "Success",
                         TextDialogContent: "Activated Successfully",
                         TextDialogButtonOnConfirmId: "OK",
                         TextDialogButtonOnConfirm: "OK",
-                        showCancelBtn: false
+                        ShowCancelBtn: false
                     });
                 }
                 else if (header === 'approve') {
                     setShowDialogBoxContent({
+                        ShowDialogBox: true,
                         TextDialogTitle: "Success",
                         TextDialogContent: "Approved Successfully",
                         TextDialogButtonOnConfirmId: "OK",
                         TextDialogButtonOnConfirm: "OK",
-                        showCancelBtn: false
+                        ShowCancelBtn: false
                     });
                 }
-
-                setShowDialogBox(true);
+                setShowDialogBoxContent(prevState => ({ ...prevState, ShowDialogBox: true }));
             }
 
         }
@@ -281,19 +293,37 @@ const HomePage = () => {
 
     return (
         <div>
-            {showSomethingWrongDialogBox && <DialogSomethingWrong key={count} />}
-            {showDialogBox && <DialogBoxes key={count} showDefaultTextDialogButton={false} TextDialogTitle={showDialogBoxContent.TextDialogTitle} TextDialogContent={showDialogBoxContent.TextDialogContent} TextDialogButtonOnConfirm={showDialogBoxContent.TextDialogButtonOnConfirm} TextDialogButtonOnConfirmId={showDialogBoxContent.TextDialogButtonOnConfirmId} showCancelBtn={showDialogBoxContent.showCancelBtn} clickFunctionsOnConfirm={clickFunctionsOnConfirm} />}
+            {showSomethingWrongDialogBox
+                && <DialogSomethingWrong key={count} />}
+            {showDialogBoxContent.ShowDialogBox
+                && <DialogBoxes key={count}
+                    showDefaultTextDialogButton={false}
+                    TextDialogTitle={showDialogBoxContent.TextDialogTitle}
+                    TextDialogContent={showDialogBoxContent.TextDialogContent}
+                    TextDialogButtonOnConfirm={showDialogBoxContent.TextDialogButtonOnConfirm}
+                    TextDialogButtonOnConfirmId={showDialogBoxContent.TextDialogButtonOnConfirmId}
+                    ShowCancelBtn={showDialogBoxContent.ShowCancelBtn}
+                    clickFunctionsOnConfirm={clickFunctionsOnConfirm} />}
             <br />
             {
                 !showForm ?
                     <>
-                        <Button variant="contained" className="HomePageButttons" onClick={(e) => ToggleForm(e)}><AddIcon />&nbsp;ADD NEW</Button>
-                        <Button variant="contained" id="RefreshBtn" onClick={(e) => RefreshBtnOnClick(e)}><RefreshIcon /></Button>
+                        <Button variant="contained" className="HomePageButttons" onClick={ToggleForm}><AddIcon />&nbsp;ADD NEW</Button>
+                        <Button variant="contained" id="RefreshBtn" onClick={RefreshBtnOnClick}><RefreshIcon /></Button>
                         <div style={{ marginTop: "2rem" }}>
                             <Switch defaultChecked={false} id='ApprovedToggleBtn' onChange={statusToggleOnClick} /> <span style={{ fontWeight: 'bold' }}>Unapproved</span>
                             {showActiveStatus && <span><Switch defaultChecked={activeStatus} id='ActiveToggleBtn' onChange={statusToggleOnClick} /> <span style={{ fontWeight: 'bold' }}>Active</span></span>}
                         </div>
-                        <Table key={count} columnsProps={homePageHeader} dataProps={approvedData} isLoadingState={isLoading} isShowRowSelectionBtns={isShowRowSelectionBtns} showRowSelectionBtns={showRowSelectionBtns} rowSelection={rowSelection} setRowSelection={setRowSelection} clickFunctions={clickFunctions} />
+                        <br />
+                        <Table key={count}
+                            columnsProps={homePageHeader}
+                            dataProps={approvedData}
+                            isLoadingState={isLoading}
+                            isShowRowSelectionBtns={showRowSelectionBtns.isShowRowSelectionBtns}
+                            showRowSelectionBtns={showRowSelectionBtns}
+                            rowSelection={rowSelection}
+                            setRowSelection={setRowSelection}
+                            clickFunctions={clickFunctions} />
                     </>
                     :
                     <>

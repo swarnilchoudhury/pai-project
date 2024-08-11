@@ -25,10 +25,15 @@ const CreateForm = () => {
 
     const [isBtnLoading, setisBtnLoading] = useState(false);
     const [formsTxts, setformsTxts] = useState(defaultformsTxts);
-
-    const [showDialogBox, setshowDialogBox] = useState(false);
     const [showFullForm, setshowFullForm] = useState(false);
     const [showSomethingWrongDialogBox, setShowSomethingWrongDialogBox] = useState(false);
+    const [showDialogBoxContent, setShowDialogBoxContent] = useState({
+        ShowDialogBox: false,
+        TextDialogTitle: "",
+        TextDialogButton: "",
+        ShowCancelBtn: false
+    });
+
     const [showMessage, setshowMessage] = useState({});
 
     const [count, setCount] = useState(0);
@@ -84,17 +89,16 @@ const CreateForm = () => {
 
             if (response.data) {
                 if (response.data.returnCode === 1) {
-                    setshowDialogBox(true);
-                    setshowMessage({
-                        TextDialogContent: formsTxts.studentCode + " already exists.",
-                        TextDialogTitle: "",
+                    setShowDialogBoxContent({
+                        ShowDialogBox: true,
+                        TextDialogTitle: formsTxts.studentCode + " already exists.",
                         TextDialogButton: "OK",
-                        showCancelBtn: false
+                        ShowCancelBtn: false
                     });
                     setshowFullForm(false);
                 }
                 else {
-                    setshowDialogBox(false);
+                    setShowDialogBoxContent(prevState => ({ ...prevState, ShowDialogBox: false }));
                     setshowFullForm(true);
                 }
             }
@@ -126,14 +130,13 @@ const CreateForm = () => {
                     'Content-Type': 'application/json'
                 }
             });
-
-            setshowDialogBox(true);
-            setshowMessage({
-                TextDialogContent: response.data.message,
-                TextDialogTitle: "",
+            setShowDialogBoxContent({
+                ShowDialogBox: true,
+                TextDialogTitle: response.data.message,
                 TextDialogButton: "OK",
-                showCancelBtn: false
+                ShowCancelBtn: false
             });
+            
             setisBtnLoading(false);
             ResetButtonOnClick(e);
         }
@@ -153,7 +156,7 @@ const CreateForm = () => {
 
         setCount(count => count + 1);
         setformsTxts({ ...defaultformsTxts, studentCode: formsTxts.studentCode });
-        setshowDialogBox(false);
+        setShowDialogBoxContent(prevState => ({ ...prevState, ShowDialogBox: false }));
 
     }
 
@@ -167,7 +170,7 @@ const CreateForm = () => {
                                 <div className="card-body p-5 text-center">
                                     <div className="form-group row">
                                         {showSomethingWrongDialogBox && <DialogSomethingWrong key={count} />}
-                                        {showDialogBox && <DialogBoxes key={count} {...showMessage} />}
+                                        {showDialogBoxContent.ShowDialogBox && <DialogBoxes key={count} {...showMessage} />}
                                         {
                                             !showFullForm
                                                 ?

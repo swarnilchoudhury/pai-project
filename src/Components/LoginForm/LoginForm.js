@@ -30,8 +30,6 @@ export default function LoginForm() {
 
     let navigate = useNavigate();
 
-    let location = useLocation();
-
     useEffect(() => {
         document.title = 'Welcome to Purbasa Activity Institute';
 
