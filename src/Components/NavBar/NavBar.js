@@ -64,7 +64,6 @@ const NavBar = ({ UserName }) => {
     };
 
     return (
-        <>
             <div>
                 <AppBar position="static">
                     <Container maxWidth="xl" className="container-NavBar">
@@ -191,7 +190,6 @@ const NavBar = ({ UserName }) => {
                     </Container>
                 </AppBar>
             </div>
-        </>
     )
 }
 

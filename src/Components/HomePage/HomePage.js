@@ -94,8 +94,8 @@ const HomePage = () => {
         setIsLoading(true);
         setShowSomethingWrongDialogBox(false);
         setRowSelection({});
-        setShowRowSelectionBtns(prevState => ({ ...prevState, isShowRowSelectionBtns: true }));
-        setShowDialogBoxContent(prevState => ({ ...prevState, ShowDialogBox: true }));
+        setShowRowSelectionBtns({ isShowRowSelectionBtns: false });
+        setShowDialogBoxContent({ ShowDialogBox: false });
         setCount(count => count + 1);
 
         if (e.target.id === 'ActiveToggleBtn') {
@@ -131,18 +131,18 @@ const HomePage = () => {
 
             if (activeToggleBtn != null) {
                 if (activeToggleBtn.checked) {
-                    setShowRowSelectionBtns(prevState => ({ ...prevState, isShowRowSelectionBtns: true, DeactiveButton: true }));
+                    setShowRowSelectionBtns({ isShowRowSelectionBtns: true, DeactiveButton: true });
                 }
                 else if (!activeToggleBtn.checked) {
-                    setShowRowSelectionBtns(prevState => ({ ...prevState, isShowRowSelectionBtns: true, ActiveButton: true }));
+                    setShowRowSelectionBtns({ isShowRowSelectionBtns: true, ActiveButton: true });
                 }
             }
             else {
-                setShowRowSelectionBtns(prevState => ({ ...prevState, isShowRowSelectionBtns: true, ApproveButton: true }));
+                setShowRowSelectionBtns({ isShowRowSelectionBtns: true, ApproveButton: true });
             }
         }
         else {
-            setShowRowSelectionBtns(prevState => ({ ...prevState, isShowRowSelectionBtns: false }));
+            setShowRowSelectionBtns({ isShowRowSelectionBtns: false });
         }
     }, [rowSelection])
 
@@ -151,7 +151,7 @@ const HomePage = () => {
 
         e.preventDefault();
         setRowSelection({});
-        setShowDialogBoxContent(prevState => ({ ...prevState, ShowDialogBox: false }));
+        setShowDialogBoxContent({ ShowDialogBox: false });
         setShowForm(state => !state);
 
     };
@@ -178,9 +178,9 @@ const HomePage = () => {
         setCount(count => count + 1);
     }
 
-    const RefreshBtnOnClick = async () => {  
-        setShowDialogBoxContent(prevState => ({ ...prevState, ShowDialogBox: false }));
-        RefreshTable();     
+    const RefreshBtnOnClick = async () => {
+        setShowDialogBoxContent({ ShowDialogBox: false });
+        RefreshTable();
     }
 
     const clickFunctions = async (e) => {
@@ -216,11 +216,10 @@ const HomePage = () => {
                 ShowCancelBtn: true
             });
         }
-        setShowDialogBoxContent(prevState => ({ ...prevState, ShowDialogBox: true }));
     }
 
     const clickFunctionsOnConfirm = async (e) => {
-        setShowDialogBoxContent(prevState => ({ ...prevState, ShowDialogBox: false }));
+        setShowDialogBoxContent({ ShowDialogBox: false });
         if (e.target.id === 'OK') {
             return;
         }
@@ -246,7 +245,7 @@ const HomePage = () => {
                 });
 
             if (response.status === 200) {
-                setShowRowSelectionBtns(prevState => ({ ...prevState, isShowRowSelectionBtns: false }));
+                setShowRowSelectionBtns({ isShowRowSelectionBtns: false });
                 setRowSelection({});
                 RefreshTable();
                 setCount(count => count + 1);
@@ -281,7 +280,6 @@ const HomePage = () => {
                         ShowCancelBtn: false
                     });
                 }
-                setShowDialogBoxContent(prevState => ({ ...prevState, ShowDialogBox: true }));
             }
 
         }

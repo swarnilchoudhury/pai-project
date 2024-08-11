@@ -23,9 +23,9 @@ const CreateForm = () => {
         phoneNumber: "-"
     }
 
-    const [isBtnLoading, setisBtnLoading] = useState(false);
-    const [formsTxts, setformsTxts] = useState(defaultformsTxts);
-    const [showFullForm, setshowFullForm] = useState(false);
+    const [isBtnLoading, setIsBtnLoading] = useState(false);
+    const [formsTxts, setFormsTxts] = useState(defaultformsTxts);
+    const [showFullForm, setShowFullForm] = useState(false);
     const [showSomethingWrongDialogBox, setShowSomethingWrongDialogBox] = useState(false);
     const [showDialogBoxContent, setShowDialogBoxContent] = useState({
         ShowDialogBox: false,
@@ -33,8 +33,6 @@ const CreateForm = () => {
         TextDialogButton: "",
         ShowCancelBtn: false
     });
-
-    const [showMessage, setshowMessage] = useState({});
 
     const [count, setCount] = useState(0);
 
@@ -53,7 +51,7 @@ const CreateForm = () => {
     }
 
     useEffect(() => {
-        setformsTxts(prevFormsTxts => ({
+        setFormsTxts(prevFormsTxts => ({
             ...prevFormsTxts,
             dob: dates.selectedDOBDate ? dateFormater(dates.selectedDOBDate) : "-",
             admissionDate: dates.selectedAdmissionDate ? dateFormater(dates.selectedAdmissionDate) : "-"
@@ -65,7 +63,7 @@ const CreateForm = () => {
         const maxLength = 4;
 
         if (value.length <= maxLength) {
-            setformsTxts({ ...formsTxts, studentCode: value.toUpperCase() });
+            setFormsTxts({ ...formsTxts, studentCode: value.toUpperCase() });
         }
     };
 
@@ -74,14 +72,14 @@ const CreateForm = () => {
         const maxLength = 10;
 
         if (value.length <= maxLength) {
-            setformsTxts({ ...formsTxts, phoneNumber: e.target.value.toUpperCase() });
+            setFormsTxts({ ...formsTxts, phoneNumber: e.target.value.toUpperCase() });
         }
     };
 
     const SearchButtonOnClick = async (e) => {
 
         e.preventDefault();
-        setisBtnLoading(true);
+        setIsBtnLoading(true);
 
         try {
             let response = await axios.post(process.env.REACT_APP_SEARCH_CODE_API_URL,
@@ -95,11 +93,11 @@ const CreateForm = () => {
                         TextDialogButton: "OK",
                         ShowCancelBtn: false
                     });
-                    setshowFullForm(false);
+                    setShowFullForm(false);
                 }
                 else {
-                    setShowDialogBoxContent(prevState => ({ ...prevState, ShowDialogBox: false }));
-                    setshowFullForm(true);
+                    setShowDialogBoxContent({ ShowDialogBox: false });
+                    setShowFullForm(true);
                 }
             }
         }
@@ -108,20 +106,20 @@ const CreateForm = () => {
         }
 
         setCount(count => count + 1);
-        setisBtnLoading(false);
+        setIsBtnLoading(false);
     }
 
     const ResetButtonOnClick = (e) => {
 
         e.preventDefault();
-        setshowFullForm(false);
-        setformsTxts(defaultformsTxts);
+        setShowFullForm(false);
+        setFormsTxts(defaultformsTxts);
     }
 
     const CreateBtnOnClick = async (e) => {
 
         e.preventDefault();
-        setisBtnLoading(true);
+        setIsBtnLoading(true);
 
         try {
             let response = await axios.post(process.env.REACT_APP_CREATE_API_URL,
@@ -136,8 +134,8 @@ const CreateForm = () => {
                 TextDialogButton: "OK",
                 ShowCancelBtn: false
             });
-            
-            setisBtnLoading(false);
+
+            setIsBtnLoading(false);
             ResetButtonOnClick(e);
         }
         catch {
@@ -145,7 +143,7 @@ const CreateForm = () => {
         }
 
         setCount(count => count + 1);
-        setisBtnLoading(false);
+        setIsBtnLoading(false);
 
     }
 
@@ -155,8 +153,8 @@ const CreateForm = () => {
         e.preventDefault();
 
         setCount(count => count + 1);
-        setformsTxts({ ...defaultformsTxts, studentCode: formsTxts.studentCode });
-        setShowDialogBoxContent(prevState => ({ ...prevState, ShowDialogBox: false }));
+        setFormsTxts({ ...defaultformsTxts, studentCode: formsTxts.studentCode });
+        setShowDialogBoxContent({ ShowDialogBox: false });
 
     }
 
@@ -170,7 +168,11 @@ const CreateForm = () => {
                                 <div className="card-body p-5 text-center">
                                     <div className="form-group row">
                                         {showSomethingWrongDialogBox && <DialogSomethingWrong key={count} />}
-                                        {showDialogBoxContent.ShowDialogBox && <DialogBoxes key={count} {...showMessage} />}
+                                        {showDialogBoxContent.ShowDialogBox
+                                            && <DialogBoxes key={count}
+                                                TextDialogTitle={showDialogBoxContent.TextDialogTitle}
+                                                TextDialogButton={showDialogBoxContent.TextDialogButton}
+                                                ShowCancelBtn={showDialogBoxContent.ShowCancelBtn} />}
                                         {
                                             !showFullForm
                                                 ?
@@ -191,7 +193,7 @@ const CreateForm = () => {
                                                 <>
                                                     <label htmlFor='StudentCodeTxt' className="col-sm-2 col-form-label">Student Code <span className='required'>*</span></label>
                                                     <div className="col-sm-10">
-                                                        <input type="number" className="form-control" id="StudentCodeTxt" disabled={true} value={formsTxts.studentCode} onChange={(e) => setformsTxts({ ...formsTxts, studentCode: e.target.value.toUpperCase() })} />
+                                                        <input type="number" className="form-control" id="StudentCodeTxt" disabled={true} value={formsTxts.studentCode} onChange={(e) => setFormsTxts({ ...formsTxts, studentCode: e.target.value.toUpperCase() })} />
                                                         <br />
                                                     </div>
                                                     <div className='buttons'>
@@ -206,12 +208,12 @@ const CreateForm = () => {
                                                             <>
                                                                 <div className="form-group row">
                                                                     <label htmlFor='studentNameTxt' className="col-sm-2 col-form-label">Student Name <span className='required'>*</span></label>
-                                                                    <input type="text" className="form-control" id="studentNameTxt" value={formsTxts.studentName} onChange={(e) => setformsTxts({ ...formsTxts, studentName: e.target.value.toUpperCase() })} required />
+                                                                    <input type="text" className="form-control" id="studentNameTxt" value={formsTxts.studentName} onChange={(e) => setFormsTxts({ ...formsTxts, studentName: e.target.value.toUpperCase() })} required />
                                                                 </div>
                                                                 <br />
                                                                 <div className="form-group row">
                                                                     <label htmlFor='guardianNameTxt' className="col-sm-2 col-form-label">Guardian Name <span className='required'>*</span></label>
-                                                                    <input type="text" className="form-control" id="guardianNameTxt" value={formsTxts.guardianName} onChange={(e) => setformsTxts({ ...formsTxts, guardianName: e.target.value.toUpperCase() })} required />
+                                                                    <input type="text" className="form-control" id="guardianNameTxt" value={formsTxts.guardianName} onChange={(e) => setFormsTxts({ ...formsTxts, guardianName: e.target.value.toUpperCase() })} required />
                                                                 </div>
                                                                 <br />
                                                                 <div className="form-group row">
