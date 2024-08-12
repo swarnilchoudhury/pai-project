@@ -153,6 +153,7 @@ const HomePage = () => {
         setRowSelection({});
         setShowDialogBoxContent({ ShowDialogBox: false });
         setShowForm(state => !state);
+        // setActiveStatus(true);
 
     };
 
@@ -245,12 +246,21 @@ const HomePage = () => {
                 });
 
             if (response.status === 200) {
+                RefreshTable();
                 setShowRowSelectionBtns({ isShowRowSelectionBtns: false });
                 setRowSelection({});
-                RefreshTable();
                 setCount(count => count + 1);
-
-                if (header === 'deactive') {
+                if (response.data.message) {
+                    setShowDialogBoxContent({
+                        ShowDialogBox: true,
+                        TextDialogTitle: "Message",
+                        TextDialogContent: response.data.message,
+                        TextDialogButtonOnConfirmId: "OK",
+                        TextDialogButtonOnConfirm: "OK",
+                        ShowCancelBtn: false
+                    })
+                }
+                else if (header === 'deactive') {
                     setShowDialogBoxContent({
                         ShowDialogBox: true,
                         TextDialogTitle: "Success",
@@ -280,7 +290,7 @@ const HomePage = () => {
                         ShowCancelBtn: false
                     });
                 }
-            }
+            }    
 
         }
         catch {
