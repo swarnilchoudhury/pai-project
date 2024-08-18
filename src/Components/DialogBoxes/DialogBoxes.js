@@ -6,8 +6,28 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import { auth } from '../Configs/FirebaseConfig';
+import PropTypes from 'prop-types';
 
-const DialogBoxes = ({ TextDialogContent, TextDialogTitle, TextDialogButton, showCancelBtn, showDefaultTextDialogButton = true, TextDialogButtonOnConfirmId, TextDialogButtonOnConfirm, clickFunctionsOnConfirm }) => {
+const DialogBoxes = ({ TextDialogContent,
+    TextDialogTitle,
+    TextDialogButton,
+    showCancelBtn,
+    showDefaultTextDialogButton = true,
+    TextDialogButtonOnConfirmId,
+    TextDialogButtonOnConfirm,
+    clickFunctionsOnConfirm }) => {
+
+    //Props validations
+    DialogBoxes.propTypes = {
+        TextDialogContent: PropTypes.string,
+        TextDialogTitle: PropTypes.string,
+        showCancelBtn: PropTypes.bool,
+        showDefaultTextDialogButton: PropTypes.bool,
+        TextDialogButtonOnConfirmId: PropTypes.string,
+        TextDialogButtonOnConfirm: PropTypes.string,
+        clickFunctionsOnConfirm: PropTypes.func
+    };
+
     const [open, setOpen] = useState(true);
 
     const BtnOnClick = async () => {
@@ -25,7 +45,7 @@ const DialogBoxes = ({ TextDialogContent, TextDialogTitle, TextDialogButton, sho
         await auth.signOut();
     }
 
-    const handleClose = () => {
+    const handleClose = () => { //Close the Dialog Box
         setOpen(false);
     };
 

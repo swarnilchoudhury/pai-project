@@ -10,6 +10,7 @@ import CreateForm from './CreateForm.js';
 import axios from '../../Components/AxiosInterceptor/axiosInterceptor.js'
 import DialogSomethingWrong from '../DialogBoxes/DialogSomethingWrong.js';
 import DialogBoxes from '../DialogBoxes/DialogBoxes.js';
+import { usePermissions } from '../Context/PermissionContext.js';
 
 const HomePage = () => {
 
@@ -26,7 +27,7 @@ const HomePage = () => {
         TextDialogContent: "",
         TextDialogButtonOnConfirmId: "",
         TextDialogButtonOnConfirm: "",
-        ShowCancelBtn: true
+        showCancelBtn: true
     });
 
     const [showRowSelectionBtns, setShowRowSelectionBtns] = useState({
@@ -37,7 +38,10 @@ const HomePage = () => {
     });
 
     const [count, setCount] = useState(0);
+    const [dialogBoxCount, setDialogBoxCount] = useState(0);
+    const { editPermissions } = usePermissions();
 
+    //Home Page Header for Showing in Table
     const homePageHeader =
         [
             {
@@ -70,6 +74,7 @@ const HomePage = () => {
             }
         ]
 
+    //Fetch Home Page Data
     const homePageData = async (status) => {
 
         try {
@@ -89,6 +94,7 @@ const HomePage = () => {
         setIsLoading(false);
     }
 
+    //When toggles on statusToggle button
     const statusToggleOnClick = async (e) => {
 
         setIsLoading(true);
@@ -120,16 +126,18 @@ const HomePage = () => {
         setIsLoading(false);
     }
 
+    //Render first time when Home Page mounts
     useEffect(() => {
         document.title = 'Home Page';
         homePageData('Active');
     }, []);
 
+    //Select the rows to change the status for data based on edit permissions
     useEffect(() => {
-        if (Object.keys(rowSelection).length > 0) {
+        if (Object.keys(rowSelection).length > 0 && editPermissions) {
             let activeToggleBtn = document.getElementById('ActiveToggleBtn');
 
-            if (activeToggleBtn != null) {
+            if (activeToggleBtn) {
                 if (activeToggleBtn.checked) {
                     setShowRowSelectionBtns({ isShowRowSelectionBtns: true, DeactiveButton: true });
                 }
@@ -144,19 +152,19 @@ const HomePage = () => {
         else {
             setShowRowSelectionBtns({ isShowRowSelectionBtns: false });
         }
-    }, [rowSelection])
+    }, [rowSelection, editPermissions])
 
-
+    //When changing the form from create to home or vice-versa
     const ToggleForm = (e) => {
 
         e.preventDefault();
         setRowSelection({});
         setShowDialogBoxContent({ ShowDialogBox: false });
         setShowForm(state => !state);
-        // setActiveStatus(true);
 
-    };
+    }
 
+    //When RefreshTable button is clicked
     const RefreshTable = async () => {
         setIsLoading(true);
         let activeToggleBtn = document.getElementById('ActiveToggleBtn');
@@ -179,13 +187,15 @@ const HomePage = () => {
         setCount(count => count + 1);
     }
 
+    //When RefreshTable button is clicked
     const RefreshBtnOnClick = async () => {
         setShowDialogBoxContent({ ShowDialogBox: false });
         RefreshTable();
     }
 
+    //When status button is clicked
     const clickFunctions = async (e) => {
-        setCount(count => count + 1);
+        setDialogBoxCount(count => count + 1);
         if (e.target.id === 'deactiveBtn') {
 
             setShowDialogBoxContent({
@@ -194,7 +204,7 @@ const HomePage = () => {
                 TextDialogContent: "Are you Sure to Deactivate?",
                 TextDialogButtonOnConfirmId: "deactiveBtn",
                 TextDialogButtonOnConfirm: "Deactivate",
-                ShowCancelBtn: true
+                showCancelBtn: true
             });
         }
         else if (e.target.id === 'activeBtn') {
@@ -204,7 +214,7 @@ const HomePage = () => {
                 TextDialogContent: "Are you Sure to Activate?",
                 TextDialogButtonOnConfirmId: "activeBtn",
                 TextDialogButtonOnConfirm: "Activate",
-                ShowCancelBtn: true
+                showCancelBtn: true
             });
         }
         else if (e.target.id === 'approveBtn') {
@@ -214,11 +224,12 @@ const HomePage = () => {
                 TextDialogContent: "Are you Sure to Approve?",
                 TextDialogButtonOnConfirmId: "approveBtn",
                 TextDialogButtonOnConfirm: "Approve",
-                ShowCancelBtn: true
+                showCancelBtn: true
             });
         }
     }
 
+    //When status button is clicked after confirm
     const clickFunctionsOnConfirm = async (e) => {
         setShowDialogBoxContent({ ShowDialogBox: false });
         if (e.target.id === 'OK') {
@@ -245,11 +256,11 @@ const HomePage = () => {
 
                 });
 
-            if (response.status === 200) {
+            if (response.status === 200) { //When response is 200
                 RefreshTable();
                 setShowRowSelectionBtns({ isShowRowSelectionBtns: false });
                 setRowSelection({});
-                setCount(count => count + 1);
+                setDialogBoxCount(count => count + 1);
                 if (response.data.message) {
                     setShowDialogBoxContent({
                         ShowDialogBox: true,
@@ -257,7 +268,7 @@ const HomePage = () => {
                         TextDialogContent: response.data.message,
                         TextDialogButtonOnConfirmId: "OK",
                         TextDialogButtonOnConfirm: "OK",
-                        ShowCancelBtn: false
+                        showCancelBtn: false
                     })
                 }
                 else if (header === 'deactive') {
@@ -267,7 +278,7 @@ const HomePage = () => {
                         TextDialogContent: "Deactivated Successfully",
                         TextDialogButtonOnConfirmId: "OK",
                         TextDialogButtonOnConfirm: "OK",
-                        ShowCancelBtn: false
+                        showCancelBtn: false
                     });
                 }
                 else if (header === 'active') {
@@ -277,7 +288,7 @@ const HomePage = () => {
                         TextDialogContent: "Activated Successfully",
                         TextDialogButtonOnConfirmId: "OK",
                         TextDialogButtonOnConfirm: "OK",
-                        ShowCancelBtn: false
+                        showCancelBtn: false
                     });
                 }
                 else if (header === 'approve') {
@@ -287,14 +298,14 @@ const HomePage = () => {
                         TextDialogContent: "Approved Successfully",
                         TextDialogButtonOnConfirmId: "OK",
                         TextDialogButtonOnConfirm: "OK",
-                        ShowCancelBtn: false
+                        showCancelBtn: false
                     });
                 }
-            }    
+            }
 
         }
         catch {
-            setCount(count => count + 1);
+            setDialogBoxCount(count => count + 1);
             setShowSomethingWrongDialogBox(true);
         }
     }
@@ -302,15 +313,15 @@ const HomePage = () => {
     return (
         <div>
             {showSomethingWrongDialogBox
-                && <DialogSomethingWrong key={count} />}
+                && <DialogSomethingWrong key={dialogBoxCount} />}
             {showDialogBoxContent.ShowDialogBox
-                && <DialogBoxes key={count}
+                && <DialogBoxes key={dialogBoxCount}
                     showDefaultTextDialogButton={false}
                     TextDialogTitle={showDialogBoxContent.TextDialogTitle}
                     TextDialogContent={showDialogBoxContent.TextDialogContent}
                     TextDialogButtonOnConfirm={showDialogBoxContent.TextDialogButtonOnConfirm}
                     TextDialogButtonOnConfirmId={showDialogBoxContent.TextDialogButtonOnConfirmId}
-                    ShowCancelBtn={showDialogBoxContent.ShowCancelBtn}
+                    showCancelBtn={showDialogBoxContent.showCancelBtn}
                     clickFunctionsOnConfirm={clickFunctionsOnConfirm} />}
             <br />
             {
@@ -327,15 +338,15 @@ const HomePage = () => {
                             columnsProps={homePageHeader}
                             dataProps={approvedData}
                             isLoadingState={isLoading}
-                            isShowRowSelectionBtns={showRowSelectionBtns.isShowRowSelectionBtns}
-                            showRowSelectionBtns={showRowSelectionBtns}
+                            isShowRowSelectionBtns={editPermissions && showRowSelectionBtns.isShowRowSelectionBtns}
+                            showRowSelectionBtns={editPermissions && showRowSelectionBtns}
                             rowSelection={rowSelection}
                             setRowSelection={setRowSelection}
                             clickFunctions={clickFunctions} />
                     </>
                     :
                     <>
-                        <Button variant="contained" className="HomePageButttons" onClick={(e) => ToggleForm(e)}><ArrowBackIcon />&nbsp;BACK TO TABLE</Button>
+                        <Button variant="contained" className="HomePageButttons" onClick={ToggleForm}><ArrowBackIcon />&nbsp;BACK TO TABLE</Button>
                         <CreateForm />
                     </>
             }

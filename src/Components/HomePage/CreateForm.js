@@ -36,13 +36,13 @@ const CreateForm = () => {
 
     const [count, setCount] = useState(0);
 
-    const [dates, setDates] = useState({
+    const [dates, setDates] = useState({ //Set the dates
         selectedDOBDate: "",
         selectedAdmissionDate: ""
     });
 
 
-    const dateFormater = (datePrm) => {
+    const dateFormater = (datePrm) => { //Format the date to store in Databases
 
         const date = dayjs(datePrm);
         const formattedDate = date.format('DD/MM/YYYY');
@@ -50,6 +50,7 @@ const CreateForm = () => {
 
     }
 
+    //When changing any dates
     useEffect(() => {
         setFormsTxts(prevFormsTxts => ({
             ...prevFormsTxts,
@@ -58,6 +59,7 @@ const CreateForm = () => {
         }));
     }, [dates]);
 
+    //Max 4 length for input paramater for StudentCode
     const handleStudentCodeInputChange = (e) => {
         const { value } = e.target;
         const maxLength = 4;
@@ -67,6 +69,7 @@ const CreateForm = () => {
         }
     };
 
+    //Max 10 length for input paramater for PhoneNumber
     const handlePhoneNumberInputChange = (e) => {
         const { value } = e.target;
         const maxLength = 10;
@@ -76,16 +79,18 @@ const CreateForm = () => {
         }
     };
 
+    //When clicking on Search Button
     const SearchButtonOnClick = async (e) => {
 
         e.preventDefault();
         setIsBtnLoading(true);
+        setCount(count => count + 1);
 
         try {
             let response = await axios.post(process.env.REACT_APP_SEARCH_CODE_API_URL,
                 { "studentCode": formsTxts.studentCode });
 
-            if (response.data) {
+            if (response.data) { //When response with data received
                 if (response.data.returnCode === 1) {
                     setShowDialogBoxContent({
                         ShowDialogBox: true,
@@ -105,10 +110,10 @@ const CreateForm = () => {
             setShowSomethingWrongDialogBox(true);
         }
 
-        setCount(count => count + 1);
         setIsBtnLoading(false);
     }
 
+    //When clicking on Reset Button
     const ResetButtonOnClick = (e) => {
 
         e.preventDefault();
@@ -116,10 +121,12 @@ const CreateForm = () => {
         setFormsTxts(defaultformsTxts);
     }
 
+    //When clicking on Create Button
     const CreateBtnOnClick = async (e) => {
 
         e.preventDefault();
         setIsBtnLoading(true);
+        setCount(count => count + 1);
 
         try {
             let response = await axios.post(process.env.REACT_APP_CREATE_API_URL,
@@ -141,18 +148,14 @@ const CreateForm = () => {
         catch {
             setShowSomethingWrongDialogBox(true);
         }
-
-        setCount(count => count + 1);
         setIsBtnLoading(false);
 
     }
 
-
+    //When clicking on ClearHome Button
     const ClearHomeBtnOnClick = (e) => {
 
         e.preventDefault();
-
-        setCount(count => count + 1);
         setFormsTxts({ ...defaultformsTxts, studentCode: formsTxts.studentCode });
         setShowDialogBoxContent({ ShowDialogBox: false });
 
@@ -185,7 +188,7 @@ const CreateForm = () => {
                                                     <br />
                                                     {
                                                         !isBtnLoading ?
-                                                            <Button variant="contained" id="searchtHomeBtn" disabled={!formsTxts.studentCode} onClick={(e) => SearchButtonOnClick(e)}><SearchIcon />Search</Button>
+                                                            <Button variant="contained" id="searchtHomeBtn" disabled={!formsTxts.studentCode} onClick={SearchButtonOnClick}><SearchIcon />Search</Button>
                                                             : <Button variant="contained" id="searchtHomeBtn" disabled={true} ><SearchIcon />Searching...</Button>
                                                     }
                                                 </>
@@ -197,8 +200,8 @@ const CreateForm = () => {
                                                         <br />
                                                     </div>
                                                     <div className='buttons'>
-                                                        <Button variant="contained" type="reset" onClick={(e) => ClearHomeBtnOnClick(e)}><MdOutlineReplay /> Clear</Button>
-                                                        <Button variant="contained" type="reset" color="error" onClick={(e) => ResetButtonOnClick(e)}><CloseIcon /> Reset</Button>
+                                                        <Button variant="contained" type="reset" onClick={ClearHomeBtnOnClick}><MdOutlineReplay /> Clear</Button>
+                                                        <Button variant="contained" type="reset" color="error" onClick={ResetButtonOnClick}><CloseIcon /> Reset</Button>
                                                     </div>
                                                     <hr className="custom-line" />
                                                     <br />

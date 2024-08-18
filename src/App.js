@@ -5,19 +5,23 @@ import { auth } from "./Components/Configs/FirebaseConfig.js";
 import LoginForm from "./Components/LoginForm/LoginForm.js";
 import PageNotFound from "./Components/PageNotFound/PageNotFound.js";
 import HomePage from "./Components/HomePage/HomePage.js";
-import RecordsPage from "./Components/RecordsPage/RecordsPage.js";
 import Spinner from "./Components/Spinner/Spinner.js";
 import NavBar from "./Components/NavBar/NavBar.js";
+import axios from './Components/AxiosInterceptor/axiosInterceptor.js'
+import { usePermissions } from "./Components/Context/PermissionContext.js";
 
-function App() {
+const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [showLoadingSpin, setShowLoadingSpin] = useState(true);
 
   const navigate = useNavigate();
   const location = useLocation();
 
+  const { setEditPermissions } = usePermissions();
+
+  //Set onAuthStateChanged observer when App mounts
   useEffect(() => {
-   
+
     // Set persistence to local storage explicitly
     setPersistence(auth, browserLocalPersistence).then(() => {
       // Set up an auth state observer
@@ -31,7 +35,14 @@ function App() {
             } else {
               navigate(location.pathname);
             }
-            console.log("User ID:", user.uid);
+            const response = await axios.get(process.env.REACT_APP_PERMISSIONS_API_URL);
+
+            if (response.data.isEditPermissions) {
+              setEditPermissions(true);
+            }
+            else {
+              setEditPermissions(false);
+            }
             setIsAuthenticated(true);
           } catch (error) {
             console.error("Error getting ID token:", error);
@@ -50,7 +61,7 @@ function App() {
       // Clean up the listener on component unmount
       return () => unsubscribe();
     });
-  }, []);
+  }, []); // eslint-disable-line
 
   return (
     <>
@@ -64,7 +75,6 @@ function App() {
           ) : (
             <>
               <Route path="/Home" element={<HomePage />} />
-              <Route path="/Records" element={<RecordsPage />} />
               <Route path="*" element={<PageNotFound />} />
             </>
           )}

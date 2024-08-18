@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { auth } from '../Configs/FirebaseConfig.js';
 import { signInWithEmailAndPassword } from 'firebase/auth'
-import { useLocation, useNavigate } from 'react-router-dom';
 import Button from '@mui/material/Button';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import ShowMessagediv from '../ShowMessage/ShowMessagediv.js';
@@ -16,26 +15,25 @@ import '../../ComponetsStyles/LoginForm.css';
 import axios from '../AxiosInterceptor/axiosInterceptor.js';
 import CircularProgressButton from '../CircularProgressButton/CircularProgressButton.js';
 
-export default function LoginForm() {
+const LoginForm = () => {
 
     const [count, setCount] = useState(0);
     const [showPassword, setShowPassword] = useState(false);
     const [loggingIn, setLoggingIn] = useState(false);
 
-    const [showMessage, setshowMessage] = useState({
+    const [showMessage, setShowMessage] = useState({
         innerText: "",
         className: "",
         role: ""
     });
 
-    let navigate = useNavigate();
-
+    //Render first time when LoginForm mounts
     useEffect(() => {
         document.title = 'Welcome to Purbasa Activity Institute';
 
         if (sessionStorage.getItem("somethingWrong")) {
             sessionStorage.clear();
-            setshowMessage({
+            setShowMessage({
                 innerText: "Something went wrong. Please Log In again.",
                 className: "alert alert-danger",
                 role: "alert"
@@ -44,7 +42,7 @@ export default function LoginForm() {
         }
         else if (sessionStorage.getItem("Logout")) {
             sessionStorage.clear();
-            setshowMessage({
+            setShowMessage({
                 innerText: "Successfully Logged out.",
                 className: "alert alert-danger",
                 role: "alert"
@@ -52,6 +50,7 @@ export default function LoginForm() {
         }
     }, []);
 
+    //When Login Button is clicked
     const LoginBtnOnClick = async (e) => {
         e.preventDefault();
         setCount(count => count + 1);
@@ -60,7 +59,7 @@ export default function LoginForm() {
         const password = document.getElementById('PasswordTxt').value;
 
         if (!email || !password) {
-            setshowMessage({
+            setShowMessage({
                 innerText: "Please Enter User Name and Password to Login.",
                 className: "alert alert-danger",
                 role: "alert"
@@ -71,28 +70,27 @@ export default function LoginForm() {
         setLoggingIn(true);
 
         try {
-            const signinResponse = await signInWithEmailAndPassword(auth, email, password);
-            await handleLoginSuccess(signinResponse);
+            await signInWithEmailAndPassword(auth, email, password);
+            await handleLoginSuccess();
         } catch {
             handleLoginError();
         }
     };
 
-    const handleLoginSuccess = async (signinResponse) => {
+    //For Login Success
+    const handleLoginSuccess = async () => {
         try {
-            const response = await axios.post(
-                process.env.REACT_APP_LOGIN_API_URL,
-                { emailId: signinResponse.user.email }
-            );
+            const response = await axios.post(process.env.REACT_APP_LOGIN_API_URL);
+
             localStorage.setItem("UserName", response.data.name);
-            navigate("/Home");
         } catch {
             handleRequestError();
         }
     };
 
+    //For Login Error
     const handleLoginError = () => {
-        setshowMessage({
+        setShowMessage({
             innerText: "Entered User Name or Password is incorrect. Please Try Again.",
             className: "alert alert-danger",
             role: "alert"
@@ -102,8 +100,9 @@ export default function LoginForm() {
         setLoggingIn(false);
     };
 
+    //Something went wrong
     const handleRequestError = () => {
-        setshowMessage({
+        setShowMessage({
             innerText: "Something went wrong.",
             className: "alert alert-danger",
             role: "alert"
@@ -113,12 +112,13 @@ export default function LoginForm() {
         setLoggingIn(false);
     };
 
+    //Clear the Password
     const clearPasswordInput = () => {
         document.getElementById('PasswordTxt').value = "";
     };
 
 
-
+    //Show or disable the show password
     const handleClickShowPassword = () => setShowPassword((show) => !show);
 
     const handleMouseDownPassword = (e) => {
@@ -193,3 +193,4 @@ export default function LoginForm() {
     )
 }
 
+export default LoginForm;
