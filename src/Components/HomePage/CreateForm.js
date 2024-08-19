@@ -84,6 +84,7 @@ const CreateForm = () => {
 
         e.preventDefault();
         setIsBtnLoading(true);
+        setShowSomethingWrongDialogBox(false);
         setCount(count => count + 1);
 
         try {
@@ -118,6 +119,7 @@ const CreateForm = () => {
 
         e.preventDefault();
         setShowFullForm(false);
+        setShowSomethingWrongDialogBox(false);
         setFormsTxts(defaultformsTxts);
     }
 
@@ -126,6 +128,7 @@ const CreateForm = () => {
 
         e.preventDefault();
         setIsBtnLoading(true);
+        setShowSomethingWrongDialogBox(false);
         setCount(count => count + 1);
 
         try {
@@ -158,6 +161,7 @@ const CreateForm = () => {
         e.preventDefault();
         setFormsTxts({ ...defaultformsTxts, studentCode: formsTxts.studentCode });
         setShowDialogBoxContent({ ShowDialogBox: false });
+        setShowSomethingWrongDialogBox(false);
 
     }
 

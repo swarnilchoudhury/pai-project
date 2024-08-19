@@ -159,6 +159,7 @@ const HomePage = () => {
 
         e.preventDefault();
         setRowSelection({});
+        setShowSomethingWrongDialogBox(false);
         setShowDialogBoxContent({ ShowDialogBox: false });
         setShowForm(state => !state);
 
@@ -189,6 +190,7 @@ const HomePage = () => {
 
     //When RefreshTable button is clicked
     const RefreshBtnOnClick = async () => {
+        setShowSomethingWrongDialogBox(false);
         setShowDialogBoxContent({ ShowDialogBox: false });
         RefreshTable();
     }
@@ -196,6 +198,7 @@ const HomePage = () => {
     //When status button is clicked
     const clickFunctions = async (e) => {
         setDialogBoxCount(count => count + 1);
+        setShowSomethingWrongDialogBox(false);
         if (e.target.id === 'deactiveBtn') {
 
             setShowDialogBoxContent({
@@ -232,6 +235,7 @@ const HomePage = () => {
     //When status button is clicked after confirm
     const clickFunctionsOnConfirm = async (e) => {
         setShowDialogBoxContent({ ShowDialogBox: false });
+        setShowSomethingWrongDialogBox(false);
         if (e.target.id === 'OK') {
             return;
         }
@@ -261,6 +265,7 @@ const HomePage = () => {
                 setShowRowSelectionBtns({ isShowRowSelectionBtns: false });
                 setRowSelection({});
                 setDialogBoxCount(count => count + 1);
+                setShowSomethingWrongDialogBox(false);
                 if (response.data.message) {
                     setShowDialogBoxContent({
                         ShowDialogBox: true,

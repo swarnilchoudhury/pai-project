@@ -14,6 +14,7 @@ import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import '../../ComponetsStyles/LoginForm.css';
 import axios from '../AxiosInterceptor/axiosInterceptor.js';
 import CircularProgressButton from '../CircularProgressButton/CircularProgressButton.js';
+import { usePermissions } from '../Context/PermissionContext.js';
 
 const LoginForm = () => {
 
@@ -26,6 +27,8 @@ const LoginForm = () => {
         className: "",
         role: ""
     });
+
+    const { setUserName } = usePermissions();
 
     //Render first time when LoginForm mounts
     useEffect(() => {
@@ -80,9 +83,10 @@ const LoginForm = () => {
     //For Login Success
     const handleLoginSuccess = async () => {
         try {
-            const response = await axios.post(process.env.REACT_APP_LOGIN_API_URL);
-
-            localStorage.setItem("UserName", response.data.name);
+            const response = await axios.get(process.env.REACT_APP_LOGIN_API_URL);
+            let name = response.data.name;
+            localStorage.setItem("UserName", name);
+            setUserName(name)
         } catch {
             handleRequestError();
         }
