@@ -84,6 +84,7 @@ const CreateForm = () => {
 
         e.preventDefault();
         setIsBtnLoading(true);
+        setShowDialogBoxContent({ ShowDialogBox: false });
         setShowSomethingWrongDialogBox(false);
         setCount(count => count + 1);
 
