@@ -17,6 +17,7 @@ const HomePage = () => {
     const [showForm, setShowForm] = useState(false);
     const [showActiveStatus, setShowActiveStatus] = useState(true);
     const [activeStatus, setActiveStatus] = useState(true);
+    const [approveStatus, setApproveStatus] = useState(false);
     const [approvedData, setApprovedData] = useState({});
     const [isLoading, setIsLoading] = useState(true);
     const [showSomethingWrongDialogBox, setShowSomethingWrongDialogBox] = useState(false);
@@ -33,6 +34,11 @@ const HomePage = () => {
     const [showRowSelectionBtns, setShowRowSelectionBtns] = useState({
         isShowRowSelectionBtns: false,
         DeactiveButton: false,
+        ActiveButton: false,
+        ApproveButton: false
+    });
+
+    const [currentStatesToggleBtns, setCurrentStatesToggleBtns] = useState({
         ActiveButton: false,
         ApproveButton: false
     });
@@ -107,22 +113,29 @@ const HomePage = () => {
         if (e.target.id === 'ActiveToggleBtn') {
             if (e.target.checked) {
                 await homePageData('Active');
+                setCurrentStatesToggleBtns({ ActiveButton: true });
             }
             else {
                 await homePageData('Deactive');
+                setCurrentStatesToggleBtns({ ActiveButton: false });
             }
         }
         else if (e.target.id === 'ApprovedToggleBtn') {
             if (e.target.checked) {
                 setShowActiveStatus(false);
+                setApproveStatus(true);
                 await homePageData('Unapproval');
+                setCurrentStatesToggleBtns({ ApproveButton: true });
             }
             else {
                 setShowActiveStatus(true);
                 setActiveStatus(true);
+                setApproveStatus(false);
                 await homePageData('Active');
+                setCurrentStatesToggleBtns({ ActiveButton: true });
             }
         }
+
         setIsLoading(false);
     }
 
@@ -155,7 +168,7 @@ const HomePage = () => {
     }, [rowSelection, editPermissions])
 
     //When changing the form from create to home or vice-versa
-    const ToggleForm = (e) => {
+    const ToggleForm = async (e) => {
 
         e.preventDefault();
         setRowSelection({});
@@ -163,6 +176,18 @@ const HomePage = () => {
         setShowDialogBoxContent({ ShowDialogBox: false });
         setShowForm(state => !state);
 
+        if (currentStatesToggleBtns.ActiveButton) {
+            setActiveStatus(true);
+            setApproveStatus(false);
+        }
+        else if (!currentStatesToggleBtns.ActiveButton && currentStatesToggleBtns.ApproveButton) {
+            setActiveStatus(false);
+            setApproveStatus(true);
+        }
+        else {
+            setActiveStatus(false);
+            setApproveStatus(false);
+        }
     }
 
     //When RefreshTable button is clicked
@@ -181,6 +206,7 @@ const HomePage = () => {
             }
         }
         else {
+            setApproveStatus(false);
             await homePageData('Unapproval');
         }
 
@@ -335,7 +361,7 @@ const HomePage = () => {
                         <Button variant="contained" className="HomePageButttons" onClick={ToggleForm}><AddIcon />&nbsp;ADD NEW</Button>
                         <Button variant="contained" id="RefreshBtn" onClick={RefreshBtnOnClick}><RefreshIcon /></Button>
                         <div style={{ marginTop: "2rem" }}>
-                            <Switch defaultChecked={false} id='ApprovedToggleBtn' onChange={statusToggleOnClick} /> <span style={{ fontWeight: 'bold' }}>Unapproved</span>
+                            <Switch defaultChecked={approveStatus} id='ApprovedToggleBtn' onChange={statusToggleOnClick} /> <span style={{ fontWeight: 'bold' }}>Unapproved</span>
                             {showActiveStatus && <span><Switch defaultChecked={activeStatus} id='ActiveToggleBtn' onChange={statusToggleOnClick} /> <span style={{ fontWeight: 'bold' }}>Active</span></span>}
                         </div>
                         <br />
