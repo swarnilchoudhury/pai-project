@@ -29,7 +29,7 @@ const CreateForm = () => {
     const [showSomethingWrongDialogBox, setShowSomethingWrongDialogBox] = useState(false);
     const [showDialogBoxContent, setShowDialogBoxContent] = useState({
         ShowDialogBox: false,
-        TextDialogTitle: "",
+        TextDialogContent: "",
         TextDialogButton: "",
         ShowCancelBtn: false
     });
@@ -95,7 +95,7 @@ const CreateForm = () => {
                 if (response.data.returnCode === 1) {
                     setShowDialogBoxContent({
                         ShowDialogBox: true,
-                        TextDialogTitle: formsTxts.studentCode + " already exists.",
+                        TextDialogContent: "PAI-" + formsTxts.studentCode + " already exists.",
                         TextDialogButton: "OK",
                         ShowCancelBtn: false
                     });
@@ -140,7 +140,7 @@ const CreateForm = () => {
             });
             setShowDialogBoxContent({
                 ShowDialogBox: true,
-                TextDialogTitle: response.data.message,
+                TextDialogContent: response.data.message,
                 TextDialogButton: "OK",
                 ShowCancelBtn: false
             });
@@ -177,7 +177,7 @@ const CreateForm = () => {
                                         {showSomethingWrongDialogBox && <DialogSomethingWrong key={count} />}
                                         {showDialogBoxContent.ShowDialogBox
                                             && <DialogBoxes key={count}
-                                                TextDialogTitle={showDialogBoxContent.TextDialogTitle}
+                                                TextDialogContent={showDialogBoxContent.TextDialogContent}
                                                 TextDialogButton={showDialogBoxContent.TextDialogButton}
                                                 ShowCancelBtn={showDialogBoxContent.ShowCancelBtn} />}
                                         {

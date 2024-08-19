@@ -8,7 +8,7 @@ export const usePermissions = () => {
 
 export const PermissionProvider = ({ children }) => {
     const [editPermissions, setEditPermissions] = useState(null); //Edit Permissions to check
-    const [userName, setUserName] = useState(""); //Edit Permissions to check
+    const [userName, setUserName] = useState(""); //Set UserName from API
 
     return (
         <PermissionContext.Provider value={{ editPermissions, setEditPermissions, userName, setUserName }}>
