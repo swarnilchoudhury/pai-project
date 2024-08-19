@@ -161,6 +161,7 @@ const LoginForm = () => {
                                                 <InputLabel htmlFor="PasswordTxt">Password</InputLabel>
                                                 <OutlinedInput
                                                     id="PasswordTxt"
+                                                    autoComplete="on"
                                                     type={showPassword ? 'text' : 'password'}
                                                     endAdornment={
                                                         <InputAdornment position="start">
