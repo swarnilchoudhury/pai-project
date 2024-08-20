@@ -5,9 +5,9 @@ import RefreshIcon from '@mui/icons-material/Refresh';
 import Table from '../Table/Table.js';
 import Switch from '@mui/material/Switch';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import '../../ComponetsStyles/HomePage.css'
+import '../../ComponetsStyles/HomePage.css';
 import CreateForm from './CreateForm.js';
-import axios from '../../Components/AxiosInterceptor/axiosInterceptor.js'
+import axios from '../../Components/AxiosInterceptor/axiosInterceptor.js';
 import DialogSomethingWrong from '../DialogBoxes/DialogSomethingWrong.js';
 import DialogBoxes from '../DialogBoxes/DialogBoxes.js';
 import { usePermissions } from '../Context/PermissionContext.js';
@@ -16,8 +16,6 @@ const HomePage = () => {
 
     const [showForm, setShowForm] = useState(false);
     const [showActiveStatus, setShowActiveStatus] = useState(true);
-    const [activeStatus, setActiveStatus] = useState(true);
-    const [approveStatus, setApproveStatus] = useState(false);
     const [approvedData, setApprovedData] = useState({});
     const [isLoading, setIsLoading] = useState(true);
     const [showSomethingWrongDialogBox, setShowSomethingWrongDialogBox] = useState(false);
@@ -38,71 +36,43 @@ const HomePage = () => {
         ApproveButton: false
     });
 
-    const [currentStatesToggleBtns, setCurrentStatesToggleBtns] = useState({
-        ActiveButton: false,
-        ApproveButton: false
-    });
-
     const [count, setCount] = useState(0);
     const [dialogBoxCount, setDialogBoxCount] = useState(0);
     const { editPermissions } = usePermissions();
 
-    //Home Page Header for Showing in Table
-    const homePageHeader =
-        [
-            {
-                accessorKey: 'studentName',
-                header: 'Student Name',
-            },
-            {
-                accessorKey: 'studentCode',
-                header: 'Code',
-            },
-            {
-                accessorKey: 'guardianName',
-                header: 'Guardian Name',
-            },
-            {
-                accessorKey: 'dob',
-                header: 'Date of Birth',
-            },
-            {
-                accessorKey: 'admissionDate',
-                header: 'Admission Date',
-            },
-            {
-                accessorKey: 'phoneNumber',
-                header: 'Phone Number',
-            },
-            {
-                accessorKey: 'createdDateTimeFormatted',
-                header: 'Created Date Time',
-            }
-        ]
+    // Add state variables to remember toggle button states
+    const [approvedToggleState, setApprovedToggleState] = useState(false);
+    const [activeToggleState, setActiveToggleState] = useState(true);
 
-    //Fetch Home Page Data
+    // Home Page Header for Showing in Table
+    const homePageHeader = [
+        { accessorKey: 'studentName', header: 'Student Name' },
+        { accessorKey: 'studentCode', header: 'Code' },
+        { accessorKey: 'guardianName', header: 'Guardian Name' },
+        { accessorKey: 'dob', header: 'Date of Birth' },
+        { accessorKey: 'admissionDate', header: 'Admission Date' },
+        { accessorKey: 'phoneNumber', header: 'Phone Number' },
+        { accessorKey: 'createdDateTimeFormatted', header: 'Created Date Time' }
+    ];
+
+    // Fetch Home Page Data
     const homePageData = async (status) => {
-
         try {
-            let response = await axios.get(process.env.REACT_APP_HOME_API_URL,
-                {
-                    headers:
-                        { 'x-status': status }
-                });
+            let response = await axios.get(process.env.REACT_APP_HOME_API_URL, {
+                headers: { 'x-status': status }
+            });
 
             setApprovedData(response.data);
-        }
-        catch {
+        } catch {
             setShowSomethingWrongDialogBox(true);
         }
 
         setCount(count => count + 1);
         setIsLoading(false);
-    }
+    };
 
-    //When toggles on statusToggle button
+    // When toggles on statusToggle button
     const statusToggleOnClick = async (e) => {
-
         setIsLoading(true);
         setShowSomethingWrongDialogBox(false);
         setRowSelection({});
@@ -110,123 +80,91 @@ const HomePage = () => {
         setShowDialogBoxContent({ ShowDialogBox: false });
         setCount(count => count + 1);
 
-        if (e.target.id === 'ActiveToggleBtn') {
-            if (e.target.checked) {
+        const { id, checked } = e.target;
+        if (id === 'ActiveToggleBtn') {
+            setActiveToggleState(checked); // Update state
+            if (checked) {
                 await homePageData('Active');
-                setCurrentStatesToggleBtns({ ActiveButton: true });
-            }
-            else {
+            } else {
                 await homePageData('Deactive');
-                setCurrentStatesToggleBtns({ ActiveButton: false });
             }
-        }
-        else if (e.target.id === 'ApprovedToggleBtn') {
-            if (e.target.checked) {
-                setShowActiveStatus(false);
-                setApproveStatus(true);
+        } else if (id === 'ApprovedToggleBtn') {
+            setApprovedToggleState(checked); // Update state
+            setShowActiveStatus(!checked);
+            if (checked) {
                 await homePageData('Unapproval');
-                setCurrentStatesToggleBtns({ ApproveButton: true });
-            }
-            else {
-                setShowActiveStatus(true);
-                setActiveStatus(true);
-                setApproveStatus(false);
+            } else {
                 await homePageData('Active');
-                setCurrentStatesToggleBtns({ ActiveButton: true });
             }
         }
-
         setIsLoading(false);
-    }
+    };
 
-    //Render first time when Home Page mounts
+    // Render first time when Home Page mounts
     useEffect(() => {
         document.title = 'Home Page';
         homePageData('Active');
     }, []);
 
-    //Select the rows to change the status for data based on edit permissions
+    // Select the rows to change the status for data based on edit permissions
     useEffect(() => {
         if (Object.keys(rowSelection).length > 0 && editPermissions) {
-            let activeToggleBtn = document.getElementById('ActiveToggleBtn');
 
-            if (activeToggleBtn) {
-                if (activeToggleBtn.checked) {
-                    setShowRowSelectionBtns({ isShowRowSelectionBtns: true, DeactiveButton: true });
-                }
-                else if (!activeToggleBtn.checked) {
-                    setShowRowSelectionBtns({ isShowRowSelectionBtns: true, ActiveButton: true });
-                }
+            if (activeToggleState === true && showActiveStatus === true) {
+                setShowRowSelectionBtns({ isShowRowSelectionBtns: true, DeactiveButton: true });
+            }
+            else if (approvedToggleState === true && showActiveStatus === false) {
+                setShowRowSelectionBtns({ isShowRowSelectionBtns: true, ApproveButton: true });
             }
             else {
-                setShowRowSelectionBtns({ isShowRowSelectionBtns: true, ApproveButton: true });
+                setShowRowSelectionBtns({ isShowRowSelectionBtns: true, ActiveButton: true });
             }
         }
         else {
             setShowRowSelectionBtns({ isShowRowSelectionBtns: false });
         }
-    }, [rowSelection, editPermissions])
+    }, [rowSelection, editPermissions]);
 
-    //When changing the form from create to home or vice-versa
-    const ToggleForm = async (e) => {
-
+    // When changing the form from create to home or vice-versa
+    const ToggleForm = (e) => {
         e.preventDefault();
         setRowSelection({});
         setShowSomethingWrongDialogBox(false);
         setShowDialogBoxContent({ ShowDialogBox: false });
         setShowForm(state => !state);
+    };
 
-        if (currentStatesToggleBtns.ActiveButton) {
-            setActiveStatus(true);
-            setApproveStatus(false);
-        }
-        else if (!currentStatesToggleBtns.ActiveButton && currentStatesToggleBtns.ApproveButton) {
-            setActiveStatus(false);
-            setApproveStatus(true);
-        }
-        else {
-            setActiveStatus(false);
-            setApproveStatus(false);
-        }
-    }
-
-    //When RefreshTable button is clicked
+    // When RefreshTable button is clicked
     const RefreshTable = async () => {
         setIsLoading(true);
-        let activeToggleBtn = document.getElementById('ActiveToggleBtn');
 
-        if (activeToggleBtn != null) {
-            if (activeToggleBtn.checked) {
-                setActiveStatus(true);
-                await homePageData('Active');
-            }
-            else {
-                setActiveStatus(false);
-                await homePageData('Deactive');
-            }
+        if (activeToggleState === true && showActiveStatus === true) {
+            await homePageData('Active');
+        }
+        else if (approvedToggleState === true && showActiveStatus === false) {
+            await homePageData('Unapproval');
         }
         else {
-            setApproveStatus(false);
-            await homePageData('Unapproval');
+            await homePageData('Deactive');
         }
 
         setIsLoading(false);
         setCount(count => count + 1);
-    }
+    };
 
-    //When RefreshTable button is clicked
+    // When RefreshTable button is clicked
     const RefreshBtnOnClick = async () => {
         setShowSomethingWrongDialogBox(false);
         setShowDialogBoxContent({ ShowDialogBox: false });
         RefreshTable();
-    }
+    };
 
-    //When status button is clicked
+    // When status button is clicked
     const clickFunctions = async (e) => {
         setDialogBoxCount(count => count + 1);
         setShowSomethingWrongDialogBox(false);
-        if (e.target.id === 'deactiveBtn') {
-
+        const { id } = e.target;
+        if (id === 'deactiveBtn') {
             setShowDialogBoxContent({
                 ShowDialogBox: true,
                 TextDialogTitle: "Deactivate",
@@ -235,8 +173,7 @@ const HomePage = () => {
                 TextDialogButtonOnConfirm: "Deactivate",
                 showCancelBtn: true
             });
-        }
-        else if (e.target.id === 'activeBtn') {
+        } else if (id === 'activeBtn') {
             setShowDialogBoxContent({
                 ShowDialogBox: true,
                 TextDialogTitle: "Activate",
@@ -245,8 +182,7 @@ const HomePage = () => {
                 TextDialogButtonOnConfirm: "Activate",
                 showCancelBtn: true
             });
-        }
-        else if (e.target.id === 'approveBtn') {
+        } else if (id === 'approveBtn') {
             setShowDialogBoxContent({
                 ShowDialogBox: true,
                 TextDialogTitle: "Approve",
@@ -256,37 +192,34 @@ const HomePage = () => {
                 showCancelBtn: true
             });
         }
-    }
+    };
 
-    //When status button is clicked after confirm
+    // When status button is clicked after confirm
     const clickFunctionsOnConfirm = async (e) => {
         setShowDialogBoxContent({ ShowDialogBox: false });
         setShowSomethingWrongDialogBox(false);
-        if (e.target.id === 'OK') {
+        const { id } = e.target;
+        if (id === 'OK') {
             return;
         }
 
         let header = "";
-        if (e.target.id === 'deactiveBtn') {
-            header = 'deactive'
-        }
-        else if (e.target.id === 'activeBtn') {
-            header = 'active'
-        }
-        else if (e.target.id === 'approveBtn') {
-            header = 'approve'
+        if (id === 'deactiveBtn') {
+            header = 'deactive';
+        } else if (id === 'activeBtn') {
+            header = 'active';
+        } else if (id === 'approveBtn') {
+            header = 'approve';
         }
 
         try {
             const keysArray = Object.keys(rowSelection);
 
-            let response = await axios.post(process.env.REACT_APP_UPDATE_API_URL, { data: keysArray },
-                {
-                    headers: { 'Content-Type': 'application/json', 'x-update': header }
+            let response = await axios.post(process.env.REACT_APP_UPDATE_API_URL, { data: keysArray }, {
+                headers: { 'Content-Type': 'application/json', 'x-update': header }
+            });
 
-                });
-
-            if (response.status === 200) { //When response is 200
+            if (response.status === 200) { // When response is 200
                 RefreshTable();
                 setShowRowSelectionBtns({ isShowRowSelectionBtns: false });
                 setRowSelection({});
@@ -300,9 +233,8 @@ const HomePage = () => {
                         TextDialogButtonOnConfirmId: "OK",
                         TextDialogButtonOnConfirm: "OK",
                         showCancelBtn: false
-                    })
-                }
-                else if (header === 'deactive') {
+                    });
+                } else if (header === 'deactive') {
                     setShowDialogBoxContent({
                         ShowDialogBox: true,
                         TextDialogTitle: "Success",
@@ -311,8 +243,7 @@ const HomePage = () => {
                         TextDialogButtonOnConfirm: "OK",
                         showCancelBtn: false
                     });
-                }
-                else if (header === 'active') {
+                } else if (header === 'active') {
                     setShowDialogBoxContent({
                         ShowDialogBox: true,
                         TextDialogTitle: "Success",
@@ -321,8 +252,7 @@ const HomePage = () => {
                         TextDialogButtonOnConfirm: "OK",
                         showCancelBtn: false
                     });
-                }
-                else if (header === 'approve') {
+                } else if (header === 'approve') {
                     setShowDialogBoxContent({
                         ShowDialogBox: true,
                         TextDialogTitle: "Success",
@@ -334,12 +264,11 @@ const HomePage = () => {
                 }
             }
 
-        }
-        catch {
+        } catch {
             setDialogBoxCount(count => count + 1);
             setShowSomethingWrongDialogBox(true);
         }
-    }
+    };
 
     return (
         <div>
@@ -361,8 +290,16 @@ const HomePage = () => {
                         <Button variant="contained" className="HomePageButttons" onClick={ToggleForm}><AddIcon />&nbsp;ADD NEW</Button>
                         <Button variant="contained" id="RefreshBtn" onClick={RefreshBtnOnClick}><RefreshIcon /></Button>
                         <div style={{ marginTop: "2rem" }}>
-                            <Switch defaultChecked={approveStatus} id='ApprovedToggleBtn' onChange={statusToggleOnClick} /> <span style={{ fontWeight: 'bold' }}>Unapproved</span>
-                            {showActiveStatus && <span><Switch defaultChecked={activeStatus} id='ActiveToggleBtn' onChange={statusToggleOnClick} /> <span style={{ fontWeight: 'bold' }}>Active</span></span>}
+                            <Switch
+                                checked={approvedToggleState}
+                                 id='ApprovedToggleBtn'
+                                onChange={statusToggleOnClick}
+                            /> <span style={{ fontWeight: 'bold' }}>Unapproved</span>
+                            {showActiveStatus && <span><Switch
+                                checked={activeToggleState}
+                                id='ActiveToggleBtn'
+                                onChange={statusToggleOnClick}
+                            /> <span style={{ fontWeight: 'bold' }}>Active</span></span>}
                         </div>
                         <br />
                         <Table key={count}
@@ -383,7 +320,7 @@ const HomePage = () => {
             }
 
         </div>
-    )
-}
+    );
+};
 
-export default HomePage
+export default HomePage;
