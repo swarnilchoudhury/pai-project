@@ -20,7 +20,7 @@ const CreateForm = () => {
         studentName: "",
         guardianName: "",
         studentCode: "",
-        phoneNumber: "-"
+        phoneNumber: ""
     }
 
     const [isBtnLoading, setIsBtnLoading] = useState(false);
