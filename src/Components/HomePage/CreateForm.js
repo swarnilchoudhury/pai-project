@@ -240,6 +240,7 @@ const CreateForm = () => {
                                                                                     textField: {
                                                                                         helperText: 'DD/MM/YYYY',
                                                                                     },
+                                                                                    field: { clearable: true }
                                                                                 }} />
                                                                         </DemoContainer>
                                                                     </LocalizationProvider>
@@ -256,6 +257,7 @@ const CreateForm = () => {
                                                                                     textField: {
                                                                                         helperText: 'DD/MM/YYYY',
                                                                                     },
+                                                                                    field: { clearable: true }
                                                                                 }} />
                                                                         </DemoContainer>
                                                                     </LocalizationProvider>
