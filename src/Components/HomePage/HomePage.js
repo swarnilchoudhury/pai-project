@@ -90,6 +90,7 @@ const HomePage = () => {
             }
         } else if (id === 'ApprovedToggleBtn') {
             setApprovedToggleState(checked); // Update state
+            setActiveToggleState(true);
             setShowActiveStatus(!checked);
             if (checked) {
                 await homePageData('Unapproval');
@@ -123,7 +124,7 @@ const HomePage = () => {
         else {
             setShowRowSelectionBtns({ isShowRowSelectionBtns: false });
         }
-    }, [rowSelection, editPermissions]);
+    }, [rowSelection, editPermissions, activeToggleState, approvedToggleState, showActiveStatus]);
 
     // When changing the form from create to home or vice-versa
     const ToggleForm = (e) => {
@@ -292,7 +293,7 @@ const HomePage = () => {
                         <div style={{ marginTop: "2rem" }}>
                             <Switch
                                 checked={approvedToggleState}
-                                 id='ApprovedToggleBtn'
+                                id='ApprovedToggleBtn'
                                 onChange={statusToggleOnClick}
                             /> <span style={{ fontWeight: 'bold' }}>Unapproved</span>
                             {showActiveStatus && <span><Switch
