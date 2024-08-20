@@ -170,7 +170,7 @@ const Table = ({ columnsProps,
           onClick={handleExportData}
           startIcon={<FileDownloadIcon />}
         >
-          Download All
+          Download
         </Button>
         <Button
           disabled={
@@ -180,7 +180,7 @@ const Table = ({ columnsProps,
           onClick={() => handleExportRows(table.getSelectedRowModel().rows)}
           startIcon={<FileDownloadIcon />}
         >
-          Download Selected Rows
+          Download Rows
         </Button>
       </div>
     </div>
