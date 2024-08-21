@@ -107,6 +107,7 @@ const Table = ({ columnsProps,
     data,
     enableRowActions: false,
     enableRowSelection: editPermissions,
+    enableStickyHeader:true,
     getRowId: (row) => row.studentCode, //give each row a more useful id
     onRowSelectionChange: setRowSelection, //connect internal row selection state to your own
     state: { rowSelection, isLoading: isLoadingState }, //pass our managed row selection state to the table to use
@@ -120,11 +121,12 @@ const Table = ({ columnsProps,
         whiteSpace: 'nowrap',
         overflow: 'hidden',
         padding: '0.8rem',
+        backgroundColor:'rgba(211, 242, 250, 0.8)'
       },
     },
     muiTableProps: {
       sx: {
-        border: '4px solid rgba(81, 81, 81, .5)',
+        border: '1px solid rgba(81, 81, 81, .5)',
         caption: {
           captionSide: 'top',
         },
