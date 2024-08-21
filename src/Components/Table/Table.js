@@ -1,10 +1,9 @@
-import { useMemo } from 'react';
+import React,{ useMemo } from 'react';
 import {
   MaterialReactTable,
   useMaterialReactTable,
   MRT_ActionMenuItem
 } from 'material-react-table';
-import React from 'react';
 import { Button } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import Done from '@mui/icons-material/Done';
@@ -80,7 +79,7 @@ const Table = ({ columnsProps,
       filename: 'PAIStudents_' + statusName + "_" + dayjs().format('DDMMYY')
     });
 
-    if (buttonCheck && buttonCheck.includes("Selected")) {
+    if (buttonCheck?.includes("Selected")) {
       const rowData = rows.map((row) => row.original);
       const csv = generateCsv(csvConfig)(rowData);
       download(csvConfig)(csv);
@@ -131,6 +130,9 @@ const Table = ({ columnsProps,
     muiTableBodyCellProps: {
       sx: {
         border: '1px solid rgba(81, 81, 81, .5)',
+        whiteSpace: 'nowrap',
+        overflow: 'hidden',
+        padding: '12px',
       },
     },
     renderTopToolbarCustomActions: () => (
