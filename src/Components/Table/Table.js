@@ -114,6 +114,14 @@ const Table = ({ columnsProps,
       animation: 'pulse',
       height: 28,
     },
+    muiTableHeadCellProps:{
+      sx: {
+        border: '1px solid rgba(81, 81, 81, .5)',
+        whiteSpace: 'nowrap',
+        overflow: 'hidden',
+        padding: '0.8rem',
+      },
+    },
     muiTableProps: {
       sx: {
         border: '4px solid rgba(81, 81, 81, .5)',
@@ -122,17 +130,12 @@ const Table = ({ columnsProps,
         },
       },
     },
-    muiTableHeadCellProps: {
-      sx: {
-        border: '1px solid rgba(81, 81, 81, .5)',
-      },
-    },
     muiTableBodyCellProps: {
       sx: {
         border: '1px solid rgba(81, 81, 81, .5)',
         whiteSpace: 'nowrap',
         overflow: 'hidden',
-        padding: '12px',
+        padding: '0.8rem',
       },
     },
     renderTopToolbarCustomActions: () => (
