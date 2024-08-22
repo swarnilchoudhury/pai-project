@@ -121,7 +121,7 @@ const Table = ({ columnsProps,
         whiteSpace: 'nowrap',
         overflow: 'hidden',
         padding: '0.8rem',
-        backgroundColor:'rgba(211, 242, 250, 0.8)'
+        backgroundColor:'lightgrey'
       },
     },
     muiTableProps: {
