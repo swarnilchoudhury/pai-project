@@ -41,6 +41,7 @@ const CreateForm = () => {
         selectedAdmissionDate: ""
     });
 
+    const [latestStudentCodeData, setLatestStudentCodeData] = useState("");
 
     const dateFormater = (datePrm) => { //Format the date to store in Databases
 
@@ -49,6 +50,21 @@ const CreateForm = () => {
         return formattedDate;
 
     }
+
+    const fetchLatestStudentCodeData = async () => {
+        try {
+            let response = await axios.get(process.env.REACT_APP_LATEST_CODE_API_URL);
+
+            setLatestStudentCodeData(response.data.latestStudentCode);
+
+        } catch {
+            setShowSomethingWrongDialogBox(true);
+        }
+    };
+
+    useEffect(() => {
+        fetchLatestStudentCodeData();
+    }, []);
 
     //When changing any dates
     useEffect(() => {
@@ -145,7 +161,8 @@ const CreateForm = () => {
                 TextDialogButton: "OK",
                 ShowCancelBtn: false
             });
-
+            
+            fetchLatestStudentCodeData();
             setIsBtnLoading(false);
             ResetButtonOnClick(e);
         }
@@ -185,6 +202,9 @@ const CreateForm = () => {
                                             !showFullForm
                                                 ?
                                                 <>
+                                                    <div style={{ backgroundColor: 'white', fontSize: '15px' }}>
+                                                        {"Latest Student Code is " + latestStudentCodeData}
+                                                    </div>
                                                     <label htmlFor='StudentCodeTxt' className="col-sm-2 col-form-label">Student Code <span className='required'>*</span></label>
                                                     <div className="col-sm-10">
                                                         <input type="number" className="form-control" id="StudentCodeTxt" disabled={false} value={formsTxts.studentCode}

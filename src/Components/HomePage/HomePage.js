@@ -43,6 +43,7 @@ const HomePage = () => {
     // Add state variables to remember toggle button states
     const [approvedToggleState, setApprovedToggleState] = useState(false);
     const [activeToggleState, setActiveToggleState] = useState(true);
+    const [showMessageBeforeTable, setShowMessageBeforeTable] = useState("");
 
     // Home Page Header for Showing in Table
     const homePageHeader = [
@@ -63,6 +64,17 @@ const HomePage = () => {
             });
 
             setApprovedData(response.data);
+
+            if (status === 'Active') {
+                setShowMessageBeforeTable('Ekhane jara class e bhorti ache');
+            }
+            else if (status === 'Deactive') {
+                setShowMessageBeforeTable('Ekhane jara class e bhorti nei');
+            }
+            else {
+                setShowMessageBeforeTable('Ekhane approve korle active e jai');
+            }
+
         } catch {
             setShowSomethingWrongDialogBox(true);
         }
@@ -303,6 +315,9 @@ const HomePage = () => {
                             /> <span style={{ fontWeight: 'bold' }}>Active</span></span>}
                         </div>
                         <br />
+                        <div style={{ backgroundColor: 'white', fontSize: '20px' }}>
+                            <span style={{ marginLeft: '1rem' }}>{showMessageBeforeTable}</span>
+                        </div>
                         <Table key={count}
                             columnsProps={homePageHeader}
                             dataProps={approvedData}
