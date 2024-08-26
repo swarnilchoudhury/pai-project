@@ -62,6 +62,7 @@ const CreateForm = () => {
         }
     };
 
+    //Fetch the Latest Student Code
     useEffect(() => {
         fetchLatestStudentCodeData();
     }, []);
@@ -162,7 +163,7 @@ const CreateForm = () => {
                 ShowCancelBtn: false
             });
             
-            fetchLatestStudentCodeData();
+            fetchLatestStudentCodeData(); //Fetch Latest Student Code
             setIsBtnLoading(false);
             ResetButtonOnClick(e);
         }

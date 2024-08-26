@@ -36,6 +36,7 @@ const HomePage = () => {
         ApproveButton: false
     });
 
+    const [showMessageBeforeTable, setShowMessageBeforeTable] = useState("");
     const [count, setCount] = useState(0);
     const [dialogBoxCount, setDialogBoxCount] = useState(0);
     const { editPermissions } = usePermissions();
@@ -43,7 +44,7 @@ const HomePage = () => {
     // Add state variables to remember toggle button states
     const [approvedToggleState, setApprovedToggleState] = useState(false);
     const [activeToggleState, setActiveToggleState] = useState(true);
-    const [showMessageBeforeTable, setShowMessageBeforeTable] = useState("");
+    
 
     // Home Page Header for Showing in Table
     const homePageHeader = [
@@ -65,6 +66,7 @@ const HomePage = () => {
 
             setApprovedData(response.data);
 
+            //Show the messages before the table
             if (status === 'Active') {
                 setShowMessageBeforeTable('Ekhane jara class e bhorti ache');
             }
