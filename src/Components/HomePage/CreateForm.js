@@ -71,8 +71,8 @@ const CreateForm = () => {
     useEffect(() => {
         setFormsTxts(prevFormsTxts => ({
             ...prevFormsTxts,
-            dob: dates.selectedDOBDate ? dateFormater(dates.selectedDOBDate) : "-",
-            admissionDate: dates.selectedAdmissionDate ? dateFormater(dates.selectedAdmissionDate) : "-"
+            dob: dates.selectedDOBDate ? dateFormater(dates.selectedDOBDate) : "",
+            admissionDate: dates.selectedAdmissionDate ? dateFormater(dates.selectedAdmissionDate) : ""
         }));
     }, [dates]);
 
