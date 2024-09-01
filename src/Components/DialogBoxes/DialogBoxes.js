@@ -21,6 +21,7 @@ const DialogBoxes = ({ TextDialogContent,
     DialogBoxes.propTypes = {
         TextDialogContent: PropTypes.string,
         TextDialogTitle: PropTypes.string,
+        TextDialogButton:PropTypes.object,
         showCancelBtn: PropTypes.bool,
         showDefaultTextDialogButton: PropTypes.bool,
         TextDialogButtonOnConfirmId: PropTypes.string,

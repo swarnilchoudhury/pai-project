@@ -65,7 +65,7 @@ const App = () => {
 
   return (
     <>
-      {isAuthenticated ? <NavBar UserName={userName ? userName : localStorage.getItem('UserName')} /> : null}
+      {isAuthenticated ? <NavBar UserName={userName || localStorage.getItem('UserName')} /> : null}
       {showLoadingSpin ? (
         <Spinner Text="Please Wait..." />
       ) : (
