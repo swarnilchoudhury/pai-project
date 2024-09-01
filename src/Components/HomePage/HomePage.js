@@ -54,7 +54,8 @@ const HomePage = () => {
         { accessorKey: 'dob', header: 'Date of Birth' },
         { accessorKey: 'admissionDate', header: 'Admission Date' },
         { accessorKey: 'phoneNumber', header: 'Phone Number' },
-        { accessorKey: 'createdDateTimeFormatted', header: 'Created Date Time' }
+        { accessorKey: 'createdDateTimeFormatted', header: 'Created Date Time' },
+        { accessorKey: 'createdBy', header: 'Created By' }
     ];
 
     // Fetch Home Page Data
@@ -68,13 +69,26 @@ const HomePage = () => {
 
             //Show the messages before the table
             if (status === 'Active') {
-                setShowMessageBeforeTable('Ekhane jara class e bhorti ache');
+                setShowMessageBeforeTable(
+                    <span>
+                      <strong>(Active)</strong> Ekhane jara class e bhorti ache
+                    </span>
+                  );                  
             }
             else if (status === 'Deactive') {
-                setShowMessageBeforeTable('Ekhane jara class e bhorti nei');
+                setShowMessageBeforeTable(
+                    <span>
+                      <strong>(Deactive)</strong> Ekhane jara class e bhorti nei
+                    </span>
+                  );
             }
             else {
-                setShowMessageBeforeTable('Ekhane approve korle active e jai');
+                setShowMessageBeforeTable(
+                    <span>
+                      <strong>(Approve)</strong> Ekhane approve korle active e jai
+                    </span>
+                  );
+                  
             }
 
         } catch {

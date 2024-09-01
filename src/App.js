@@ -46,7 +46,6 @@ const App = () => {
             setIsAuthenticated(true);
           } catch (error) {
             console.error("Error getting ID token:", error);
-            localStorage.clear();
             navigate("/Login");
             setIsAuthenticated(false);
           }
@@ -54,7 +53,6 @@ const App = () => {
           // No user is signed in
           navigate("/Login");
           console.log("No user is signed in");
-          localStorage.clear();
           setIsAuthenticated(false);
         }
         setShowLoadingSpin(false);
