@@ -1,15 +1,15 @@
 import { Routes, Route, useNavigate, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { onAuthStateChanged, setPersistence, browserLocalPersistence } from 'firebase/auth';
-import { auth } from "./Components/Configs/FirebaseConfig.js";
-import LoginForm from "./Components/LoginForm/LoginForm.js";
-import PageNotFound from "./Components/PageNotFound/PageNotFound.js";
-import HomePage from "./Components/HomePage/HomePage.js";
-import Spinner from "./Components/Spinner/Spinner.js";
-import NavBar from "./Components/NavBar/NavBar.js";
-import axios from './Components/AxiosInterceptor/axiosInterceptor.js'
-import { usePermissions } from "./Components/Context/PermissionContext.js";
-import CreatePayments from "./Components/PaymentsPage/CreatePayments.js";
+import { auth } from "./Components/Configs/FirebaseConfig";
+import LoginForm from "./Components/LoginForm/LoginForm";
+import PageNotFound from "./Components/PageNotFound/PageNotFound";
+import HomePage from "./Components/HomePage/HomePage";
+import Spinner from "./Components/Spinner/Spinner";
+import NavBar from "./Components/NavBar/NavBar";
+import axios from './Components/AxiosInterceptor/AxiosInterceptor'
+import { usePermissions } from "./Components/Context/PermissionContext";
+import CreatePayments from "./Components/PaymentsPage/CreatePayments";
 
 const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
