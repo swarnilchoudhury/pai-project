@@ -10,7 +10,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import dayjs from 'dayjs';
 import Button from '@mui/material/Button';
 import '../../ComponetsStyles/CreateForm.css';
-import axios from '../AxiosInterceptor/axiosInterceptor';
+import axios from '../AxiosInterceptor/AxiosInterceptor';
 import DialogSomethingWrong from '../DialogBoxes/DialogSomethingWrong';
 
 const CreateForm = () => {
