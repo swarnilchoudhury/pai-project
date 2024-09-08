@@ -2,15 +2,15 @@ import React, { useState, useEffect } from 'react';
 import AddIcon from '@mui/icons-material/Add';
 import Button from '@mui/material/Button';
 import RefreshIcon from '@mui/icons-material/Refresh';
-import Table from '../Table/Table.js';
+import Table from '../Table/Table';
 import Switch from '@mui/material/Switch';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import '../../ComponetsStyles/HomePage.css';
-import CreateForm from './CreateForm.js';
-import axios from '../../Components/AxiosInterceptor/axiosInterceptor.js';
-import DialogSomethingWrong from '../DialogBoxes/DialogSomethingWrong.js';
-import DialogBoxes from '../DialogBoxes/DialogBoxes.js';
-import { usePermissions } from '../Context/PermissionContext.js';
+import CreateForm from './CreateForm';
+import axios from '../../Components/AxiosInterceptor/AxiosInterceptor';
+import DialogSomethingWrong from '../DialogBoxes/DialogSomethingWrong';
+import DialogBoxes from '../DialogBoxes/DialogBoxes';
+import { usePermissions } from '../Context/PermissionContext';
 
 const HomePage = () => {
 
