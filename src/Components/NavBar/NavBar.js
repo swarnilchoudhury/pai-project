@@ -15,6 +15,7 @@ import Tooltip from '@mui/material/Tooltip';
 import "../../ComponetsStyles/NavBar.css"
 import DialogBoxes from '../DialogBoxes/DialogBoxes';
 import PropTypes from 'prop-types';
+import { usePermissions } from '../Context/PermissionContext';
 
 
 const NavBar = ({ UserName }) => {
@@ -25,9 +26,14 @@ const NavBar = ({ UserName }) => {
     };
 
     const [openDialog, setOpenDialog] = useState(false);
+    const { editPermissions } = usePermissions();
+    let pages = ['Home'];
 
-    const pages = ['Home'];
-    const settings = ['Logout'];
+    if(editPermissions){
+        pages = ['Home','Payments'];
+    }
+    
+    let settings = ['Logout'];
 
     const [anchorElNav, setAnchorElNav] = useState(null);
     const [anchorElUser, setAnchorElUser] = useState(null);

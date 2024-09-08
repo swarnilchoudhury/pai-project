@@ -9,6 +9,7 @@ import Spinner from "./Components/Spinner/Spinner.js";
 import NavBar from "./Components/NavBar/NavBar.js";
 import axios from './Components/AxiosInterceptor/axiosInterceptor.js'
 import { usePermissions } from "./Components/Context/PermissionContext.js";
+import CreatePayments from "./Components/PaymentsPage/CreatePayments.js";
 
 const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -75,6 +76,7 @@ const App = () => {
           ) : (
             <>
               <Route path="/Home" element={<HomePage />} />
+              <Route path="/Payments" element={<CreatePayments />} />
               <Route path="*" element={<PageNotFound />} />
             </>
           )}
