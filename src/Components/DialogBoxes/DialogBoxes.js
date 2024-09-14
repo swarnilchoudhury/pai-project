@@ -6,37 +6,52 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import { auth } from '../Configs/FirebaseConfig';
-import { useNavigationInterceptor } from '../AxiosInterceptor/Navigate';
+import PropTypes from 'prop-types';
 
-const DialogBoxes = ({ TextDialogContent, TextDialogTitle, TextDialogButton }) => {
-    
-    const navigate = useNavigationInterceptor();
+const DialogBoxes = ({ TextDialogContent,
+    TextDialogTitle,
+    TextDialogButton,
+    showCancelBtn,
+    showDefaultTextDialogButton = true,
+    TextDialogButtonOnConfirmId,
+    TextDialogButtonOnConfirm,
+    clickFunctionsOnConfirm }) => {
+
+    //Props validations
+    DialogBoxes.propTypes = {
+        TextDialogContent: PropTypes.string,
+        TextDialogTitle: PropTypes.string,
+        TextDialogButton:PropTypes.object,
+        showCancelBtn: PropTypes.bool,
+        showDefaultTextDialogButton: PropTypes.bool,
+        TextDialogButtonOnConfirmId: PropTypes.string,
+        TextDialogButtonOnConfirm: PropTypes.string,
+        clickFunctionsOnConfirm: PropTypes.func
+    };
 
     const [open, setOpen] = useState(true);
 
-    const BtnOnClick = async (e, buttonText) => {
-        if (buttonText === "YES") {
+    const BtnOnClick = async () => {
+        if (TextDialogButton === "Logout") {
             await LogoutBtnOnClick();
+        }
+        else {
+            setOpen(false);
         }
     }
 
     const LogoutBtnOnClick = async () => {
-
-        let response = await auth.signOut();
-        if (response !== null) {
-            sessionStorage.setItem("Logout", "Logout");
-            navigate("/login");
-            localStorage.clear();
-        }
+        sessionStorage.clear();
+        sessionStorage.setItem("Logout", "Logout");
+        await auth.signOut();
     }
 
-    const handleClose = () => {
+    const handleClose = () => { //Close the Dialog Box
         setOpen(false);
     };
 
     return (
         <div>
-
             <Dialog
                 open={open}
                 onClose={handleClose}
@@ -52,10 +67,16 @@ const DialogBoxes = ({ TextDialogContent, TextDialogTitle, TextDialogButton }) =
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleClose}>Cancel</Button>
-                    <Button onClick={e => BtnOnClick(e, TextDialogButton)} autoFocus>
+                    {showCancelBtn && <Button onClick={handleClose}>Cancel</Button>}
+                    {showDefaultTextDialogButton ? <Button onClick={BtnOnClick} autoFocus>
                         {TextDialogButton}
                     </Button>
+                        :
+                        <Button id={TextDialogButtonOnConfirmId} onClick={clickFunctionsOnConfirm} autoFocus>
+                            {TextDialogButtonOnConfirm}
+                        </Button>
+                    }
+
                 </DialogActions>
             </Dialog>
         </div>

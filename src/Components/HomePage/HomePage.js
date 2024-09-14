@@ -1,245 +1,358 @@
 import React, { useState, useEffect } from 'react';
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
-import { db } from '../Configs/FirebaseConfig.js';
-import DialogBoxes from '../DialogBoxes/DialogBoxes.js';
-import { MdOutlineReplay } from "react-icons/md";
+import AddIcon from '@mui/icons-material/Add';
 import Button from '@mui/material/Button';
-import '../../ComponetsStyles/CreateForm.css';
-import axios from 'axios';
+import RefreshIcon from '@mui/icons-material/Refresh';
+import Table from '../Table/Table';
+import Switch from '@mui/material/Switch';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import '../../ComponetsStyles/HomePage.css';
+import CreateForm from './CreateForm';
+import axios from '../../Components/AxiosInterceptor/AxiosInterceptor';
+import DialogSomethingWrong from '../DialogBoxes/DialogSomethingWrong';
+import DialogBoxes from '../DialogBoxes/DialogBoxes';
+import { usePermissions } from '../Context/PermissionContext';
 
 const HomePage = () => {
 
-    const [showDialogBox, setshowDialogBox] = useState(false);
-    const [showMessage, setshowMessage] = useState({});
+    const [showForm, setShowForm] = useState(false);
+    const [showActiveStatus, setShowActiveStatus] = useState(true);
+    const [approvedData, setApprovedData] = useState({});
+    const [isLoading, setIsLoading] = useState(true);
+    const [showSomethingWrongDialogBox, setShowSomethingWrongDialogBox] = useState(false);
+    const [rowSelection, setRowSelection] = useState({});
+    const [showDialogBoxContent, setShowDialogBoxContent] = useState({
+        ShowDialogBox: false,
+        TextDialogTitle: "",
+        TextDialogContent: "",
+        TextDialogButtonOnConfirmId: "",
+        TextDialogButtonOnConfirm: "",
+        showCancelBtn: true
+    });
 
+    const [showRowSelectionBtns, setShowRowSelectionBtns] = useState({
+        isShowRowSelectionBtns: false,
+        DeactiveButton: false,
+        ActiveButton: false,
+        ApproveButton: false
+    });
+
+    const [showMessageBeforeTable, setShowMessageBeforeTable] = useState("");
     const [count, setCount] = useState(0);
+    const [dialogBoxCount, setDialogBoxCount] = useState(0);
+    const { editPermissions } = usePermissions();
 
+    // Add state variables to remember toggle button states
+    const [approvedToggleState, setApprovedToggleState] = useState(false);
+    const [activeToggleState, setActiveToggleState] = useState(true);
+    
 
+    // Home Page Header for Showing in Table
+    const homePageHeader = [
+        { accessorKey: 'studentName', header: 'Student Name' },
+        { accessorKey: 'studentCode', header: 'Code' },
+        { accessorKey: 'guardianName', header: 'Guardian Name' },
+        { accessorKey: 'dob', header: 'Date of Birth' },
+        { accessorKey: 'admissionDate', header: 'Admission Date' },
+        { accessorKey: 'phoneNumber', header: 'Phone Number' },
+        { accessorKey: 'createdDateTimeFormatted', header: 'Created Date Time' },
+        { accessorKey: 'createdBy', header: 'Created By' }
+    ];
 
+    // Fetch Home Page Data
+    const homePageData = async (status) => {
+        try {
+            let response = await axios.get(process.env.REACT_APP_HOME_API_URL, {
+                headers: { 'x-status': status }
+            });
+
+            setApprovedData(response.data);
+
+            //Show the messages before the table
+            if (status === 'Active') {
+                setShowMessageBeforeTable(
+                    <span>
+                      <strong>(Active)</strong> Ekhane jara class e bhorti ache
+                    </span>
+                  );                  
+            }
+            else if (status === 'Deactive') {
+                setShowMessageBeforeTable(
+                    <span>
+                      <strong>(Deactive)</strong> Ekhane jara class e bhorti nei
+                    </span>
+                  );
+            }
+            else {
+                setShowMessageBeforeTable(
+                    <span>
+                      <strong>(Approve)</strong> Ekhane approve korle active e jai
+                    </span>
+                  );
+                  
+            }
+
+        } catch {
+            setShowSomethingWrongDialogBox(true);
+        }
+
+        setCount(count => count + 1);
+        setIsLoading(false);
+    };
+
+    // When toggles on statusToggle button
+    const statusToggleOnClick = async (e) => {
+        setIsLoading(true);
+        setShowSomethingWrongDialogBox(false);
+        setRowSelection({});
+        setShowRowSelectionBtns({ isShowRowSelectionBtns: false });
+        setShowDialogBoxContent({ ShowDialogBox: false });
+        setCount(count => count + 1);
+
+        const { id, checked } = e.target;
+        if (id === 'ActiveToggleBtn') {
+            setActiveToggleState(checked); // Update state
+            if (checked) {
+                await homePageData('Active');
+            } else {
+                await homePageData('Deactive');
+            }
+        } else if (id === 'ApprovedToggleBtn') {
+            setApprovedToggleState(checked); // Update state
+            setActiveToggleState(true);
+            setShowActiveStatus(!checked);
+            if (checked) {
+                await homePageData('Unapproval');
+            } else {
+                await homePageData('Active');
+            }
+        }
+        setIsLoading(false);
+    };
+
+    // Render first time when Home Page mounts
     useEffect(() => {
-
-        // const homeURL = async() =>{
-        //     let response = await axios.post(process.env.REACT_APP_HOME_API_URL);
-        //     console.log();
-        // }
-
-        // homeURL();
-
+        document.title = 'Home Page';
+        homePageData('Active');
     }, []);
 
+    // Select the rows to change the status for data based on edit permissions
+    useEffect(() => {
+        if (Object.keys(rowSelection).length > 0 && editPermissions) {
 
+            if (activeToggleState === true && showActiveStatus === true) {
+                setShowRowSelectionBtns({ isShowRowSelectionBtns: true, DeactiveButton: true });
+            }
+            else if (approvedToggleState === true && showActiveStatus === false) {
+                setShowRowSelectionBtns({ isShowRowSelectionBtns: true, ApproveButton: true });
+            }
+            else {
+                setShowRowSelectionBtns({ isShowRowSelectionBtns: true, ActiveButton: true });
+            }
+        }
+        else {
+            setShowRowSelectionBtns({ isShowRowSelectionBtns: false });
+        }
+    }, [rowSelection, editPermissions, activeToggleState, approvedToggleState, showActiveStatus]);
 
-    // const CreateHomeBtnOnClick = (e) => {
+    // When changing the form from create to home or vice-versa
+    const ToggleForm = (e) => {
+        e.preventDefault();
+        setRowSelection({});
+        setShowSomethingWrongDialogBox(false);
+        setShowDialogBoxContent({ ShowDialogBox: false });
+        setShowForm(state => !state);
+    };
 
-    //     e.preventDefault();
+    // When RefreshTable button is clicked
+    const RefreshTable = async () => {
+        setIsLoading(true);
 
-    //     const studentDetailsCollection = collection(db, 'StudentDetails');
+        if (activeToggleState === true && showActiveStatus === true) {
+            await homePageData('Active');
+        }
+        else if (approvedToggleState === true && showActiveStatus === false) {
+            await homePageData('Unapproval');
+        }
+        else {
+            await homePageData('Deactive');
+        }
 
-    //     // asynchronously add a document to the collection
-    //     addDoc(studentDetailsCollection, {
-    //         ...formsTxts
-    //     })
-    //         .then(() => {
+        setIsLoading(false);
+        setCount(count => count + 1);
+    };
 
-    //             setCount(count => count + 1);
+    // When RefreshTable button is clicked
+    const RefreshBtnOnClick = async () => {
+        setShowSomethingWrongDialogBox(false);
+        setShowDialogBoxContent({ ShowDialogBox: false });
+        RefreshTable();
+    };
 
-    //             setshowMessage({
-    //                 dialogContent: "Inserted " + formsTxts.studentName + "," + " " + formsTxts.studentCode + " details Successfully",
-    //                 dialogTitle: "Success",
-    //                 CloseButtonName: "OK"
-    //             });
+    // When status button is clicked
+    const clickFunctions = async (e) => {
+        setDialogBoxCount(count => count + 1);
+        setShowSomethingWrongDialogBox(false);
+        const { id } = e.target;
+        if (id === 'deactiveBtn') {
+            setShowDialogBoxContent({
+                ShowDialogBox: true,
+                TextDialogTitle: "Deactivate",
+                TextDialogContent: "Are you Sure to Deactivate?",
+                TextDialogButtonOnConfirmId: "deactiveBtn",
+                TextDialogButtonOnConfirm: "Deactivate",
+                showCancelBtn: true
+            });
+        } else if (id === 'activeBtn') {
+            setShowDialogBoxContent({
+                ShowDialogBox: true,
+                TextDialogTitle: "Activate",
+                TextDialogContent: "Are you Sure to Activate?",
+                TextDialogButtonOnConfirmId: "activeBtn",
+                TextDialogButtonOnConfirm: "Activate",
+                showCancelBtn: true
+            });
+        } else if (id === 'approveBtn') {
+            setShowDialogBoxContent({
+                ShowDialogBox: true,
+                TextDialogTitle: "Approve",
+                TextDialogContent: "Are you Sure to Approve?",
+                TextDialogButtonOnConfirmId: "approveBtn",
+                TextDialogButtonOnConfirm: "Approve",
+                showCancelBtn: true
+            });
+        }
+    };
 
-    //             setformsTxts(defaultformsTxts);
-    //             setshowDialogBox(true);
+    // When status button is clicked after confirm
+    const clickFunctionsOnConfirm = async (e) => {
+        setShowDialogBoxContent({ ShowDialogBox: false });
+        setShowSomethingWrongDialogBox(false);
+        const { id } = e.target;
+        if (id === 'OK') {
+            return;
+        }
 
-    //             let form = document.getElementById('create-form');
-    //             form.scrollTop = 0;
+        let header = "";
+        if (id === 'deactiveBtn') {
+            header = 'deactive';
+        } else if (id === 'activeBtn') {
+            header = 'active';
+        } else if (id === 'approveBtn') {
+            header = 'approve';
+        }
 
-    //         })
-    //         .catch(() => {
+        try {
+            const keysArray = Object.keys(rowSelection);
 
-    //             setCount(count => count + 1);
+            let response = await axios.post(process.env.REACT_APP_UPDATE_API_URL, { data: keysArray }, {
+                headers: { 'Content-Type': 'application/json', 'x-update': header }
+            });
 
-    //             setshowMessage({
-    //                 dialogContent: "Failed to Insert " + formsTxts.studentName + "," + " " + formsTxts.studentCode + " details",
-    //                 dialogTitle: "Error",
-    //                 CloseButtonName: "OK"
-    //             });
+            if (response.status === 200) { // When response is 200
+                RefreshTable();
+                setShowRowSelectionBtns({ isShowRowSelectionBtns: false });
+                setRowSelection({});
+                setDialogBoxCount(count => count + 1);
+                setShowSomethingWrongDialogBox(false);
+                if (response.data.message) {
+                    setShowDialogBoxContent({
+                        ShowDialogBox: true,
+                        TextDialogTitle: "Message",
+                        TextDialogContent: response.data.message,
+                        TextDialogButtonOnConfirmId: "OK",
+                        TextDialogButtonOnConfirm: "OK",
+                        showCancelBtn: false
+                    });
+                } else if (header === 'deactive') {
+                    setShowDialogBoxContent({
+                        ShowDialogBox: true,
+                        TextDialogTitle: "Success",
+                        TextDialogContent: "Deactivated Successfully",
+                        TextDialogButtonOnConfirmId: "OK",
+                        TextDialogButtonOnConfirm: "OK",
+                        showCancelBtn: false
+                    });
+                } else if (header === 'active') {
+                    setShowDialogBoxContent({
+                        ShowDialogBox: true,
+                        TextDialogTitle: "Success",
+                        TextDialogContent: "Activated Successfully",
+                        TextDialogButtonOnConfirmId: "OK",
+                        TextDialogButtonOnConfirm: "OK",
+                        showCancelBtn: false
+                    });
+                } else if (header === 'approve') {
+                    setShowDialogBoxContent({
+                        ShowDialogBox: true,
+                        TextDialogTitle: "Success",
+                        TextDialogContent: "Approved Successfully",
+                        TextDialogButtonOnConfirmId: "OK",
+                        TextDialogButtonOnConfirm: "OK",
+                        showCancelBtn: false
+                    });
+                }
+            }
 
-    //             setshowDialogBox(true);
-
-    //             let form = document.getElementById('create-form');
-    //             form.scrollTop = 0;
-                
-    //         });
-
-
-
-    // }
-
-
-    // const ClearHomeBtnOnClick = (e) => {
-
-    //     e.preventDefault();
-
-    //     setCount(count => count + 1);
-    //     setformsTxts(defaultformsTxts);
-    //     setshowDialogBox(false);
-
-    // }
+        } catch {
+            setDialogBoxCount(count => count + 1);
+            setShowSomethingWrongDialogBox(true);
+        }
+    };
 
     return (
         <div>
-            <section className="vh-200">
-                <div className="container py-5 h-100">
-                    <div className="row d-flex justify-content-center align-items-center h-100">
-                        <div className="formDiv">
-                            <div className="card shadow-2-strong" style={{ "borderRadius": "1rem" }}>
-                                <div className="card-body p-5 text-center">
-                                    {/* <p className="mb-4 pText">Create Form</p>
-                                    <div className='dash'>
-                                        Create Record
-                                        <Button variant="contained" id="ClearHomeBtn" type="reset" onClick={(e) => ClearHomeBtnOnClick(e)}><MdOutlineReplay /> Clear</Button>
-                                    </div>
-                                    <div className='dash'>
-                                        ---------------------------------------------------------
-                                    </div>
-                                    <br />
-                                    <form className="form" id="create-form" onSubmit={CreateHomeBtnOnClick}>
-                                        <div className="form-group row">
-                                            <label htmlFor='studentNameTxt' className="col-sm-2 col-form-label">Student Name</label>
-                                            <div className="col-sm-10">
-                                                <input type="text" className="form-control" id="studentNameTxt" value={formsTxts.studentName} onChange={(e) => setformsTxts({ ...formsTxts, studentName: e.target.value.toUpperCase() })} required />
-                                            </div>
-                                        </div>
-                                        <br />
-                                        <div className="form-group row">
-                                            <label htmlFor='guardianNameTxt' className="col-sm-2 col-form-label">Guardian Name</label>
-                                            <div className="col-sm-10">
-                                                <input type="text" className="form-control" id="guardianNameTxt" value={formsTxts.guardianName} onChange={(e) => setformsTxts({ ...formsTxts, guardianName: e.target.value.toUpperCase() })} required />
-                                            </div>
-                                        </div>
-                                        <br />
-                                        <div className="form-group row">
-                                            <label htmlFor='LevelTxt' className="col-sm-2 col-form-label">Level</label>
-                                            <div className="col-sm-10">
-                                                <input type="text" className="form-control" id="LevelTxt" value={formsTxts.Level} onChange={(e) => setformsTxts({ ...formsTxts, Level: e.target.value.toUpperCase() })} required />
-                                            </div>
-                                        </div>
-                                        <br />
-                                        <div className="form-group row">
-                                            <label htmlFor='StudentCodeTxt' className="col-sm-2 col-form-label">Student Code</label>
-                                            <div className="col-sm-10">
-                                                <input type="text" className="form-control" id="StudentCodeTxt" value={formsTxts.studentCode} onChange={(e) => setformsTxts({ ...formsTxts, studentCode: e.target.value.toUpperCase() })} required />
-                                            </div>
-                                        </div>
-                                        <br />
-                                        <div className="form-group row">
-                                            <label htmlFor='AbacusTxt' className="col-sm-2 col-form-label">Abacus</label>
-                                            <div className="col-sm-10">
-                                                <input type="number" className="form-control" id="AbacusTxt" value={formsTxts.Abacus} onChange={(e) => setformsTxts({ ...formsTxts, Abacus: e.target.value })} required />
-                                            </div>
-                                        </div>
-                                        <br />
-                                        <div className="form-group row">
-                                            <label htmlFor='FingerTxt' className="col-sm-2 col-form-label">Finger</label>
-                                            <div className="col-sm-10">
-                                                <input type="number" className="form-control" id="FingerTxt" value={formsTxts.Finger} onChange={(e) => setformsTxts({ ...formsTxts, Finger: e.target.value })} required />
-                                            </div>
-                                        </div>
-                                        <br />
-                                        <div className="form-group row">
-                                            <label htmlFor='MentalviewingTxt' className="col-sm-2 col-form-label">Mental viewing</label>
-                                            <div className="col-sm-10">
-                                                <input type="number" className="form-control" id="MentalviewingTxt" value={formsTxts.Mentalviewing} onChange={(e) => setformsTxts({ ...formsTxts, Mentalviewing: e.target.value })} required />
-                                            </div>
-                                        </div>
-                                        <br />
-                                        <div className="form-group row">
-                                            <label htmlFor='MentalhearingTxt' className="col-sm-2 col-form-label">Mental hearing</label>
-                                            <div className="col-sm-10">
-                                                <input type="number" className="form-control" id="MentalhearingTxt" value={formsTxts.Mentalhearing} onChange={(e) => setformsTxts({ ...formsTxts, Mentalhearing: e.target.value })} required />
-                                            </div>
-                                        </div>
-                                        <br />
-                                        <div className="form-group row">
-                                            <label htmlFor='TotalTxt' className="col-sm-2 col-form-label">Total</label>
-                                            <div className="col-sm-10">
-                                                <input type="number" className="form-control" id="TotalTxt" value={formsTxts.Total} onChange={(e) => setformsTxts({ ...formsTxts, Total: e.target.value })} required />
-                                            </div>
-                                        </div>
-                                        <br />
-                                        <div className="form-group row">
-                                            <label htmlFor='AttendenceTxt' className="col-sm-2 col-form-label">Attendence</label>
-                                            <div className="col-sm-10">
-                                                <input type="text" className="form-control" id="AttendenceTxt" value={formsTxts.Attendence} onChange={(e) => setformsTxts({ ...formsTxts, Attendence: e.target.value })} required />
-                                            </div>
-                                        </div>
-                                        <br />
-                                        <div className="form-group row">
-                                            <label htmlFor='CWTxt' className="col-sm-2 col-form-label">C.W</label>
-                                            <div className="col-sm-10">
-                                                <input type="text" className="form-control" id="CWTxt" value={formsTxts.CW} onChange={(e) => setformsTxts({ ...formsTxts, CW: e.target.value })} required />
-                                            </div>
-                                        </div>
-                                        <br />
-                                        <div className="form-group row">
-                                            <label htmlFor='HWTxt' className="col-sm-2 col-form-label">H.W</label>
-                                            <div className="col-sm-10">
-                                                <input type="text" className="form-control" id="HWTxt" value={formsTxts.HW} onChange={(e) => setformsTxts({ ...formsTxts, HW: e.target.value })} required />
-                                            </div>
-                                        </div>
-                                        <br />
-                                        <div className="form-group row">
-                                            <label htmlFor='BraingymTxt' className="col-sm-2 col-form-label">Braingym</label>
-                                            <div className="col-sm-10">
-                                                <input type="text" className="form-control" id="BraingymTxt" value={formsTxts.Braingym} onChange={(e) => setformsTxts({ ...formsTxts, Braingym: e.target.value })} required />
-                                            </div>
-                                        </div>
-                                        <br />
-                                        <div className="form-group row">
-                                            <label htmlFor='swritingTxt' className="col-sm-2 col-form-label">S.Writing</label>
-                                            <div className="col-sm-10">
-                                                <input type="text" className="form-control" id="swritingTxt" value={formsTxts.swriting} onChange={(e) => setformsTxts({ ...formsTxts, swriting: e.target.value })} required />
-                                            </div>
-                                        </div>
-                                        <br />
-                                        <div className="form-group row">
-                                            <label htmlFor='Abacus_no_of_sums_minTxt' className="col-sm-2 col-form-label">Abacus (no. of sums /min)</label>
-                                            <div className="col-sm-10">
-                                                <input type="number" className="form-control" id="Abacus_no_of_sums_minTxt" value={formsTxts.Abacus_no_of_sums_min} onChange={(e) => setformsTxts({ ...formsTxts, Abacus_no_of_sums_min: e.target.value })} required />
-                                            </div>
-                                        </div>
-                                        <br />
-                                        <div className="form-group row">
-                                            <label htmlFor='Finger_no_of_sums_minTxt' className="col-sm-2 col-form-label"> Finger (no. of sums /min)</label>
-                                            <div className="col-sm-10">
-                                                <input type="number" className="form-control" id="Finger_no_of_sums_minTxt" value={formsTxts.Finger_no_of_sums_min} onChange={(e) => setformsTxts({ ...formsTxts, Finger_no_of_sums_min: e.target.value })} required />
-                                            </div>
-                                        </div>
-                                        <br />
-                                        <div className="form-group row">
-                                            <label htmlFor='MHearing_no_of_sums_minTxt' className="col-sm-2 col-form-label">M.Hearing (no. of sums /min)</label>
-                                            <div className="col-sm-10">
-                                                <input type="number" className="form-control" id="MHearing_no_of_sums_minTxt" value={formsTxts.MHearing_no_of_sums_min} onChange={(e) => setformsTxts({ ...formsTxts, MHearing_no_of_sums_min: e.target.value })} required />
-                                            </div>
-                                        </div>
-                                    </form>
-                                    <br /> */}
-                                    <div className='dash'>
-                                        ---------------------------------------------------------
-                                    </div>
-                                    <Button variant="contained" id="submitHomeBtn" form="create-form" type="submit">Save</Button>
-                                    {showDialogBox && <DialogBoxes key={count} props={showMessage} />}
-
-                                </div>
-                            </div>
+            {showSomethingWrongDialogBox
+                && <DialogSomethingWrong key={dialogBoxCount} />}
+            {showDialogBoxContent.ShowDialogBox
+                && <DialogBoxes key={dialogBoxCount}
+                    showDefaultTextDialogButton={false}
+                    TextDialogTitle={showDialogBoxContent.TextDialogTitle}
+                    TextDialogContent={showDialogBoxContent.TextDialogContent}
+                    TextDialogButtonOnConfirm={showDialogBoxContent.TextDialogButtonOnConfirm}
+                    TextDialogButtonOnConfirmId={showDialogBoxContent.TextDialogButtonOnConfirmId}
+                    showCancelBtn={showDialogBoxContent.showCancelBtn}
+                    clickFunctionsOnConfirm={clickFunctionsOnConfirm} />}
+            <br />
+            {
+                !showForm ?
+                    <>
+                        <Button variant="contained" className="HomePageButttons" onClick={ToggleForm}><AddIcon />&nbsp;ADD NEW</Button>
+                        <Button variant="contained" id="RefreshBtn" onClick={RefreshBtnOnClick}><RefreshIcon /></Button>
+                        <div style={{ marginTop: "2rem" }}>
+                            <Switch
+                                checked={approvedToggleState}
+                                id='ApprovedToggleBtn'
+                                onChange={statusToggleOnClick}
+                            /> <span style={{ fontWeight: 'bold' }}>Unapproved</span>
+                            {showActiveStatus && <span><Switch
+                                checked={activeToggleState}
+                                id='ActiveToggleBtn'
+                                onChange={statusToggleOnClick}
+                            /> <span style={{ fontWeight: 'bold' }}>Active</span></span>}
                         </div>
-                    </div>
-                </div>
-            </section>
-        </div>
-    )
-}
+                        <br />
+                        <div style={{ backgroundColor: 'white', fontSize: '20px' }}>
+                            <span style={{ marginLeft: '1rem' }}>{showMessageBeforeTable}</span>
+                        </div>
+                        <Table key={count}
+                            columnsProps={homePageHeader}
+                            dataProps={approvedData}
+                            isLoadingState={isLoading}
+                            isShowRowSelectionBtns={editPermissions && showRowSelectionBtns.isShowRowSelectionBtns}
+                            showRowSelectionBtns={editPermissions && showRowSelectionBtns}
+                            rowSelection={rowSelection}
+                            setRowSelection={setRowSelection}
+                            clickFunctions={clickFunctions} />
+                    </>
+                    :
+                    <>
+                        <Button variant="contained" className="HomePageButttons" onClick={ToggleForm}><ArrowBackIcon />&nbsp;BACK TO TABLE</Button>
+                        <CreateForm />
+                    </>
+            }
 
-export default HomePage
+        </div>
+    );
+};
+
+export default HomePage;

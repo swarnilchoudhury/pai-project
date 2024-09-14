@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { auth } from '../Configs/FirebaseConfig.js';
+import { auth } from '../Configs/FirebaseConfig';
 import { signInWithEmailAndPassword } from 'firebase/auth'
-import { useLocation, useNavigate } from 'react-router-dom';
 import Button from '@mui/material/Button';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import CircularProgress from '@mui/material/CircularProgress';
-import ShowMessagediv from '../ShowMessage/ShowMessagediv.js';
+import ShowMessagediv from '../ShowMessage/ShowMessagediv';
 import IconButton from '@mui/material/IconButton';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import InputLabel from '@mui/material/InputLabel';
@@ -14,56 +12,40 @@ import FormControl from '@mui/material/FormControl';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import '../../ComponetsStyles/LoginForm.css';
-import axios from 'axios';
+import axios from '../AxiosInterceptor/AxiosInterceptor';
+import CircularProgressButton from '../CircularProgressButton/CircularProgressButton';
+import { usePermissions } from '../Context/PermissionContext';
 
-export default function LoginForm() {
+const LoginForm = () => {
 
     const [count, setCount] = useState(0);
     const [showPassword, setShowPassword] = useState(false);
     const [loggingIn, setLoggingIn] = useState(false);
 
-    const [showMessage, setshowMessage] = useState({
+    const [showMessage, setShowMessage] = useState({
         innerText: "",
         className: "",
         role: ""
     });
 
-    let navigate = useNavigate();
+    const { setUserName } = usePermissions();
 
-    let location = useLocation();
-
+    //Render first time when LoginForm mounts
     useEffect(() => {
-        const session_expired = () => {
+        document.title = 'Welcome to Purbasa Activity Institute';
+
+        if (sessionStorage.getItem("somethingWrong")) {
             sessionStorage.clear();
-            setshowMessage({
-                innerText: "Session Expired. Please Log In.",
+            setShowMessage({
+                innerText: "Something went wrong. Please Log In again.",
                 className: "alert alert-danger",
                 role: "alert"
             });
-        }
 
-        if (sessionStorage.getItem("session_expired")) {
-            session_expired();
-
-        }
-        else if (location.state != null) {
-            if (location.state.session_expired) {
-
-                session_expired();
-            }
-            else if (location.state.loginIn) {
-
-                setshowMessage({
-                    innerText: "Please Log In to continue",
-                    className: "alert alert-danger",
-                    role: "alert"
-                });
-
-            }
         }
         else if (sessionStorage.getItem("Logout")) {
             sessionStorage.clear();
-            setshowMessage({
+            setShowMessage({
                 innerText: "Successfully Logged out.",
                 className: "alert alert-danger",
                 role: "alert"
@@ -71,6 +53,7 @@ export default function LoginForm() {
         }
     }, []);
 
+    //When Login Button is clicked
     const LoginBtnOnClick = async (e) => {
         e.preventDefault();
         setCount(count => count + 1);
@@ -79,7 +62,7 @@ export default function LoginForm() {
         const password = document.getElementById('PasswordTxt').value;
 
         if (!email || !password) {
-            setshowMessage({
+            setShowMessage({
                 innerText: "Please Enter User Name and Password to Login.",
                 className: "alert alert-danger",
                 role: "alert"
@@ -90,32 +73,28 @@ export default function LoginForm() {
         setLoggingIn(true);
 
         try {
-            const signinResponse = await signInWithEmailAndPassword(auth, email, password);
-            await handleLoginSuccess(signinResponse);
+            await signInWithEmailAndPassword(auth, email, password);
+            await handleLoginSuccess();
         } catch {
             handleLoginError();
         }
     };
 
-    const handleLoginSuccess = async (signinResponse) => {
+    //For Login Success
+    const handleLoginSuccess = async () => {
         try {
-            const token = signinResponse.user.accessToken;
-            const response = await axios.post(
-                process.env.REACT_APP_LOGIN_API_URL,
-                { emailId: signinResponse.user.email },
-                { headers: { Authorization: `Bearer ${token}` } }
-            );
-
-            localStorage.setItem("authToken", token);
-            saveUserSession(response.data);
-            navigate("/Home");
+            const response = await axios.get(process.env.REACT_APP_LOGIN_API_URL);
+            let name = response.data.name;
+            localStorage.setItem("UserName", name);
+            setUserName(name)
         } catch {
             handleRequestError();
         }
     };
 
+    //For Login Error
     const handleLoginError = () => {
-        setshowMessage({
+        setShowMessage({
             innerText: "Entered User Name or Password is incorrect. Please Try Again.",
             className: "alert alert-danger",
             role: "alert"
@@ -125,8 +104,9 @@ export default function LoginForm() {
         setLoggingIn(false);
     };
 
+    //Something went wrong
     const handleRequestError = () => {
-        setshowMessage({
+        setShowMessage({
             innerText: "Something went wrong.",
             className: "alert alert-danger",
             role: "alert"
@@ -136,17 +116,13 @@ export default function LoginForm() {
         setLoggingIn(false);
     };
 
-    const saveUserSession = ({ expiry, Name }) => {
-        localStorage.setItem("expiresAt", expiry);
-        localStorage.setItem("UserName", Name);
-    };
-
+    //Clear the Password
     const clearPasswordInput = () => {
         document.getElementById('PasswordTxt').value = "";
     };
 
 
-
+    //Show or disable the show password
     const handleClickShowPassword = () => setShowPassword((show) => !show);
 
     const handleMouseDownPassword = (e) => {
@@ -185,6 +161,7 @@ export default function LoginForm() {
                                                 <InputLabel htmlFor="PasswordTxt">Password</InputLabel>
                                                 <OutlinedInput
                                                     id="PasswordTxt"
+                                                    autoComplete="on"
                                                     type={showPassword ? 'text' : 'password'}
                                                     endAdornment={
                                                         <InputAdornment position="start">
@@ -205,7 +182,7 @@ export default function LoginForm() {
                                         <br />
                                         {!loggingIn ?
                                             <Button variant="contained" id="LoginBtn" type="submit">Login</Button>
-                                            : <Button variant="contained" id="LogingInBtn" disabled={true}><CircularProgress disableShrink style={{ color: "grey", marginRight: "1rem" }} />Logging In...</Button>
+                                            : <CircularProgressButton Text="Logging In..." id="LoggingInBtn" />
                                         }
                                         <br />
                                         <br />
@@ -221,3 +198,4 @@ export default function LoginForm() {
     )
 }
 
+export default LoginForm;
