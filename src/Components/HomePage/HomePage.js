@@ -44,7 +44,7 @@ const HomePage = () => {
     // Add state variables to remember toggle button states
     const [approvedToggleState, setApprovedToggleState] = useState(false);
     const [activeToggleState, setActiveToggleState] = useState(true);
-    
+
 
     // Home Page Header for Showing in Table
     const homePageHeader = [
@@ -71,24 +71,24 @@ const HomePage = () => {
             if (status === 'Active') {
                 setShowMessageBeforeTable(
                     <span className='DescBeforeTable'>
-                      <strong>(Active)</strong> Ekhane jara class e bhorti ache
+                        <strong>(Active)</strong> Ekhane jara class e bhorti ache
                     </span>
-                  );                  
+                );
             }
             else if (status === 'Deactive') {
                 setShowMessageBeforeTable(
                     <span className='DescBeforeTable'>
-                      <strong>(Deactive)</strong> Ekhane jara class e bhorti nei
+                        <strong>(Deactive)</strong> Ekhane jara class e bhorti nei
                     </span>
-                  );
+                );
             }
             else {
                 setShowMessageBeforeTable(
                     <span className='DescBeforeTable'>
-                      <strong>(Approve)</strong> Ekhane approve korle active e jai
+                        <strong>(Approve)</strong> Ekhane approve korle active e jai
                     </span>
-                  );
-                  
+                );
+
             }
 
         } catch {

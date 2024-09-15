@@ -1,4 +1,4 @@
-import React,{ useMemo } from 'react';
+import React, { useMemo } from 'react';
 import {
   MaterialReactTable,
   useMaterialReactTable,
@@ -107,7 +107,7 @@ const Table = ({ columnsProps,
     data,
     enableRowActions: false,
     enableRowSelection: editPermissions,
-    enableStickyHeader:true,
+    enableStickyHeader: true,
     getRowId: (row) => row.studentCode, //give each row a more useful id
     onRowSelectionChange: setRowSelection, //connect internal row selection state to your own
     state: { rowSelection, isLoading: isLoadingState }, //pass our managed row selection state to the table to use
@@ -115,13 +115,13 @@ const Table = ({ columnsProps,
       animation: 'pulse',
       height: 28,
     },
-    muiTableHeadCellProps:{
+    muiTableHeadCellProps: {
       sx: {
         border: '1px solid rgba(81, 81, 81, .5)',
         whiteSpace: 'nowrap',
         overflow: 'hidden',
         padding: '0.8rem',
-        backgroundColor:'lightgrey'
+        backgroundColor: 'lightgrey'
       },
     },
     muiTableProps: {
