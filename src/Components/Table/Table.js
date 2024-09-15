@@ -56,44 +56,47 @@ const Table = ({ columnsProps,
 
   const { editPermissions } = usePermissions();
 
-  const downloadRows = (rows, buttonCheck) => {
+  const downloadRows = (rows = []) => {
     let activeToggleBtn = document.getElementById('ActiveToggleBtn');
     let statusName = "";
-
+  
     if (activeToggleBtn) {
-      if (activeToggleBtn.checked) {
-        statusName = "Active";
-      }
-      else if (!activeToggleBtn.checked) {
-        statusName = "Deactive";
-      }
-    }
-    else {
+      statusName = activeToggleBtn.checked ? "Active" : "Deactive";
+    } else {
       statusName = "Approve";
     }
-
-    let csvConfig = mkConfig({ //Config the csv file
+  
+    let csvConfig = mkConfig({
       fieldSeparator: ',',
       decimalSeparator: '.',
       useKeysAsHeaders: true,
+      headers: columnsProps.map(col => col.header), // Extract headers from columnsProps
       filename: 'PAIStudents_' + statusName + "_" + dayjs().format('DDMMYY')
     });
-
-    if (buttonCheck?.includes("Selected")) {
-      const rowData = rows.map((row) => row.original);
-      const csv = generateCsv(csvConfig)(rowData);
-      download(csvConfig)(csv);
-    }
-    else {
-      const csv = generateCsv(csvConfig)(data);
-      download(csvConfig)(csv);
-    }
-
-  }
-
+  
+    const rowData = rows.length > 0 
+      ? rows.map(row => {
+          const selectedRow = {};
+          columnsProps.forEach(col => {
+            selectedRow[col.header] = row.original[col.accessorKey]; // Access data via original for selected rows
+          });
+          return selectedRow;
+        })
+      : data.map(item => {
+          const fullRow = {};
+          columnsProps.forEach(col => {
+            fullRow[col.header] = item[col.accessorKey]; // Use full data if no rows are selected
+          });
+          return fullRow;
+        });
+  
+    const csv = generateCsv(csvConfig)(rowData);
+    download(csvConfig)(csv);
+  };
+  
   //Export particular rows that are selected
   const handleExportRows = (rows) => {
-    downloadRows(rows, "Selected");
+    downloadRows(rows);
   };
 
   //Export all rows that are selected
