@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { auth } from '../Configs/FirebaseConfig';
+import { auth } from '../../Configs/FirebaseConfig';
 
 axios.defaults.baseURL = process.env.REACT_APP_BASE_URL;
 

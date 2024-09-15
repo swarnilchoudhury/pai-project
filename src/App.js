@@ -1,14 +1,14 @@
 import { Routes, Route, useNavigate, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { onAuthStateChanged, setPersistence, browserLocalPersistence } from 'firebase/auth';
-import { auth } from "./Components/Configs/FirebaseConfig";
+import { auth } from "./Configs/FirebaseConfig";
 import LoginForm from "./Components/LoginForm/LoginForm";
 import PageNotFound from "./Components/PageNotFound/PageNotFound";
 import HomePage from "./Components/HomePage/HomePage";
 import Spinner from "./Components/Spinner/Spinner";
 import NavBar from "./Components/NavBar/NavBar";
 import axios from './Components/AxiosInterceptor/AxiosInterceptor'
-import { usePermissions } from "./Components/Context/PermissionContext";
+import { usePermissions } from "./Context/PermissionContext";
 
 const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);

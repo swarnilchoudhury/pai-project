@@ -11,3 +11,6 @@
     transition: opacity 0.5s ease-in-out;
   }
   
+.DescBeforeTable{
+    font-size: 1.1rem;
+}

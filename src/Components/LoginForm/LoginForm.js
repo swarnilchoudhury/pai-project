@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { auth } from '../Configs/FirebaseConfig';
+import { auth } from '../../Configs/FirebaseConfig';
 import { signInWithEmailAndPassword } from 'firebase/auth'
 import Button from '@mui/material/Button';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
@@ -14,7 +14,7 @@ import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import '../../ComponetsStyles/LoginForm.css';
 import axios from '../AxiosInterceptor/AxiosInterceptor';
 import CircularProgressButton from '../CircularProgressButton/CircularProgressButton';
-import { usePermissions } from '../Context/PermissionContext';
+import { usePermissions } from '../../Context/PermissionContext';
 
 const LoginForm = () => {
 
