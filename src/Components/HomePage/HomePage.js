@@ -10,7 +10,7 @@ import CreateForm from './CreateForm';
 import axios from '../../Components/AxiosInterceptor/AxiosInterceptor';
 import DialogSomethingWrong from '../DialogBoxes/DialogSomethingWrong';
 import DialogBoxes from '../DialogBoxes/DialogBoxes';
-import { usePermissions } from '../Context/PermissionContext';
+import { usePermissions } from '../../Context/PermissionContext';
 
 const HomePage = () => {
 
@@ -70,21 +70,21 @@ const HomePage = () => {
             //Show the messages before the table
             if (status === 'Active') {
                 setShowMessageBeforeTable(
-                    <span>
+                    <span className='DescBeforeTable'>
                       <strong>(Active)</strong> Ekhane jara class e bhorti ache
                     </span>
                   );                  
             }
             else if (status === 'Deactive') {
                 setShowMessageBeforeTable(
-                    <span>
+                    <span className='DescBeforeTable'>
                       <strong>(Deactive)</strong> Ekhane jara class e bhorti nei
                     </span>
                   );
             }
             else {
                 setShowMessageBeforeTable(
-                    <span>
+                    <span className='DescBeforeTable'>
                       <strong>(Approve)</strong> Ekhane approve korle active e jai
                     </span>
                   );

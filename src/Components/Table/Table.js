@@ -10,7 +10,7 @@ import Done from '@mui/icons-material/Done';
 import { Edit, Delete } from '@mui/icons-material';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import { mkConfig, generateCsv, download } from 'export-to-csv';
-import { usePermissions } from '../Context/PermissionContext';
+import { usePermissions } from '../../Context/PermissionContext';
 import PropTypes from 'prop-types';
 import dayjs from 'dayjs';
 

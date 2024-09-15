@@ -5,7 +5,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-import { auth } from '../Configs/FirebaseConfig';
+import { auth } from '../../Configs/FirebaseConfig';
 import PropTypes from 'prop-types';
 
 const DialogBoxes = ({ TextDialogContent,
