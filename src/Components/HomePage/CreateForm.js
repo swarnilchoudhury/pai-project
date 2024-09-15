@@ -162,7 +162,7 @@ const CreateForm = () => {
                 TextDialogButton: "OK",
                 ShowCancelBtn: false
             });
-            
+
             fetchLatestStudentCodeData(); //Fetch Latest Student Code
             setIsBtnLoading(false);
             ResetButtonOnClick(e);

@@ -11,7 +11,7 @@ export const usePermissions = () => {
 
 // Provider component
 export const PermissionProvider = ({ children }) => {
-    
+
     //Props validations
     PermissionProvider.propTypes = {
         children: PropTypes.node.isRequired,
