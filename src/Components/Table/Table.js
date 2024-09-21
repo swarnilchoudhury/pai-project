@@ -59,13 +59,13 @@ const Table = ({ columnsProps,
   const downloadRows = (rows = []) => {
     let activeToggleBtn = document.getElementById('ActiveToggleBtn');
     let statusName = "";
-  
+
     if (activeToggleBtn) {
       statusName = activeToggleBtn.checked ? "Active" : "Deactive";
     } else {
       statusName = "Approve";
     }
-  
+
     let csvConfig = mkConfig({
       fieldSeparator: ',',
       decimalSeparator: '.',
@@ -73,27 +73,27 @@ const Table = ({ columnsProps,
       headers: columnsProps.map(col => col.header), // Extract headers from columnsProps
       filename: 'PAIStudents_' + statusName + "_" + dayjs().format('DDMMYY')
     });
-  
-    const rowData = rows.length > 0 
+
+    const rowData = rows.length > 0
       ? rows.map(row => {
-          const selectedRow = {};
-          columnsProps.forEach(col => {
-            selectedRow[col.header] = row.original[col.accessorKey]; // Access data via original for selected rows
-          });
-          return selectedRow;
-        })
-      : data.map(item => {
-          const fullRow = {};
-          columnsProps.forEach(col => {
-            fullRow[col.header] = item[col.accessorKey]; // Use full data if no rows are selected
-          });
-          return fullRow;
+        const selectedRow = {};
+        columnsProps.forEach(col => {
+          selectedRow[col.header] = row.original[col.accessorKey]; // Access data via original for selected rows
         });
-  
+        return selectedRow;
+      })
+      : data.map(item => {
+        const fullRow = {};
+        columnsProps.forEach(col => {
+          fullRow[col.header] = item[col.accessorKey]; // Use full data if no rows are selected
+        });
+        return fullRow;
+      });
+
     const csv = generateCsv(csvConfig)(rowData);
     download(csvConfig)(csv);
   };
-  
+
   //Export particular rows that are selected
   const handleExportRows = (rows) => {
     downloadRows(rows);
@@ -111,7 +111,7 @@ const Table = ({ columnsProps,
     enableRowActions: false,
     enableRowSelection: editPermissions,
     enableStickyHeader: true,
-    getRowId: (row) => row.studentCode, //give each row a more useful id
+    getRowId: (row) => `${row.id}/${row.studentCode}`, //give each row a more useful id
     onRowSelectionChange: setRowSelection, //connect internal row selection state to your own
     state: { rowSelection, isLoading: isLoadingState }, //pass our managed row selection state to the table to use
     muiSkeletonProps: {

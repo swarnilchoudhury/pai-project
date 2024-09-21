@@ -16,7 +16,7 @@ const HomePage = () => {
 
     const [showForm, setShowForm] = useState(false);
     const [showActiveStatus, setShowActiveStatus] = useState(true);
-    const [approvedData, setApprovedData] = useState({});
+    const [data, setData] = useState({});
     const [isLoading, setIsLoading] = useState(true);
     const [showSomethingWrongDialogBox, setShowSomethingWrongDialogBox] = useState(false);
     const [rowSelection, setRowSelection] = useState({});
@@ -65,7 +65,7 @@ const HomePage = () => {
                 headers: { 'x-status': status }
             });
 
-            setApprovedData(response.data);
+            setData(response.data);
 
             //Show the messages before the table
             if (status === 'Active') {
@@ -336,7 +336,7 @@ const HomePage = () => {
                         </div>
                         <Table key={count}
                             columnsProps={homePageHeader}
-                            dataProps={approvedData}
+                            dataProps={data}
                             isLoadingState={isLoading}
                             isShowRowSelectionBtns={editPermissions && showRowSelectionBtns.isShowRowSelectionBtns}
                             showRowSelectionBtns={editPermissions && showRowSelectionBtns}

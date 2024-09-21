@@ -113,7 +113,7 @@ const CreateForm = () => {
                 if (response.data.returnCode === 1) {
                     setShowDialogBoxContent({
                         ShowDialogBox: true,
-                        TextDialogContent: "PAI-" + formsTxts.studentCode + " already exists.",
+                        TextDialogContent: response.data.message,
                         TextDialogButton: "OK",
                         ShowCancelBtn: false
                     });
@@ -204,7 +204,10 @@ const CreateForm = () => {
                                                 ?
                                                 <>
                                                     <div style={{ backgroundColor: 'white', fontSize: '15px' }}>
-                                                        {"Latest Student Code is " + latestStudentCodeData}
+                                                        <span style={{ fontWeight: 'bold', textDecoration: 'underline' }}>Latest Student Codes</span>
+                                                        {latestStudentCodeData.split(',').map((part, index) => (
+                                                            <div key={index}>{part}</div>
+                                                        ))}
                                                     </div>
                                                     <label htmlFor='StudentCodeTxt' className="col-sm-2 col-form-label">Student Code <span className='required'>*</span></label>
                                                     <div className="col-sm-10">
