@@ -23,7 +23,7 @@ const Table = ({ columnsProps,
   setRowSelection,
   clickFunctions }) => {
 
-  //Props validations
+  // Props validations
   Table.propTypes = {
     columnsProps: PropTypes.arrayOf(
       PropTypes.shape({
@@ -46,9 +46,9 @@ const Table = ({ columnsProps,
     clickFunctions: PropTypes.func,
   };
 
-  const data = dataProps; //For Data
+  const data = dataProps; // For Data
   const columns = useMemo(
-    //column definitions...
+    // column definitions...
     () => [
       ...columnsProps
     ],
@@ -70,7 +70,7 @@ const Table = ({ columnsProps,
       fieldSeparator: ',',
       decimalSeparator: '.',
       useKeysAsHeaders: true,
-      headers: columnsProps.map(col => col.header), // Extract headers from columnsProps
+      headers: columnsProps.map(col => col.header), //  Extract headers from columnsProps
       filename: 'PAIStudents_' + statusName + "_" + dayjs().format('DDMMYY')
     });
 
@@ -78,14 +78,14 @@ const Table = ({ columnsProps,
       ? rows.map(row => {
         const selectedRow = {};
         columnsProps.forEach(col => {
-          selectedRow[col.header] = row.original[col.accessorKey]; // Access data via original for selected rows
+          selectedRow[col.header] = row.original[col.accessorKey]; //  Access data via original for selected rows
         });
         return selectedRow;
       })
       : data.map(item => {
         const fullRow = {};
         columnsProps.forEach(col => {
-          fullRow[col.header] = item[col.accessorKey]; // Use full data if no rows are selected
+          fullRow[col.header] = item[col.accessorKey]; //  Use full data if no rows are selected
         });
         return fullRow;
       });
@@ -94,26 +94,26 @@ const Table = ({ columnsProps,
     download(csvConfig)(csv);
   };
 
-  //Export particular rows that are selected
+  // Export particular rows that are selected
   const handleExportRows = (rows) => {
     downloadRows(rows);
   };
 
-  //Export all rows that are selected
+  // Export all rows that are selected
   const handleExportData = () => {
     downloadRows();
   };
 
-  //Construct the table
+  // Construct the table
   const table = useMaterialReactTable({
     columns,
     data,
     enableRowActions: false,
     enableRowSelection: editPermissions,
     enableStickyHeader: true,
-    getRowId: (row) => `${row.id}/${row.studentCode}`, //give each row a more useful id
-    onRowSelectionChange: setRowSelection, //connect internal row selection state to your own
-    state: { rowSelection, isLoading: isLoadingState }, //pass our managed row selection state to the table to use
+    getRowId: (row) => `${row.id}/${row.studentCode}`, // give each row a more useful id
+    onRowSelectionChange: setRowSelection, // connect internal row selection state to your own
+    state: { rowSelection, isLoading: isLoadingState }, // pass our managed row selection state to the table to use
     muiSkeletonProps: {
       animation: 'pulse',
       height: 28,
@@ -151,14 +151,14 @@ const Table = ({ columnsProps,
       </div>
     ),
     renderRowActionMenuItems: ({ row, table }) => ([
-      <MRT_ActionMenuItem // eslint-disable-line
+      <MRT_ActionMenuItem //  eslint-disable-line
         icon={<Edit />}
         key="edit"
         label="Edit"
         onClick={() => console.info('Edit')}
         table={table}
       />,
-      <MRT_ActionMenuItem // eslint-disable-line
+      <MRT_ActionMenuItem //  eslint-disable-line
         icon={<Delete />}
         key="delete"
         label="Delete"
@@ -173,7 +173,7 @@ const Table = ({ columnsProps,
       <MaterialReactTable table={table} />
       <div style={{ backgroundColor: 'White' }}>
         <Button style={{ marginLeft: "1.5rem" }}
-          //export all data that is currently in the table (ignore pagination, sorting, filtering, etc.)
+          // export all data that is currently in the table (ignore pagination, sorting, filtering, etc.)
           disabled={
             !data.length > 0
           }
@@ -186,7 +186,7 @@ const Table = ({ columnsProps,
           disabled={
             !table.getIsSomeRowsSelected() && !table.getIsAllRowsSelected()
           }
-          //only export selected rows
+          // only export selected rows
           onClick={() => handleExportRows(table.getSelectedRowModel().rows)}
           startIcon={<FileDownloadIcon />}
         >

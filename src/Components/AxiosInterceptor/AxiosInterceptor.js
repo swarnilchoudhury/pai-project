@@ -11,12 +11,12 @@ const unauthorized = async () => {
     await auth.signOut();
 }
 
-// Request interceptor
+//  Request interceptor
 axios.interceptors.request.use(
     async (config) => {
         try {
-            let token = await auth.currentUser.getIdToken(); //Fetch the latest token from Firebase
-            config.headers.Authorization = `Bearer ${token}`; //Insert the token for API Call
+            let token = await auth.currentUser.getIdToken(); // Fetch the latest token from Firebase
+            config.headers.Authorization = `Bearer ${token}`; // Insert the token for API Call
         } catch {
             throw new Error();
         }
@@ -28,12 +28,12 @@ axios.interceptors.request.use(
     }
 );
 
-// Response interceptor
+//  Response interceptor
 axios.interceptors.response.use(
     (response) => response,
     async (error) => {
         if (error.response && error.response.status === 401) {
-            await unauthorized(); //IF it is unauthorized
+            await unauthorized(); // IF it is unauthorized
         }
         return Promise.reject(error);
     }

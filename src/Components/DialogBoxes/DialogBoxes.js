@@ -17,7 +17,7 @@ const DialogBoxes = ({ TextDialogContent,
     TextDialogButtonOnConfirm,
     clickFunctionsOnConfirm }) => {
 
-    //Props validations
+    // Props validations
     DialogBoxes.propTypes = {
         TextDialogContent: PropTypes.string,
         TextDialogTitle: PropTypes.string,
@@ -46,7 +46,7 @@ const DialogBoxes = ({ TextDialogContent,
         await auth.signOut();
     }
 
-    const handleClose = () => { //Close the Dialog Box
+    const handleClose = () => { // Close the Dialog Box
         setOpen(false);
     };
 

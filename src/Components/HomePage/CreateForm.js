@@ -36,14 +36,14 @@ const CreateForm = () => {
 
     const [count, setCount] = useState(0);
 
-    const [dates, setDates] = useState({ //Set the dates
+    const [dates, setDates] = useState({ // Set the dates
         selectedDOBDate: "",
         selectedAdmissionDate: ""
     });
 
     const [latestStudentCodeData, setLatestStudentCodeData] = useState("");
 
-    const dateFormater = (datePrm) => { //Format the date to store in Databases
+    const dateFormater = (datePrm) => { // Format the date to store in Databases
 
         const date = dayjs(datePrm);
         const formattedDate = date.format('DD/MM/YYYY');
@@ -62,12 +62,12 @@ const CreateForm = () => {
         }
     };
 
-    //Fetch the Latest Student Code
+    // Fetch the Latest Student Code
     useEffect(() => {
         fetchLatestStudentCodeData();
     }, []);
 
-    //When changing any dates
+    // When changing any dates
     useEffect(() => {
         setFormsTxts(prevFormsTxts => ({
             ...prevFormsTxts,
@@ -76,7 +76,7 @@ const CreateForm = () => {
         }));
     }, [dates]);
 
-    //Max 4 length for input paramater for StudentCode
+    // Max 4 length for input paramater for StudentCode
     const handleStudentCodeInputChange = (e) => {
         const { value } = e.target;
         const maxLength = 4;
@@ -86,7 +86,7 @@ const CreateForm = () => {
         }
     };
 
-    //Max 10 length for input paramater for PhoneNumber
+    // Max 10 length for input paramater for PhoneNumber
     const handlePhoneNumberInputChange = (e) => {
         const { value } = e.target;
         const maxLength = 10;
@@ -96,7 +96,7 @@ const CreateForm = () => {
         }
     };
 
-    //When clicking on Search Button
+    // When clicking on Search Button
     const SearchButtonOnClick = async (e) => {
 
         e.preventDefault();
@@ -109,7 +109,7 @@ const CreateForm = () => {
             let response = await axios.post(process.env.REACT_APP_SEARCH_CODE_API_URL,
                 { "studentCode": formsTxts.studentCode });
 
-            if (response.data) { //When response with data received
+            if (response.data) { // When response with data received
                 if (response.data.returnCode === 1) {
                     setShowDialogBoxContent({
                         ShowDialogBox: true,
@@ -132,7 +132,7 @@ const CreateForm = () => {
         setIsBtnLoading(false);
     }
 
-    //When clicking on Reset Button
+    // When clicking on Reset Button
     const ResetButtonOnClick = (e) => {
 
         e.preventDefault();
@@ -141,7 +141,7 @@ const CreateForm = () => {
         setFormsTxts(defaultformsTxts);
     }
 
-    //When clicking on Create Button
+    // When clicking on Create Button
     const CreateBtnOnClick = async (e) => {
 
         e.preventDefault();
@@ -163,7 +163,7 @@ const CreateForm = () => {
                 ShowCancelBtn: false
             });
 
-            fetchLatestStudentCodeData(); //Fetch Latest Student Code
+            fetchLatestStudentCodeData(); // Fetch Latest Student Code
             setIsBtnLoading(false);
             ResetButtonOnClick(e);
         }
@@ -174,7 +174,7 @@ const CreateForm = () => {
 
     }
 
-    //When clicking on ClearHome Button
+    // When clicking on ClearHome Button
     const ClearHomeBtnOnClick = (e) => {
 
         e.preventDefault();

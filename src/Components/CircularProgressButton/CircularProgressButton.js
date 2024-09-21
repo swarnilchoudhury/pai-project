@@ -6,7 +6,7 @@ import "../../ComponetsStyles/CircularProgressButton.css";
 
 const CircularProgressButton = ({ Text, id }) => {
 
-    //Props validations
+    // Props validations
     CircularProgressButton.propTypes = {
         Text: PropTypes.string.isRequired,
         id: PropTypes.string.isRequired,

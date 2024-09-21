@@ -19,7 +19,7 @@ import PropTypes from 'prop-types';
 
 const NavBar = ({ UserName }) => {
 
-    //Props validations
+    // Props validations
     NavBar.propTypes = {
         UserName: PropTypes.string.isRequired
     };
@@ -55,7 +55,7 @@ const NavBar = ({ UserName }) => {
         setAnchorElUser(null);
     };
 
-    //For Logout
+    // For Logout
     const handleClickOpen = (e, setting) => {
         if (setting === "Logout") {
             setOpenDialog(true);
