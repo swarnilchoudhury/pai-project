@@ -1,4 +1,3 @@
-// src/Providers.js
 import React from 'react';
 import SomethingWentWrongSnackBar from '../SnackBar/SomethingWentWrong';
 import { SnackBarProvider } from '../../Context/SnackBarContext';
