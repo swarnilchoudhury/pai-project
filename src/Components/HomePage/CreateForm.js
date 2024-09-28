@@ -11,7 +11,7 @@ import dayjs from 'dayjs';
 import Button from '@mui/material/Button';
 import '../../ComponetsStyles/CreateForm.css';
 import axios from '../AxiosInterceptor/AxiosInterceptor';
-import DialogSomethingWrong from '../DialogBoxes/DialogSomethingWrong';
+import { useSnackBar } from '../../Context/SnackBarContext';
 
 const CreateForm = () => {
 
@@ -26,7 +26,6 @@ const CreateForm = () => {
     const [isBtnLoading, setIsBtnLoading] = useState(false);
     const [formsTxts, setFormsTxts] = useState(defaultformsTxts);
     const [showFullForm, setShowFullForm] = useState(false);
-    const [showSomethingWrongDialogBox, setShowSomethingWrongDialogBox] = useState(false);
     const [showDialogBoxContent, setShowDialogBoxContent] = useState({
         ShowDialogBox: false,
         TextDialogContent: "",
@@ -36,14 +35,14 @@ const CreateForm = () => {
 
     const [count, setCount] = useState(0);
 
-    const [dates, setDates] = useState({ //Set the dates
+    const [dates, setDates] = useState({ // Set the dates
         selectedDOBDate: "",
         selectedAdmissionDate: ""
     });
 
     const [latestStudentCodeData, setLatestStudentCodeData] = useState("");
 
-    const dateFormater = (datePrm) => { //Format the date to store in Databases
+    const dateFormater = (datePrm) => { // Format the date to store in Databases
 
         const date = dayjs(datePrm);
         const formattedDate = date.format('DD/MM/YYYY');
@@ -51,6 +50,7 @@ const CreateForm = () => {
 
     }
 
+    const { setSomethingWentWrong } = useSnackBar();
     const fetchLatestStudentCodeData = async () => {
         try {
             let response = await axios.get(process.env.REACT_APP_LATEST_CODE_API_URL);
@@ -58,16 +58,16 @@ const CreateForm = () => {
             setLatestStudentCodeData(response.data.latestStudentCode);
 
         } catch {
-            setShowSomethingWrongDialogBox(true);
+            setSomethingWentWrong(true);
         }
     };
 
-    //Fetch the Latest Student Code
+    // Fetch the Latest Student Code
     useEffect(() => {
-        fetchLatestStudentCodeData();
+        fetchLatestStudentCodeData(); // eslint-disable-next-line
     }, []);
 
-    //When changing any dates
+    // When changing any dates
     useEffect(() => {
         setFormsTxts(prevFormsTxts => ({
             ...prevFormsTxts,
@@ -76,7 +76,7 @@ const CreateForm = () => {
         }));
     }, [dates]);
 
-    //Max 4 length for input paramater for StudentCode
+    // Max 4 length for input paramater for StudentCode
     const handleStudentCodeInputChange = (e) => {
         const { value } = e.target;
         const maxLength = 4;
@@ -86,7 +86,7 @@ const CreateForm = () => {
         }
     };
 
-    //Max 10 length for input paramater for PhoneNumber
+    // Max 10 length for input paramater for PhoneNumber
     const handlePhoneNumberInputChange = (e) => {
         const { value } = e.target;
         const maxLength = 10;
@@ -96,24 +96,23 @@ const CreateForm = () => {
         }
     };
 
-    //When clicking on Search Button
+    // When clicking on Search Button
     const SearchButtonOnClick = async (e) => {
 
         e.preventDefault();
         setIsBtnLoading(true);
         setShowDialogBoxContent({ ShowDialogBox: false });
-        setShowSomethingWrongDialogBox(false);
         setCount(count => count + 1);
 
         try {
             let response = await axios.post(process.env.REACT_APP_SEARCH_CODE_API_URL,
                 { "studentCode": formsTxts.studentCode });
 
-            if (response.data) { //When response with data received
+            if (response.data) { // When response with data received
                 if (response.data.returnCode === 1) {
                     setShowDialogBoxContent({
                         ShowDialogBox: true,
-                        TextDialogContent: "PAI-" + formsTxts.studentCode + " already exists.",
+                        TextDialogContent: response.data.message,
                         TextDialogButton: "OK",
                         ShowCancelBtn: false
                     });
@@ -126,27 +125,25 @@ const CreateForm = () => {
             }
         }
         catch {
-            setShowSomethingWrongDialogBox(true);
+            setSomethingWentWrong(true);
         }
 
         setIsBtnLoading(false);
     }
 
-    //When clicking on Reset Button
+    // When clicking on Reset Button
     const ResetButtonOnClick = (e) => {
 
         e.preventDefault();
         setShowFullForm(false);
-        setShowSomethingWrongDialogBox(false);
         setFormsTxts(defaultformsTxts);
     }
 
-    //When clicking on Create Button
+    // When clicking on Create Button
     const CreateBtnOnClick = async (e) => {
 
         e.preventDefault();
         setIsBtnLoading(true);
-        setShowSomethingWrongDialogBox(false);
         setCount(count => count + 1);
 
         try {
@@ -163,24 +160,23 @@ const CreateForm = () => {
                 ShowCancelBtn: false
             });
 
-            fetchLatestStudentCodeData(); //Fetch Latest Student Code
+            fetchLatestStudentCodeData(); // Fetch Latest Student Code
             setIsBtnLoading(false);
             ResetButtonOnClick(e);
         }
         catch {
-            setShowSomethingWrongDialogBox(true);
+            setSomethingWentWrong(true);
         }
         setIsBtnLoading(false);
 
     }
 
-    //When clicking on ClearHome Button
+    // When clicking on ClearHome Button
     const ClearHomeBtnOnClick = (e) => {
 
         e.preventDefault();
         setFormsTxts({ ...defaultformsTxts, studentCode: formsTxts.studentCode });
         setShowDialogBoxContent({ ShowDialogBox: false });
-        setShowSomethingWrongDialogBox(false);
 
     }
 
@@ -193,7 +189,6 @@ const CreateForm = () => {
                             <div className="card shadow-2-strong" style={{ "borderRadius": "1rem" }}>
                                 <div className="card-body p-5 text-center">
                                     <div className="form-group row">
-                                        {showSomethingWrongDialogBox && <DialogSomethingWrong key={count} />}
                                         {showDialogBoxContent.ShowDialogBox
                                             && <DialogBoxes key={count}
                                                 TextDialogContent={showDialogBoxContent.TextDialogContent}
@@ -204,7 +199,10 @@ const CreateForm = () => {
                                                 ?
                                                 <>
                                                     <div style={{ backgroundColor: 'white', fontSize: '15px' }}>
-                                                        {"Latest Student Code is " + latestStudentCodeData}
+                                                        <span style={{ fontWeight: 'bold', textDecoration: 'underline' }}>Latest Student Codes</span>
+                                                        {latestStudentCodeData.split(',').map((part, index) => (
+                                                            <div key={index}>{part}</div>
+                                                        ))}
                                                     </div>
                                                     <label htmlFor='StudentCodeTxt' className="col-sm-2 col-form-label">Student Code <span className='required'>*</span></label>
                                                     <div className="col-sm-10">

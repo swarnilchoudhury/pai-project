@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 
 const Spinner = ({ Text }) => {
 
-  //Props validations
+  // Props validations
   Spinner.propTypes = {
     Text: PropTypes.string.isRequired
   };

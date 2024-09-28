@@ -30,7 +30,7 @@ const LoginForm = () => {
 
     const { setUserName } = usePermissions();
 
-    //Render first time when LoginForm mounts
+    // Render first time when LoginForm mounts
     useEffect(() => {
         document.title = 'Welcome to Purbasa Activity Institute';
 
@@ -53,7 +53,7 @@ const LoginForm = () => {
         }
     }, []);
 
-    //When Login Button is clicked
+    // When Login Button is clicked
     const LoginBtnOnClick = async (e) => {
         e.preventDefault();
         setCount(count => count + 1);
@@ -80,7 +80,7 @@ const LoginForm = () => {
         }
     };
 
-    //For Login Success
+    // For Login Success
     const handleLoginSuccess = async () => {
         try {
             const response = await axios.get(process.env.REACT_APP_LOGIN_API_URL);
@@ -92,7 +92,7 @@ const LoginForm = () => {
         }
     };
 
-    //For Login Error
+    // For Login Error
     const handleLoginError = () => {
         setShowMessage({
             innerText: "Entered User Name or Password is incorrect. Please Try Again.",
@@ -104,7 +104,7 @@ const LoginForm = () => {
         setLoggingIn(false);
     };
 
-    //Something went wrong
+    // Something went wrong
     const handleRequestError = () => {
         setShowMessage({
             innerText: "Something went wrong.",
@@ -116,13 +116,13 @@ const LoginForm = () => {
         setLoggingIn(false);
     };
 
-    //Clear the Password
+    // Clear the Password
     const clearPasswordInput = () => {
         document.getElementById('PasswordTxt').value = "";
     };
 
 
-    //Show or disable the show password
+    // Show or disable the show password
     const handleClickShowPassword = () => setShowPassword((show) => !show);
 
     const handleMouseDownPassword = (e) => {
@@ -133,7 +133,7 @@ const LoginForm = () => {
     return (
         <>
             <div className="main-menu">
-                <img src="https://mindmantraabacus.co.in/cs/logo.png"
+                <img src="https:// mindmantraabacus.co.in/cs/logo.png"
                     style={{ width: '185px', margin: "1rem", backgroundColor: "white" }} alt="logo" />
             </div>
             <section className="vh-200">
