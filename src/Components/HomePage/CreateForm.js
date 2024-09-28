@@ -11,7 +11,7 @@ import dayjs from 'dayjs';
 import Button from '@mui/material/Button';
 import '../../ComponetsStyles/CreateForm.css';
 import axios from '../AxiosInterceptor/AxiosInterceptor';
-import DialogSomethingWrong from '../DialogBoxes/DialogSomethingWrong';
+import { useSnackBar } from '../../Context/SnackBarContext';
 
 const CreateForm = () => {
 
@@ -26,7 +26,6 @@ const CreateForm = () => {
     const [isBtnLoading, setIsBtnLoading] = useState(false);
     const [formsTxts, setFormsTxts] = useState(defaultformsTxts);
     const [showFullForm, setShowFullForm] = useState(false);
-    const [showSomethingWrongDialogBox, setShowSomethingWrongDialogBox] = useState(false);
     const [showDialogBoxContent, setShowDialogBoxContent] = useState({
         ShowDialogBox: false,
         TextDialogContent: "",
@@ -51,6 +50,7 @@ const CreateForm = () => {
 
     }
 
+    const { setSomethingWentWrong } = useSnackBar();
     const fetchLatestStudentCodeData = async () => {
         try {
             let response = await axios.get(process.env.REACT_APP_LATEST_CODE_API_URL);
@@ -58,13 +58,13 @@ const CreateForm = () => {
             setLatestStudentCodeData(response.data.latestStudentCode);
 
         } catch {
-            setShowSomethingWrongDialogBox(true);
+            setSomethingWentWrong(true);
         }
     };
 
     // Fetch the Latest Student Code
     useEffect(() => {
-        fetchLatestStudentCodeData();
+        fetchLatestStudentCodeData(); // eslint-disable-next-line
     }, []);
 
     // When changing any dates
@@ -102,7 +102,6 @@ const CreateForm = () => {
         e.preventDefault();
         setIsBtnLoading(true);
         setShowDialogBoxContent({ ShowDialogBox: false });
-        setShowSomethingWrongDialogBox(false);
         setCount(count => count + 1);
 
         try {
@@ -126,7 +125,7 @@ const CreateForm = () => {
             }
         }
         catch {
-            setShowSomethingWrongDialogBox(true);
+            setSomethingWentWrong(true);
         }
 
         setIsBtnLoading(false);
@@ -137,7 +136,6 @@ const CreateForm = () => {
 
         e.preventDefault();
         setShowFullForm(false);
-        setShowSomethingWrongDialogBox(false);
         setFormsTxts(defaultformsTxts);
     }
 
@@ -146,7 +144,6 @@ const CreateForm = () => {
 
         e.preventDefault();
         setIsBtnLoading(true);
-        setShowSomethingWrongDialogBox(false);
         setCount(count => count + 1);
 
         try {
@@ -168,7 +165,7 @@ const CreateForm = () => {
             ResetButtonOnClick(e);
         }
         catch {
-            setShowSomethingWrongDialogBox(true);
+            setSomethingWentWrong(true);
         }
         setIsBtnLoading(false);
 
@@ -180,7 +177,6 @@ const CreateForm = () => {
         e.preventDefault();
         setFormsTxts({ ...defaultformsTxts, studentCode: formsTxts.studentCode });
         setShowDialogBoxContent({ ShowDialogBox: false });
-        setShowSomethingWrongDialogBox(false);
 
     }
 
@@ -193,7 +189,6 @@ const CreateForm = () => {
                             <div className="card shadow-2-strong" style={{ "borderRadius": "1rem" }}>
                                 <div className="card-body p-5 text-center">
                                     <div className="form-group row">
-                                        {showSomethingWrongDialogBox && <DialogSomethingWrong key={count} />}
                                         {showDialogBoxContent.ShowDialogBox
                                             && <DialogBoxes key={count}
                                                 TextDialogContent={showDialogBoxContent.TextDialogContent}

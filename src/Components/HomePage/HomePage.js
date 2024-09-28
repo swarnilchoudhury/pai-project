@@ -8,9 +8,9 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import '../../ComponetsStyles/HomePage.css';
 import CreateForm from './CreateForm';
 import axios from '../../Components/AxiosInterceptor/AxiosInterceptor';
-import DialogSomethingWrong from '../DialogBoxes/DialogSomethingWrong';
 import DialogBoxes from '../DialogBoxes/DialogBoxes';
 import { usePermissions } from '../../Context/PermissionContext';
+import { useSnackBar } from '../../Context/SnackBarContext';
 
 const HomePage = () => {
 
@@ -18,7 +18,6 @@ const HomePage = () => {
     const [showActiveStatus, setShowActiveStatus] = useState(true);
     const [data, setData] = useState({});
     const [isLoading, setIsLoading] = useState(true);
-    const [showSomethingWrongDialogBox, setShowSomethingWrongDialogBox] = useState(false);
     const [rowSelection, setRowSelection] = useState({});
     const [showDialogBoxContent, setShowDialogBoxContent] = useState({
         ShowDialogBox: false,
@@ -40,6 +39,7 @@ const HomePage = () => {
     const [count, setCount] = useState(0);
     const [dialogBoxCount, setDialogBoxCount] = useState(0);
     const { editPermissions } = usePermissions();
+    const { setSomethingWentWrong } = useSnackBar();
 
     //  Add state variables to remember toggle button states
     const [approvedToggleState, setApprovedToggleState] = useState(false);
@@ -66,6 +66,7 @@ const HomePage = () => {
             });
 
             setData(response.data);
+            
 
             // Show the messages before the table
             if (status === 'Active') {
@@ -91,8 +92,10 @@ const HomePage = () => {
 
             }
 
-        } catch {
-            setShowSomethingWrongDialogBox(true);
+        } catch (e) {
+            console.log(e);
+            
+            setSomethingWentWrong(true);
         }
 
         setCount(count => count + 1);
@@ -102,7 +105,6 @@ const HomePage = () => {
     //  When toggles on statusToggle button
     const statusToggleOnClick = async (e) => {
         setIsLoading(true);
-        setShowSomethingWrongDialogBox(false);
         setRowSelection({});
         setShowRowSelectionBtns({ isShowRowSelectionBtns: false });
         setShowDialogBoxContent({ ShowDialogBox: false });
@@ -130,9 +132,9 @@ const HomePage = () => {
     };
 
     //  Render first time when Home Page mounts
-    useEffect(() => {
+    useEffect(() => { 
         document.title = 'Home Page';
-        homePageData('Active');
+        homePageData('Active'); // eslint-disable-next-line
     }, []);
 
     //  Select the rows to change the status for data based on edit permissions
@@ -158,7 +160,6 @@ const HomePage = () => {
     const ToggleForm = (e) => {
         e.preventDefault();
         setRowSelection({});
-        setShowSomethingWrongDialogBox(false);
         setShowDialogBoxContent({ ShowDialogBox: false });
         setShowForm(state => !state);
     };
@@ -183,7 +184,6 @@ const HomePage = () => {
 
     //  When RefreshTable button is clicked
     const RefreshBtnOnClick = async () => {
-        setShowSomethingWrongDialogBox(false);
         setShowDialogBoxContent({ ShowDialogBox: false });
         RefreshTable();
     };
@@ -191,7 +191,6 @@ const HomePage = () => {
     //  When status button is clicked
     const clickFunctions = async (e) => {
         setDialogBoxCount(count => count + 1);
-        setShowSomethingWrongDialogBox(false);
         const { id } = e.target;
         if (id === 'deactiveBtn') {
             setShowDialogBoxContent({
@@ -226,7 +225,6 @@ const HomePage = () => {
     //  When status button is clicked after confirm
     const clickFunctionsOnConfirm = async (e) => {
         setShowDialogBoxContent({ ShowDialogBox: false });
-        setShowSomethingWrongDialogBox(false);
         const { id } = e.target;
         if (id === 'OK') {
             return;
@@ -253,7 +251,6 @@ const HomePage = () => {
                 setShowRowSelectionBtns({ isShowRowSelectionBtns: false });
                 setRowSelection({});
                 setDialogBoxCount(count => count + 1);
-                setShowSomethingWrongDialogBox(false);
                 if (response.data.message) {
                     setShowDialogBoxContent({
                         ShowDialogBox: true,
@@ -295,14 +292,12 @@ const HomePage = () => {
 
         } catch {
             setDialogBoxCount(count => count + 1);
-            setShowSomethingWrongDialogBox(true);
+            setSomethingWentWrong(true);
         }
     };
 
     return (
         <div>
-            {showSomethingWrongDialogBox
-                && <DialogSomethingWrong key={dialogBoxCount} />}
             {showDialogBoxContent.ShowDialogBox
                 && <DialogBoxes key={dialogBoxCount}
                     showDefaultTextDialogButton={false}
