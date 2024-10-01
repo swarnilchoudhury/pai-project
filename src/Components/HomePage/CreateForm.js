@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import DialogBoxes from '../DialogBoxes/DialogBoxes';
 import { MdOutlineReplay } from "react-icons/md";
 import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -11,7 +10,8 @@ import dayjs from 'dayjs';
 import Button from '@mui/material/Button';
 import '../../ComponetsStyles/CreateForm.css';
 import axios from '../AxiosInterceptor/AxiosInterceptor';
-import { useSnackBar } from '../../Context/SnackBarContext';
+import useErrorMessageHandler from '../../CustomHooks/ErrorMessageHandler';
+import useDialogBoxHandler from '../../CustomHooks/DialogBoxHandler';
 
 const CreateForm = () => {
 
@@ -26,14 +26,6 @@ const CreateForm = () => {
     const [isBtnLoading, setIsBtnLoading] = useState(false);
     const [formsTxts, setFormsTxts] = useState(defaultformsTxts);
     const [showFullForm, setShowFullForm] = useState(false);
-    const [showDialogBoxContent, setShowDialogBoxContent] = useState({
-        ShowDialogBox: false,
-        TextDialogContent: "",
-        TextDialogButton: "",
-        ShowCancelBtn: false
-    });
-
-    const [count, setCount] = useState(0);
 
     const [dates, setDates] = useState({ // Set the dates
         selectedDOBDate: "",
@@ -50,7 +42,9 @@ const CreateForm = () => {
 
     }
 
-    const { setSomethingWentWrong } = useSnackBar();
+    const { handleErrorMessage } = useErrorMessageHandler();
+    const { showDialogBox } = useDialogBoxHandler();
+
     const fetchLatestStudentCodeData = async () => {
         try {
             let response = await axios.get(process.env.REACT_APP_LATEST_CODE_API_URL);
@@ -58,7 +52,7 @@ const CreateForm = () => {
             setLatestStudentCodeData(response.data.latestStudentCode);
 
         } catch {
-            setSomethingWentWrong(true);
+            handleErrorMessage();
         }
     };
 
@@ -101,8 +95,6 @@ const CreateForm = () => {
 
         e.preventDefault();
         setIsBtnLoading(true);
-        setShowDialogBoxContent({ ShowDialogBox: false });
-        setCount(count => count + 1);
 
         try {
             let response = await axios.post(process.env.REACT_APP_SEARCH_CODE_API_URL,
@@ -110,22 +102,21 @@ const CreateForm = () => {
 
             if (response.data) { // When response with data received
                 if (response.data.returnCode === 1) {
-                    setShowDialogBoxContent({
-                        ShowDialogBox: true,
-                        TextDialogContent: response.data.message,
-                        TextDialogButton: "OK",
-                        ShowCancelBtn: false
+                    showDialogBox({
+                        showButtons:true,
+                        dialogTextContent:response.data.message,
+                        dialogTextButton:"OK",
+                        showDefaultButton:true
                     });
                     setShowFullForm(false);
                 }
                 else {
-                    setShowDialogBoxContent({ ShowDialogBox: false });
                     setShowFullForm(true);
                 }
             }
         }
-        catch {
-            setSomethingWentWrong(true);
+        catch {          
+            handleErrorMessage();
         }
 
         setIsBtnLoading(false);
@@ -144,7 +135,6 @@ const CreateForm = () => {
 
         e.preventDefault();
         setIsBtnLoading(true);
-        setCount(count => count + 1);
 
         try {
             let response = await axios.post(process.env.REACT_APP_CREATE_API_URL,
@@ -153,11 +143,11 @@ const CreateForm = () => {
                     'Content-Type': 'application/json'
                 }
             });
-            setShowDialogBoxContent({
-                ShowDialogBox: true,
-                TextDialogContent: response.data.message,
-                TextDialogButton: "OK",
-                ShowCancelBtn: false
+            showDialogBox({
+                showButtons:true,
+                dialogTextContent:response.data.message,
+                dialogTextButton:"OK",
+                showDefaultButton:true
             });
 
             fetchLatestStudentCodeData(); // Fetch Latest Student Code
@@ -165,7 +155,7 @@ const CreateForm = () => {
             ResetButtonOnClick(e);
         }
         catch {
-            setSomethingWentWrong(true);
+            handleErrorMessage();
         }
         setIsBtnLoading(false);
 
@@ -176,7 +166,6 @@ const CreateForm = () => {
 
         e.preventDefault();
         setFormsTxts({ ...defaultformsTxts, studentCode: formsTxts.studentCode });
-        setShowDialogBoxContent({ ShowDialogBox: false });
 
     }
 
@@ -189,11 +178,6 @@ const CreateForm = () => {
                             <div className="card shadow-2-strong" style={{ "borderRadius": "1rem" }}>
                                 <div className="card-body p-5 text-center">
                                     <div className="form-group row">
-                                        {showDialogBoxContent.ShowDialogBox
-                                            && <DialogBoxes key={count}
-                                                TextDialogContent={showDialogBoxContent.TextDialogContent}
-                                                TextDialogButton={showDialogBoxContent.TextDialogButton}
-                                                ShowCancelBtn={showDialogBoxContent.ShowCancelBtn} />}
                                         {
                                             !showFullForm
                                                 ?

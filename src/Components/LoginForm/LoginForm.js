@@ -133,7 +133,7 @@ const LoginForm = () => {
     return (
         <>
             <div className="main-menu">
-                <img src="https:// mindmantraabacus.co.in/cs/logo.png"
+                <img src="https://mindmantraabacus.co.in/cs/logo.png"
                     style={{ width: '185px', margin: "1rem", backgroundColor: "white" }} alt="logo" />
             </div>
             <section className="vh-200">
