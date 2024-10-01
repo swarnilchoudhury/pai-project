@@ -8,9 +8,9 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import '../../ComponetsStyles/HomePage.css';
 import CreateForm from './CreateForm';
 import axios from '../../Components/AxiosInterceptor/AxiosInterceptor';
-import DialogBoxes from '../DialogBoxes/DialogBoxes';
 import { usePermissions } from '../../Context/PermissionContext';
-import { useSnackBar } from '../../Context/SnackBarContext';
+import useErrorMessageHandler from '../../CustomHooks/ErrorMessageHandler';
+import useDialogBoxHandler from '../../CustomHooks/DialogBoxHandler';
 
 const HomePage = () => {
 
@@ -19,27 +19,19 @@ const HomePage = () => {
     const [data, setData] = useState({});
     const [isLoading, setIsLoading] = useState(true);
     const [rowSelection, setRowSelection] = useState({});
-    const [showDialogBoxContent, setShowDialogBoxContent] = useState({
-        ShowDialogBox: false,
-        TextDialogTitle: "",
-        TextDialogContent: "",
-        TextDialogButtonOnConfirmId: "",
-        TextDialogButtonOnConfirm: "",
-        showCancelBtn: true
-    });
 
     const [showRowSelectionBtns, setShowRowSelectionBtns] = useState({
         isShowRowSelectionBtns: false,
-        DeactiveButton: false,
-        ActiveButton: false,
-        ApproveButton: false
+        deactiveButton: false,
+        activeButton: false,
+        approveButton: false
     });
 
     const [showMessageBeforeTable, setShowMessageBeforeTable] = useState("");
     const [count, setCount] = useState(0);
-    const [dialogBoxCount, setDialogBoxCount] = useState(0);
     const { editPermissions } = usePermissions();
-    const { setSomethingWentWrong } = useSnackBar();
+    const { handleErrorMessage } = useErrorMessageHandler();
+    const { showDialogBox } = useDialogBoxHandler();
 
     //  Add state variables to remember toggle button states
     const [approvedToggleState, setApprovedToggleState] = useState(false);
@@ -92,10 +84,9 @@ const HomePage = () => {
 
             }
 
-        } catch (e) {
-            console.log(e);
+        } catch {
             
-            setSomethingWentWrong(true);
+            handleErrorMessage();
         }
 
         setCount(count => count + 1);
@@ -107,7 +98,6 @@ const HomePage = () => {
         setIsLoading(true);
         setRowSelection({});
         setShowRowSelectionBtns({ isShowRowSelectionBtns: false });
-        setShowDialogBoxContent({ ShowDialogBox: false });
         setCount(count => count + 1);
 
         const { id, checked } = e.target;
@@ -142,13 +132,13 @@ const HomePage = () => {
         if (Object.keys(rowSelection).length > 0 && editPermissions) {
 
             if (activeToggleState === true && showActiveStatus === true) {
-                setShowRowSelectionBtns({ isShowRowSelectionBtns: true, DeactiveButton: true });
+                setShowRowSelectionBtns({ isShowRowSelectionBtns: true, deactiveButton: true });
             }
             else if (approvedToggleState === true && showActiveStatus === false) {
-                setShowRowSelectionBtns({ isShowRowSelectionBtns: true, ApproveButton: true });
+                setShowRowSelectionBtns({ isShowRowSelectionBtns: true, approveButton: true });
             }
             else {
-                setShowRowSelectionBtns({ isShowRowSelectionBtns: true, ActiveButton: true });
+                setShowRowSelectionBtns({ isShowRowSelectionBtns: true, activeButton: true });
             }
         }
         else {
@@ -160,7 +150,6 @@ const HomePage = () => {
     const ToggleForm = (e) => {
         e.preventDefault();
         setRowSelection({});
-        setShowDialogBoxContent({ ShowDialogBox: false });
         setShowForm(state => !state);
     };
 
@@ -184,51 +173,17 @@ const HomePage = () => {
 
     //  When RefreshTable button is clicked
     const RefreshBtnOnClick = async () => {
-        setShowDialogBoxContent({ ShowDialogBox: false });
         RefreshTable();
     };
 
-    //  When status button is clicked
-    const clickFunctions = async (e) => {
-        setDialogBoxCount(count => count + 1);
-        const { id } = e.target;
-        if (id === 'deactiveBtn') {
-            setShowDialogBoxContent({
-                ShowDialogBox: true,
-                TextDialogTitle: "Deactivate",
-                TextDialogContent: "Are you Sure to Deactivate?",
-                TextDialogButtonOnConfirmId: "deactiveBtn",
-                TextDialogButtonOnConfirm: "Deactivate",
-                showCancelBtn: true
-            });
-        } else if (id === 'activeBtn') {
-            setShowDialogBoxContent({
-                ShowDialogBox: true,
-                TextDialogTitle: "Activate",
-                TextDialogContent: "Are you Sure to Activate?",
-                TextDialogButtonOnConfirmId: "activeBtn",
-                TextDialogButtonOnConfirm: "Activate",
-                showCancelBtn: true
-            });
-        } else if (id === 'approveBtn') {
-            setShowDialogBoxContent({
-                ShowDialogBox: true,
-                TextDialogTitle: "Approve",
-                TextDialogContent: "Are you Sure to Approve?",
-                TextDialogButtonOnConfirmId: "approveBtn",
-                TextDialogButtonOnConfirm: "Approve",
-                showCancelBtn: true
-            });
-        }
-    };
+   
 
     //  When status button is clicked after confirm
     const clickFunctionsOnConfirm = async (e) => {
-        setShowDialogBoxContent({ ShowDialogBox: false });
+        
+        showDialogBox({ dialogTextTitle: 'Message', dialogTextContent: 'Processing...', showButtons: false });
+        
         const { id } = e.target;
-        if (id === 'OK') {
-            return;
-        }
 
         let header = "";
         if (id === 'deactiveBtn') {
@@ -246,67 +201,96 @@ const HomePage = () => {
                 headers: { 'Content-Type': 'application/json', 'x-update': header }
             });
 
-            if (response.status === 200) { //  When response is 200
+            if (response.status === 200) {
+                // Common actions when the status is 200
                 RefreshTable();
                 setShowRowSelectionBtns({ isShowRowSelectionBtns: false });
                 setRowSelection({});
-                setDialogBoxCount(count => count + 1);
+            
+                // Setting up the dialog content based on different cases
+                const dialogContent = {
+                    showButtons: true,
+                    dialogTextTitle: "",
+                    dialogTextContent: "",
+                    dialogTextButton: "OK",
+                    showDefaultButton: true
+                };
+            
+                // Set dialog based on the response message or header type
                 if (response.data.message) {
-                    setShowDialogBoxContent({
-                        ShowDialogBox: true,
-                        TextDialogTitle: "Message",
-                        TextDialogContent: response.data.message,
-                        TextDialogButtonOnConfirmId: "OK",
-                        TextDialogButtonOnConfirm: "OK",
-                        showCancelBtn: false
-                    });
-                } else if (header === 'deactive') {
-                    setShowDialogBoxContent({
-                        ShowDialogBox: true,
-                        TextDialogTitle: "Success",
-                        TextDialogContent: "Deactivated Successfully",
-                        TextDialogButtonOnConfirmId: "OK",
-                        TextDialogButtonOnConfirm: "OK",
-                        showCancelBtn: false
-                    });
-                } else if (header === 'active') {
-                    setShowDialogBoxContent({
-                        ShowDialogBox: true,
-                        TextDialogTitle: "Success",
-                        TextDialogContent: "Activated Successfully",
-                        TextDialogButtonOnConfirmId: "OK",
-                        TextDialogButtonOnConfirm: "OK",
-                        showCancelBtn: false
-                    });
-                } else if (header === 'approve') {
-                    setShowDialogBoxContent({
-                        ShowDialogBox: true,
-                        TextDialogTitle: "Success",
-                        TextDialogContent: "Approved Successfully",
-                        TextDialogButtonOnConfirmId: "OK",
-                        TextDialogButtonOnConfirm: "OK",
-                        showCancelBtn: false
-                    });
+                    dialogContent.dialogTextTitle = "Message";
+                    dialogContent.dialogTextContent = response.data.message;
+                } else {
+                    switch (header) {
+                        case 'deactive':
+                            dialogContent.dialogTextTitle = "Success";
+                            dialogContent.dialogTextContent = "Deactivated Successfully";
+                            break;
+            
+                        case 'active':
+                            dialogContent.dialogTextTitle = "Success";
+                            dialogContent.dialogTextContent = "Activated Successfully";
+                            break;
+            
+                        case 'approve':
+                            dialogContent.dialogTextTitle = "Success";
+                            dialogContent.dialogTextContent = "Approved Successfully";
+                            break;
+            
+                        default:
+                            return;
+                    }
                 }
-            }
+            
+                // Call the dialog box function with the constructed content
+                showDialogBox(dialogContent);
+            }    
 
         } catch {
-            setDialogBoxCount(count => count + 1);
-            setSomethingWentWrong(true);
+            handleErrorMessage();
         }
     };
 
+    const clickFunctions = async (e) => {
+        const { id } = e.target;
+    
+        const dialogContent = {
+            showButtons: true,
+            dialogTextTitle: "",
+            dialogTextContent: "",
+            dialogTextButtonOnConfirmId: id,
+            clickFunctionsOnConfirmFunction: clickFunctionsOnConfirm,
+            showCancelBtn: true,
+        };
+        
+        // Set dialog based on header type
+        switch (id) {
+            case 'deactiveBtn':
+                dialogContent.dialogTextTitle = "Deactivate";
+                dialogContent.dialogTextContent = "Are you Sure to Deactivate?";
+                dialogContent.dialogTextButtonOnConfirm = "Deactivate";
+                break;
+            case 'activeBtn':
+                dialogContent.dialogTextTitle = "Activate";
+                dialogContent.dialogTextContent = "Are you Sure to Activate?";
+                dialogContent.dialogTextButtonOnConfirm = "Activate";
+                break;
+            case 'approveBtn':
+                dialogContent.dialogTextTitle = "Approve";
+                dialogContent.dialogTextContent = "Are you Sure to Approve?";
+                dialogContent.dialogTextButtonOnConfirm = "Approve";
+                break;
+            default:
+                return;
+        }
+        
+        // Call the dialog box function with the constructed content
+        showDialogBox(dialogContent);
+    };
+    
+
     return (
         <div>
-            {showDialogBoxContent.ShowDialogBox
-                && <DialogBoxes key={dialogBoxCount}
-                    showDefaultTextDialogButton={false}
-                    TextDialogTitle={showDialogBoxContent.TextDialogTitle}
-                    TextDialogContent={showDialogBoxContent.TextDialogContent}
-                    TextDialogButtonOnConfirm={showDialogBoxContent.TextDialogButtonOnConfirm}
-                    TextDialogButtonOnConfirmId={showDialogBoxContent.TextDialogButtonOnConfirmId}
-                    showCancelBtn={showDialogBoxContent.showCancelBtn}
-                    clickFunctionsOnConfirm={clickFunctionsOnConfirm} />}
             <br />
             {
                 !showForm ?

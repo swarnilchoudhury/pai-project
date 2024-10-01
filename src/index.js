@@ -4,15 +4,18 @@ import './index.css';
 import App from './App';
 import { BrowserRouter } from 'react-router-dom';
 import { PermissionProvider } from "./Context/PermissionContext";
-import SnackBarProviders from './Components/Providers/SnackBarProvider';
+import SnackBarProviders from './Providers/SnackBarProvider';
+import DialogBoxProviders from './Providers/DialogBoxProvider';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
     <BrowserRouter>
         <PermissionProvider>
-            <SnackBarProviders>
-                <App />
-            </SnackBarProviders>
+            <DialogBoxProviders>
+                <SnackBarProviders>
+                    <App />
+                </SnackBarProviders>
+            </DialogBoxProviders>
         </PermissionProvider>
     </BrowserRouter>
 );

@@ -1,6 +1,6 @@
 import React from 'react';
-import SomethingWentWrongSnackBar from '../SnackBar/SomethingWentWrong';
-import { SnackBarProvider } from '../../Context/SnackBarContext';
+import SomethingWentWrongSnackBar from '../Components/SnackBar/SomethingWentWrong';
+import { SnackBarProvider } from '../Context/SnackBarContext';
 
 const SnackBarProviders = ({ children }) => {
     return (

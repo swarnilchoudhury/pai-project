@@ -145,9 +145,9 @@ const Table = ({ columnsProps,
     },
     renderTopToolbarCustomActions: () => (
       <div>
-        {isShowRowSelectionBtns && showRowSelectionBtns.DeactiveButton && <Button variant="contained" color='error' id="deactiveBtn" onClick={clickFunctions}><CloseIcon />DEACTIVE</Button>}
-        {isShowRowSelectionBtns && showRowSelectionBtns.ActiveButton && <Button variant="contained" color='success' id="activeBtn" onClick={clickFunctions}><Done />ACTIVE</Button>}
-        {isShowRowSelectionBtns && showRowSelectionBtns.ApproveButton && <Button variant="contained" color='success' id="approveBtn" onClick={clickFunctions}><Done />APPROVE</Button>}
+        {isShowRowSelectionBtns && showRowSelectionBtns.deactiveButton && <Button variant="contained" color='error' id="deactiveBtn" onClick={clickFunctions}><CloseIcon />DEACTIVE</Button>}
+        {isShowRowSelectionBtns && showRowSelectionBtns.activeButton && <Button variant="contained" color='success' id="activeBtn" onClick={clickFunctions}><Done />ACTIVE</Button>}
+        {isShowRowSelectionBtns && showRowSelectionBtns.approveButton && <Button variant="contained" color='success' id="approveBtn" onClick={clickFunctions}><Done />APPROVE</Button>}
       </div>
     ),
     renderRowActionMenuItems: ({ row, table }) => ([
