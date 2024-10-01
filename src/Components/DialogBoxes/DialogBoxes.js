@@ -10,7 +10,7 @@ import { useDialogBox } from '../../Context/DialogBoxContext';
 const DialogBoxes = () => {
     const { showDialogBoxContent } = useDialogBox();
     
-    const [open, setOpen] = useState(false); //To toggle the Dialog Box
+    const [open, setOpen] = useState(false); // To toggle the Dialog Box
 
     useEffect(() => {
         if (showDialogBoxContent.dialogTextContent !== '') {
