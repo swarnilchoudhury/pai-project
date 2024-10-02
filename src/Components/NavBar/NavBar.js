@@ -13,8 +13,10 @@ import MenuItem from '@mui/material/MenuItem';
 import Avatar from '@mui/material/Avatar';
 import Tooltip from '@mui/material/Tooltip';
 import "../../ComponetsStyles/NavBar.css"
-import DialogBoxes from '../DialogBoxes/DialogBoxes';
 import PropTypes from 'prop-types';
+import useDialogBoxHandler from '../../CustomHooks/DialogBoxHandler';
+import { auth } from '../../Configs/FirebaseConfig';
+import useErrorMessageHandler from '../../CustomHooks/ErrorMessageHandler';
 
 
 const NavBar = ({ UserName }) => {
@@ -24,26 +26,20 @@ const NavBar = ({ UserName }) => {
         UserName: PropTypes.string.isRequired
     };
 
-    const [openDialog, setOpenDialog] = useState(false);
-
     const pages = ['Home'];
     const settings = ['Logout'];
 
     const [anchorElNav, setAnchorElNav] = useState(null);
     const [anchorElUser, setAnchorElUser] = useState(null);
-    const [showMessage, setshowMessage] = useState({
-        TextDialogContent: "",
-        TextDialogTitle: "",
-        TextDialogButton: ""
-    });
-    const [count, setCount] = useState(0);
+
+    const { showDialogBox } = useDialogBoxHandler();
+    const { handleErrorMessage } = useErrorMessageHandler();
 
     const handleOpenNavMenu = (event) => {
         setAnchorElNav(event.currentTarget);
     };
 
     const handleOpenUserMenu = (event) => {
-        setOpenDialog(false);
         setAnchorElUser(event.currentTarget);
     };
 
@@ -55,16 +51,35 @@ const NavBar = ({ UserName }) => {
         setAnchorElUser(null);
     };
 
+    const clickFunctionsOnConfirm = async () => {
+
+        try {
+            showDialogBox({ dialogTextTitle: 'Message', dialogTextContent: 'Logging Out...', showButtons: false });
+            await auth.signOut();
+
+            showDialogBox({
+                showButtons: true,
+                dialogTextTitle: "Logged Out",
+                dialogTextContent: "Successfully Logged Out",
+                dialogTextButton: "OK",
+                showDefaultButton: true
+            });
+        }
+        catch {
+            handleErrorMessage();
+        }
+
+    }
+
     // For Logout
     const handleClickOpen = (e, setting) => {
         if (setting === "Logout") {
-            setOpenDialog(true);
-            setCount(count => count + 1)
-            setshowMessage({
-                TextDialogContent: "Are you sure you want to logout?",
-                TextDialogTitle: "Logout",
-                TextDialogButton: "Logout",
-                showCancelBtn: true
+            showDialogBox({
+                showButtons: true,
+                dialogTextContent: "Are you sure you want to logout?",
+                dialogTextButtonOnConfirm: "Logout",
+                clickFunctionsOnConfirmFunction: clickFunctionsOnConfirm,
+                showCancelBtn: true,
             });
         }
 
@@ -192,7 +207,6 @@ const NavBar = ({ UserName }) => {
                                 ))}
                             </Menu>
                         </Box>
-                        {openDialog && <DialogBoxes key={count} {...showMessage} />}
                     </Toolbar>
                 </Container>
             </AppBar>

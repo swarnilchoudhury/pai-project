@@ -43,14 +43,6 @@ const LoginForm = () => {
             });
 
         }
-        else if (sessionStorage.getItem("Logout")) {
-            sessionStorage.clear();
-            setShowMessage({
-                innerText: "Successfully Logged out.",
-                className: "alert alert-danger",
-                role: "alert"
-            });
-        }
     }, []);
 
     // When Login Button is clicked
