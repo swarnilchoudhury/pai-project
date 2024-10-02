@@ -17,6 +17,7 @@ import PropTypes from 'prop-types';
 import useDialogBoxHandler from '../../CustomHooks/DialogBoxHandler';
 import { auth } from '../../Configs/FirebaseConfig';
 import useErrorMessageHandler from '../../CustomHooks/ErrorMessageHandler';
+import { usePermissions } from '../Context/PermissionContext';
 
 
 const NavBar = ({ UserName }) => {
@@ -26,8 +27,16 @@ const NavBar = ({ UserName }) => {
         UserName: PropTypes.string.isRequired
     };
 
-    const pages = ['Home'];
-    const settings = ['Logout'];
+
+    const [openDialog, setOpenDialog] = useState(false);
+    const { editPermissions } = usePermissions();
+    let pages = ['Home'];
+
+    if(editPermissions){
+        pages = ['Home','Payments'];
+    }
+    
+    let settings = ['Logout'];
 
     const [anchorElNav, setAnchorElNav] = useState(null);
     const [anchorElUser, setAnchorElUser] = useState(null);

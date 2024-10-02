@@ -8,7 +8,8 @@ import HomePage from "./Components/HomePage/HomePage";
 import Spinner from "./Components/Spinner/Spinner";
 import NavBar from "./Components/NavBar/NavBar";
 import axios from './Components/AxiosInterceptor/AxiosInterceptor'
-import { usePermissions } from "./Context/PermissionContext";
+import { usePermissions } from "./Components/Context/PermissionContext";
+import CreatePayments from "./Components/PaymentsPage/CreatePayments";
 
 const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -75,6 +76,7 @@ const App = () => {
           ) : (
             <>
               <Route path="/Home" element={<HomePage />} />
+              <Route path="/Payments" element={<CreatePayments />} />
               <Route path="*" element={<PageNotFound />} />
             </>
           )}
