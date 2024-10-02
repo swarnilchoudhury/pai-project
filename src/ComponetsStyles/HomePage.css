@@ -1,13 +1,16 @@
-.HomePageButttons{
+.HomePageButttons {
     margin-left: 1rem !important;
 }
 
-#RefreshBtn{
+#RefreshBtn {
     float: right;
     margin-right: 1rem;
 }
 
 #animated-button {
     transition: opacity 0.5s ease-in-out;
-  }
-  
+}
+
+.DescBeforeTable {
+    font-size: 1.1rem;
+}

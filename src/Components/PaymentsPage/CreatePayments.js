@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import MultipleDropdown from '../MultipleDropdown/MultipleDropdown'
-import { usePermissions } from '../Context/PermissionContext';
+import { usePermissions } from '../../Context/PermissionContext';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@mui/material';
 import { DemoContainer } from '@mui/x-date-pickers/internals/demo';

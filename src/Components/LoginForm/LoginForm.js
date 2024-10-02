@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { auth } from '../Configs/FirebaseConfig';
+import { auth } from '../../Configs/FirebaseConfig';
 import { signInWithEmailAndPassword } from 'firebase/auth'
 import Button from '@mui/material/Button';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
@@ -14,7 +14,7 @@ import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import '../../ComponetsStyles/LoginForm.css';
 import axios from '../AxiosInterceptor/AxiosInterceptor';
 import CircularProgressButton from '../CircularProgressButton/CircularProgressButton';
-import { usePermissions } from '../Context/PermissionContext';
+import { usePermissions } from '../../Context/PermissionContext';
 
 const LoginForm = () => {
 
@@ -30,7 +30,7 @@ const LoginForm = () => {
 
     const { setUserName } = usePermissions();
 
-    //Render first time when LoginForm mounts
+    // Render first time when LoginForm mounts
     useEffect(() => {
         document.title = 'Welcome to Purbasa Activity Institute';
 
@@ -43,17 +43,9 @@ const LoginForm = () => {
             });
 
         }
-        else if (sessionStorage.getItem("Logout")) {
-            sessionStorage.clear();
-            setShowMessage({
-                innerText: "Successfully Logged out.",
-                className: "alert alert-danger",
-                role: "alert"
-            });
-        }
     }, []);
 
-    //When Login Button is clicked
+    // When Login Button is clicked
     const LoginBtnOnClick = async (e) => {
         e.preventDefault();
         setCount(count => count + 1);
@@ -80,7 +72,7 @@ const LoginForm = () => {
         }
     };
 
-    //For Login Success
+    // For Login Success
     const handleLoginSuccess = async () => {
         try {
             const response = await axios.get(process.env.REACT_APP_LOGIN_API_URL);
@@ -92,7 +84,7 @@ const LoginForm = () => {
         }
     };
 
-    //For Login Error
+    // For Login Error
     const handleLoginError = () => {
         setShowMessage({
             innerText: "Entered User Name or Password is incorrect. Please Try Again.",
@@ -104,7 +96,7 @@ const LoginForm = () => {
         setLoggingIn(false);
     };
 
-    //Something went wrong
+    // Something went wrong
     const handleRequestError = () => {
         setShowMessage({
             innerText: "Something went wrong.",
@@ -116,13 +108,13 @@ const LoginForm = () => {
         setLoggingIn(false);
     };
 
-    //Clear the Password
+    // Clear the Password
     const clearPasswordInput = () => {
         document.getElementById('PasswordTxt').value = "";
     };
 
 
-    //Show or disable the show password
+    // Show or disable the show password
     const handleClickShowPassword = () => setShowPassword((show) => !show);
 
     const handleMouseDownPassword = (e) => {

@@ -1,4 +1,4 @@
-import React,{ useMemo } from 'react';
+import React, { useMemo } from 'react';
 import {
   MaterialReactTable,
   useMaterialReactTable,
@@ -10,7 +10,7 @@ import Done from '@mui/icons-material/Done';
 import { Edit, Delete } from '@mui/icons-material';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import { mkConfig, generateCsv, download } from 'export-to-csv';
-import { usePermissions } from '../Context/PermissionContext';
+import { usePermissions } from '../../Context/PermissionContext';
 import PropTypes from 'prop-types';
 import dayjs from 'dayjs';
 
@@ -23,7 +23,7 @@ const Table = ({ columnsProps,
   setRowSelection,
   clickFunctions }) => {
 
-  //Props validations
+  // Props validations
   Table.propTypes = {
     columnsProps: PropTypes.arrayOf(
       PropTypes.shape({
@@ -46,9 +46,9 @@ const Table = ({ columnsProps,
     clickFunctions: PropTypes.func,
   };
 
-  const data = dataProps; //For Data
+  const data = dataProps; // For Data
   const columns = useMemo(
-    //column definitions...
+    // column definitions...
     () => [
       ...columnsProps
     ],
@@ -56,72 +56,75 @@ const Table = ({ columnsProps,
 
   const { editPermissions } = usePermissions();
 
-  const downloadRows = (rows, buttonCheck) => {
+  const downloadRows = (rows = []) => {
     let activeToggleBtn = document.getElementById('ActiveToggleBtn');
     let statusName = "";
 
     if (activeToggleBtn) {
-      if (activeToggleBtn.checked) {
-        statusName = "Active";
-      }
-      else if (!activeToggleBtn.checked) {
-        statusName = "Deactive";
-      }
-    }
-    else {
+      statusName = activeToggleBtn.checked ? "Active" : "Deactive";
+    } else {
       statusName = "Approve";
     }
 
-    let csvConfig = mkConfig({ //Config the csv file
+    let csvConfig = mkConfig({
       fieldSeparator: ',',
       decimalSeparator: '.',
       useKeysAsHeaders: true,
+      headers: columnsProps.map(col => col.header), //  Extract headers from columnsProps
       filename: 'PAIStudents_' + statusName + "_" + dayjs().format('DDMMYY')
     });
 
-    if (buttonCheck?.includes("Selected")) {
-      const rowData = rows.map((row) => row.original);
-      const csv = generateCsv(csvConfig)(rowData);
-      download(csvConfig)(csv);
-    }
-    else {
-      const csv = generateCsv(csvConfig)(data);
-      download(csvConfig)(csv);
-    }
+    const rowData = rows.length > 0
+      ? rows.map(row => {
+        const selectedRow = {};
+        columnsProps.forEach(col => {
+          selectedRow[col.header] = row.original[col.accessorKey]; //  Access data via original for selected rows
+        });
+        return selectedRow;
+      })
+      : data.map(item => {
+        const fullRow = {};
+        columnsProps.forEach(col => {
+          fullRow[col.header] = item[col.accessorKey]; //  Use full data if no rows are selected
+        });
+        return fullRow;
+      });
 
-  }
-
-  //Export particular rows that are selected
-  const handleExportRows = (rows) => {
-    downloadRows(rows, "Selected");
+    const csv = generateCsv(csvConfig)(rowData);
+    download(csvConfig)(csv);
   };
 
-  //Export all rows that are selected
+  // Export particular rows that are selected
+  const handleExportRows = (rows) => {
+    downloadRows(rows);
+  };
+
+  // Export all rows that are selected
   const handleExportData = () => {
     downloadRows();
   };
 
-  //Construct the table
+  // Construct the table
   const table = useMaterialReactTable({
     columns,
     data,
     enableRowActions: false,
     enableRowSelection: editPermissions,
-    enableStickyHeader:true,
-    getRowId: (row) => row.studentCode, //give each row a more useful id
-    onRowSelectionChange: setRowSelection, //connect internal row selection state to your own
-    state: { rowSelection, isLoading: isLoadingState }, //pass our managed row selection state to the table to use
+    enableStickyHeader: true,
+    getRowId: (row) => `${row.id}/${row.studentCode}`, // give each row a more useful id
+    onRowSelectionChange: setRowSelection, // connect internal row selection state to your own
+    state: { rowSelection, isLoading: isLoadingState }, // pass our managed row selection state to the table to use
     muiSkeletonProps: {
       animation: 'pulse',
       height: 28,
     },
-    muiTableHeadCellProps:{
+    muiTableHeadCellProps: {
       sx: {
         border: '1px solid rgba(81, 81, 81, .5)',
         whiteSpace: 'nowrap',
         overflow: 'hidden',
         padding: '0.8rem',
-        backgroundColor:'lightgrey'
+        backgroundColor: 'lightgrey'
       },
     },
     muiTableProps: {
@@ -142,20 +145,20 @@ const Table = ({ columnsProps,
     },
     renderTopToolbarCustomActions: () => (
       <div>
-        {isShowRowSelectionBtns && showRowSelectionBtns.DeactiveButton && <Button variant="contained" color='error' id="deactiveBtn" onClick={clickFunctions}><CloseIcon />DEACTIVE</Button>}
-        {isShowRowSelectionBtns && showRowSelectionBtns.ActiveButton && <Button variant="contained" color='success' id="activeBtn" onClick={clickFunctions}><Done />ACTIVE</Button>}
-        {isShowRowSelectionBtns && showRowSelectionBtns.ApproveButton && <Button variant="contained" color='success' id="approveBtn" onClick={clickFunctions}><Done />APPROVE</Button>}
+        {isShowRowSelectionBtns && showRowSelectionBtns.deactiveButton && <Button variant="contained" color='error' id="deactiveBtn" onClick={clickFunctions}><CloseIcon />DEACTIVE</Button>}
+        {isShowRowSelectionBtns && showRowSelectionBtns.activeButton && <Button variant="contained" color='success' id="activeBtn" onClick={clickFunctions}><Done />ACTIVE</Button>}
+        {isShowRowSelectionBtns && showRowSelectionBtns.approveButton && <Button variant="contained" color='success' id="approveBtn" onClick={clickFunctions}><Done />APPROVE</Button>}
       </div>
     ),
     renderRowActionMenuItems: ({ row, table }) => ([
-      <MRT_ActionMenuItem // eslint-disable-line
+      <MRT_ActionMenuItem //  eslint-disable-line
         icon={<Edit />}
         key="edit"
         label="Edit"
         onClick={() => console.info('Edit')}
         table={table}
       />,
-      <MRT_ActionMenuItem // eslint-disable-line
+      <MRT_ActionMenuItem //  eslint-disable-line
         icon={<Delete />}
         key="delete"
         label="Delete"
@@ -170,7 +173,7 @@ const Table = ({ columnsProps,
       <MaterialReactTable table={table} />
       <div style={{ backgroundColor: 'White' }}>
         <Button style={{ marginLeft: "1.5rem" }}
-          //export all data that is currently in the table (ignore pagination, sorting, filtering, etc.)
+          // export all data that is currently in the table (ignore pagination, sorting, filtering, etc.)
           disabled={
             !data.length > 0
           }
@@ -183,7 +186,7 @@ const Table = ({ columnsProps,
           disabled={
             !table.getIsSomeRowsSelected() && !table.getIsAllRowsSelected()
           }
-          //only export selected rows
+          // only export selected rows
           onClick={() => handleExportRows(table.getSelectedRowModel().rows)}
           startIcon={<FileDownloadIcon />}
         >

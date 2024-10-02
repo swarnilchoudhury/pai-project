@@ -1,7 +1,7 @@
 import { Routes, Route, useNavigate, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { onAuthStateChanged, setPersistence, browserLocalPersistence } from 'firebase/auth';
-import { auth } from "./Components/Configs/FirebaseConfig";
+import { auth } from "./Configs/FirebaseConfig";
 import LoginForm from "./Components/LoginForm/LoginForm";
 import PageNotFound from "./Components/PageNotFound/PageNotFound";
 import HomePage from "./Components/HomePage/HomePage";
@@ -20,16 +20,16 @@ const App = () => {
 
   const { userName, setEditPermissions } = usePermissions();
 
-  //Set onAuthStateChanged observer when App mounts
+  // Set onAuthStateChanged observer when App mounts
   useEffect(() => {
 
-    // Set persistence to local storage explicitly
+    //  Set persistence to local storage explicitly
     setPersistence(auth, browserLocalPersistence).then(() => {
-      // Set up an auth state observer
+      //  Set up an auth state observer
       const unsubscribe = onAuthStateChanged(auth, async (user) => {
         setShowLoadingSpin(true);
         if (user) {
-          // User is signed in
+          //  User is signed in
           try {
             if (location.pathname.includes("/Login") || location.pathname.endsWith('/login') || location.pathname.endsWith('/')) {
               navigate("/Home");
@@ -51,7 +51,7 @@ const App = () => {
             setIsAuthenticated(false);
           }
         } else {
-          // No user is signed in
+          //  No user is signed in
           navigate("/Login");
           console.log("No user is signed in");
           setIsAuthenticated(false);
@@ -59,10 +59,10 @@ const App = () => {
         setShowLoadingSpin(false);
       });
 
-      // Clean up the listener on component unmount
+      //  Clean up the listener on component unmount
       return () => unsubscribe();
     });
-  }, []); // eslint-disable-line
+  }, []); //  eslint-disable-line
 
   return (
     <>

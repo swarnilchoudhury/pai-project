@@ -1,14 +1,14 @@
-body{
+body {
     background: linear-gradient(135deg, #dee3ea, #cedae9);
 }
 
 .py-6 {
-    padding-top: 10vh!important;
+    padding-top: 10vh !important;
 }
 
-#LoginBtn{
- width:90%;
- height: 55px;
+#LoginBtn {
+    width: 90%;
+    height: 55px;
 }
 
 .pText {
@@ -22,7 +22,7 @@ body{
     font-family: 'Open Sans', sans-serif;
 }
 
-#lText{
+#lText {
     font-size: 20px;
     margin-top: -1rem;
     font-weight: bold;
