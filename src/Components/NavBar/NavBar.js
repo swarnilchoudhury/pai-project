@@ -12,12 +12,12 @@ import Container from '@mui/material/Container';
 import MenuItem from '@mui/material/MenuItem';
 import Avatar from '@mui/material/Avatar';
 import Tooltip from '@mui/material/Tooltip';
-import "../../ComponetsStyles/NavBar.css"
+import "../../ComponetsStyles/NavBar.css";
 import PropTypes from 'prop-types';
 import useDialogBoxHandler from '../../CustomHooks/DialogBoxHandler';
 import { auth } from '../../Configs/FirebaseConfig';
 import useErrorMessageHandler from '../../CustomHooks/ErrorMessageHandler';
-import { usePermissions } from '../Context/PermissionContext';
+import { usePermissions } from '../../Context/PermissionContext';
 
 
 const NavBar = ({ UserName }) => {
@@ -27,8 +27,6 @@ const NavBar = ({ UserName }) => {
         UserName: PropTypes.string.isRequired
     };
 
-
-    const [openDialog, setOpenDialog] = useState(false);
     const { editPermissions } = usePermissions();
     let pages = ['Home'];
 

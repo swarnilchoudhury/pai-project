@@ -4,8 +4,6 @@ import CheckIcon from '@mui/icons-material/Check';
 
 const MultipleAutocomplete = ({values,selectedValues, setSelectedValues}) => {
 
-    //const values = ['Alice', 'Bob', 'Charlie', 'David']; // Example options
-
     // Function to handle selection changes
     const handleSelectionChange = (event, newValue) => {
         setSelectedValues(newValue); // Update the state with new selected values
