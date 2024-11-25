@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react'
-import MultipleDropdown from '../MultipleDropdown/MultipleDropdown'
 import { usePermissions } from '../../Context/PermissionContext';
 import { useNavigate } from 'react-router-dom';
-import { Button } from '@mui/material';
+import { Autocomplete, Button, TextField } from '@mui/material';
 import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -15,48 +14,37 @@ import Select from '@mui/material/Select';
 import SearchIcon from '@mui/icons-material/Search';
 import axios from '../AxiosInterceptor/AxiosInterceptor';
 import dayjs from 'dayjs';
-import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
-import PaymentsIcon from '@mui/icons-material/Payments';
-import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import useErrorMessageHandler from '../../CustomHooks/ErrorMessageHandler';
-import useDialogBoxHandler from '../../CustomHooks/DialogBoxHandler';
-import { MdOutlineReplay } from "react-icons/md";
 import '../../ComponetsStyles/CreateForm.css';
-import CloseIcon from '@mui/icons-material/Close';
-import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
-import Spinner from '../Spinner/Spinner';
 import LoadingSpin from 'react-loading-spin';
+import CreatePayments from './CreatePayments';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import AddIcon from '@mui/icons-material/Add';
+import MiscTable from '../Table/MinimalTable';
+import ShowTotalPaymentsPage from './ShowTotalPaymentsPage';
 
 const PaymentsPage = () => {
 
     const { editPermissions } = usePermissions();
     const navigate = useNavigate();
-    const { showDialogBox } = useDialogBoxHandler();
-
-    let defaultformsTxts = {
-
-        students: [],
-        amount: 500,
-        modeOfPayment: "",
-        month: "",
-        paymentDate: ""
-    }
-
-    const [formsTxts, setFormsTxts] = useState(defaultformsTxts);
     const [selectedValues, setSelectedValues] = useState([]);
-    const [values, setValues] = useState(['Loading...']);
     const [monthDate, setMonthDate] = useState('');
-    const [showPaymentForm, setShowPaymentForm] = useState(false);
     const [isBtnLoading, setIsBtnLoading] = useState(false);
     const [selectMonthOption, setSelectMonthOption] = useState(true);
-    const [dates, setDates] = useState({ // Set the dates
-        selectedPaymentDate: ""
-    });
-    const [isSaveEnabled, setIsSaveEnabled] = useState(false);
+
     const [showSearch, setShowSearch] = useState(false);
+    const [showCreatePayment, setShowCreatePayment] = useState(false);
+    const [showTotalPaymentsPage, setShowTotalPaymentsPage] = useState(false);
     const [selectedOption, setSelectedOption] = useState('ByMonth');
+    const [selectedIsGivenOption, setSelectedIsGivenOption] = useState(1);
     const [isLoading, setIsLoading] = useState(false);
     const [selectedStudentOption, setSelectedStudentOption] = useState('');
+    const [selectedOptionType, setSelectedOptionType] = useState();
+    const [showTableDetails, setShowTableDetails] = useState({
+        showTable: false,
+        header: [],
+        data: null
+    });
 
     //  Render first time when Create Payments Page mounts
     useEffect(() => {
@@ -74,15 +62,25 @@ const PaymentsPage = () => {
 
     const { handleErrorMessage } = useErrorMessageHandler();
 
+
     const handleDateChange = (date) => {
+        setShowSearch(false);
         if (date) {
             const formattedDate = dayjs(date).format('MMM_YYYY'); // "MMM_YYYY"
             setMonthDate(formattedDate);
-            setFormsTxts(prev => ({ ...prev, month: formattedDate }));
+            setShowSearch(true);
         }
     };
 
     const handleOptionChange = async (e) => {
+        setSelectedStudentOption("");
+        setMonthDate(null);
+        setShowTableDetails({
+            showTable: false,
+        });
+        setShowSearch(false);
+        setSelectedOptionType(e.target.value);
+
         if (e.target.value === 'ByMonth') {
             setSelectedOption('ByMonth');
             setSelectMonthOption(true);
@@ -91,123 +89,131 @@ const PaymentsPage = () => {
             setIsLoading(true);
             setSelectedOption('ByStudent');
             setSelectMonthOption(false);
-            let response = await axios.get(process.env.REACT_APP_GET_STUDENTS_API_URL);
-            setSelectedValues(response.data);
+            try {
+                let response = await axios.get(process.env.REACT_APP_GET_STUDENTS_API_URL);
+                setSelectedValues(response.data);
+            }
+            catch {
+                handleErrorMessage();
+            }
             setIsLoading(false);
         }
     };
 
-    const handleSelectStudentsChange = (e) => {
-        setSelectedStudentOption(e.target.value);
+    const handleIsGivenOptionChange = (e) => {
+        setSelectedIsGivenOption(e.target.value);
+    }
+
+    const handleSelectStudentsChange = (value) => {
+        if (value) {
+            setSelectedStudentOption(value);
+            setShowSearch(true);
+        }
+        else {
+            setSelectedStudentOption('');
+            setShowSearch(false);
+        }
     };
 
-    // const searchBtnOnClick = async (e) => {
-    //     e.preventDefault();
-    //     setIsBtnLoading(true);
-    //     try {
+    const searchBtnOnClick = async (e) => {
+        e.preventDefault();
+        setIsBtnLoading(true);
+        try {
+            if (selectedOptionType === 'ByStudent') {
+                let response = await axios.post(process.env.REACT_APP_BY_STUDENTS_PAYMENTS_API_URL,
+                    { studentId: selectedStudentOption }, {
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
 
-    //         let response = await axios.post(process.env.REACT_APP_PAYMENTS_VIEWS_API_URL,
-    //             { month: monthDate }, {
-    //             headers: {
-    //                 'Content-Type': 'application/json'
-    //             }
-    //         });
-    //         if (response.data.message) {
-    //             showDialogBox({
-    //                 showButtons: true,
-    //                 dialogTextContent: response.data.message,
-    //                 dialogTextButton: "OK",
-    //                 showDefaultButton: true
-    //             });
-    //             setShowPaymentForm(false);
-    //         }
-    //         else {
-    //             setValues(response.data);
-    //             setShowPaymentForm(true);
-    //         }
+                const studentPageHeader = [
+                    { accessorKey: 'month', header: 'Payment Month' },
+                    { accessorKey: 'amount', header: 'Amount' },
+                    { accessorKey: 'modeOfPayment', header: 'Mode of Payment' },
+                    { accessorKey: 'paymentDate', header: 'Payment Date' },
+                    { accessorKey: 'createdDateTime', header: 'Created Date Time' }
+                ];
 
-    //         setIsBtnLoading(false);
-    //     }
-    //     catch {
-    //         handleErrorMessage();
-    //         setIsBtnLoading(false);
-    //     }
+                setShowTableDetails({
+                    showTable: true,
+                    header: studentPageHeader,
+                    data: response.data
+                });
 
-    // }
+            }
+            else {
 
-    // // When clicking on Create Button
-    // const SaveBtnOnClick = async (e) => {
-    //     e.preventDefault();
-    //     setIsBtnLoading(true);
+                let response = await axios.post(process.env.REACT_APP_BY_MONTHLY_PAYMENTS_API_URL,
+                    { month: monthDate, isGiven: selectedIsGivenOption }, {
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
 
-    //     try {
-    //         let response = await axios.post(process.env.REACT_APP_CREATE_PAYMENTS_API_URL,
-    //             JSON.stringify(formsTxts), {
-    //             headers: {
-    //                 'Content-Type': 'application/json'
-    //             }
-    //         });
-    //         showDialogBox({
-    //             showButtons: true,
-    //             dialogTextContent: response.data.message,
-    //             dialogTextButton: "OK",
-    //             showDefaultButton: true
-    //         });
+                let monthPageHeader;
+                if (selectedIsGivenOption === 1) {
+                    monthPageHeader = [
+                        { accessorKey: 'studentName', header: 'Student Name' },
+                        { accessorKey: 'studentCode', header: 'Student Code' },
+                        { accessorKey: 'modeOfPayment', header: 'Mode of Payment' },
+                        { accessorKey: 'amount', header: 'Amount' },
+                        { accessorKey: 'paymentDate', header: 'Payment Date' },
+                        { accessorKey: 'createdDateTime', header: 'Created Date Time' }
+                    ];
+                }
+                else {
+                    monthPageHeader = [
+                        { accessorKey: 'studentName', header: 'Student Name' },
+                        { accessorKey: 'studentCode', header: 'Student Code' }
+                    ];
 
-    //         setIsBtnLoading(false);
-    //         ResetButtonOnClick(e);
-    //     }
-    //     catch {
-    //         handleErrorMessage();
-    //     }
+                }
 
-    //     setIsBtnLoading(false);
+                setShowTableDetails({
+                    showTable: true,
+                    header: monthPageHeader,
+                    data: response.data
+                });
+            }
 
-    // }
-
-    const dateFormater = (datePrm) => { // Format the date to store in Databases
-
-        const date = dayjs(datePrm);
-        const formattedDate = date.format('DD/MM/YYYY');
-        return formattedDate;
+        }
+        catch {
+            handleErrorMessage();
+        }
+        setIsBtnLoading(false);
 
     }
 
-    // const Reset = () => {
-    //     setSelectedValues([]);
-    //     setModeOfPayment("");
-    //     setFormsTxts({ ...defaultformsTxts, month: monthDate });
+    //  When changing the form from create to home or vice-versa
+    const ToggleForm = (e) => {
+        e.preventDefault();
+        setShowTotalPaymentsPage(false);
+        setShowCreatePayment(state => !state);
+    };
 
-    // }
+    const ShowTotalPayments = () => {
+        setShowTotalPaymentsPage(true);
 
-    // // When clicking on Reset Button
-    // const ResetButtonOnClick = (e) => {
-
-    //     e.preventDefault();
-    //     setShowPaymentForm(false);
-    //     Reset();
-    // }
-
-    // // When clicking on ClearHome Button
-    // const ClearHomeBtnOnClick = (e) => {
-
-    //     e.preventDefault();
-    //     Reset();
-
-    // }
+    };
 
     return (
         <div>
-            <section className="vh-200">
-                <div className="container py-5 h-100">
-                    <div className="row d-flex justify-content-center align-items-center h-100">
-                        <div className="formDiv">
-                            <div className="card shadow-2-strong" style={{ "borderRadius": "1rem" }}>
-                                <div className="card-body p-5 text-center">
-                                    <div className="form-group row">
-                                        {
-                                            !showPaymentForm ?
-                                                <>
+            <br />
+            <Button variant="contained" className="HomePageButttons" onClick={ToggleForm}>{showCreatePayment ? <><ArrowBackIcon />&nbsp;BACK TO SEARCH</> : <><AddIcon />&nbsp;CREATE PAYMENTS</>}</Button>
+            {!showTotalPaymentsPage && <Button variant="contained" className="HomePageButttons" onClick={ShowTotalPayments}><SearchIcon />&nbsp;TOTAL PAYMENTS</Button>}
+            {!showTotalPaymentsPage &&
+                (!showCreatePayment ?
+                    <>
+                        <section className="vh-200">
+                            <div className="container py-5 h-100">
+                                <div className="row d-flex justify-content-center align-items-center h-100">
+                                    <div className="formDiv">
+                                        <div className="card shadow-2-strong" style={{ "borderRadius": "1rem" }}>
+                                            <div className="card-body p-5 text-center">
+                                                <p style={{ fontSize: '1.2rem', fontWeight: 'bold' }}>SHOW PAYMENTS</p>
+                                                <hr />
+                                                <div className="form-group row">
                                                     <div className="col-sm-6">
                                                         <Box>
                                                             <FormControl fullWidth>
@@ -235,7 +241,6 @@ const PaymentsPage = () => {
                                                                         <LocalizationProvider dateAdapter={AdapterDayjs}>
                                                                             <DemoContainer components={['DatePicker']}>
                                                                                 <DatePicker
-                                                                                    disabled={showPaymentForm}
                                                                                     value={monthDate ? dayjs(monthDate, 'MMM_YYYY') : null}
                                                                                     onChange={(e) => handleDateChange(e)}
                                                                                     label="Payment Month"
@@ -246,6 +251,24 @@ const PaymentsPage = () => {
                                                                         </LocalizationProvider>
                                                                         <br />
                                                                     </div>
+                                                                    <br />
+                                                                    <div className="form-group row">
+                                                                        <div className="col-sm-6">
+                                                                            <Box>
+                                                                                <FormControl fullWidth>
+                                                                                    <Select
+                                                                                        labelId="simple-select-label"
+                                                                                        id="simple-select"
+                                                                                        value={selectedIsGivenOption}
+                                                                                        onChange={handleIsGivenOptionChange}
+                                                                                    >
+                                                                                        <MenuItem value={1}>Given</MenuItem>
+                                                                                        <MenuItem value={0}>Not Given</MenuItem>
+                                                                                    </Select>
+                                                                                </FormControl>
+                                                                            </Box>
+                                                                        </div>
+                                                                    </div>
                                                                 </>
                                                                 :
                                                                 <>
@@ -254,44 +277,56 @@ const PaymentsPage = () => {
                                                                             <br />
                                                                             <div className="col-sm-8">
                                                                                 <Box>
-                                                                                    <FormControl fullWidth>
-                                                                                        <InputLabel id="simple-select-label">Select Student</InputLabel>
-                                                                                        <Select
-                                                                                            labelId="simple-select-label"
-                                                                                            id="simple-select"
-                                                                                            value={selectedStudentOption}
-                                                                                            label="Payment Mode"
-                                                                                            onChange={handleSelectStudentsChange}
-                                                                                        >
-                                                                                            {selectedValues.map((option) => (
-                                                                                                <MenuItem key={option.id} value={option.id}>
-                                                                                                    {option.studentDetails}
-                                                                                                </MenuItem>
-                                                                                            ))}
-                                                                                        </Select>
-                                                                                    </FormControl>
+                                                                                    <Autocomplete
+                                                                                        fullWidth
+                                                                                        options={selectedValues}
+                                                                                        getOptionLabel={(option) => option.studentDetails || ""}
+                                                                                        value={
+                                                                                            selectedValues.find((option) => option.id === selectedStudentOption) || null
+                                                                                        }
+                                                                                        onChange={(event, value) => {
+                                                                                            handleSelectStudentsChange(value ? value.id : "");
+                                                                                        }}
+                                                                                        renderInput={(params) => (
+                                                                                            <TextField {...params} label="Select Student" variant="outlined" />
+                                                                                        )}
+                                                                                    />
                                                                                 </Box>
                                                                             </div>
                                                                         </>
                                                                     }
                                                                 </>
                                                         }
-                                                        {showSearch && <Button variant="contained" id="searchtHomeBtn" disabled={!showSearch}><SearchIcon />Search</Button>}
+                                                        {
+                                                            !isBtnLoading ?
+                                                                <Button variant="contained" id="searchtHomeBtn" disabled={!showSearch} onClick={searchBtnOnClick}><SearchIcon />Search</Button>
+                                                                :
+                                                                <Button variant="contained" id="searchtHomeBtn" disabled={true}><SearchIcon />Searching...</Button>
+                                                        }
+
                                                     </div>
-                                                </>
-                                                :
-                                                <>
-                                                </>
-                                        }
-                                    </div>
+                                                </div>
+                                            </div >
+                                        </div >
+                                    </div >
                                 </div >
                             </div >
-                        </div >
-                    </div >
-                </div >
-            </section >
-        </div >
-    )
-}
+                        </section >
+                        {showTableDetails.showTable && <MiscTable
+                            columnsProps={showTableDetails.header}
+                            dataProps={showTableDetails.data}
+                            isLoadingState={isBtnLoading} />}
+                    </>
+                    :
+                    <>
+                        {showCreatePayment && <CreatePayments />}
+                    </>
+                )
+            }
+            <br />
+            {showTotalPaymentsPage && <ShowTotalPaymentsPage />}
+        </div>
+    );
+};
 
-export default PaymentsPage
+export default PaymentsPage;

@@ -8,7 +8,6 @@ import HomePage from "./Components/HomePage/HomePage";
 import Spinner from "./Components/Spinner/Spinner";
 import NavBar from "./Components/NavBar/NavBar";
 import axios from './Components/AxiosInterceptor/AxiosInterceptor';
-import CreatePayments from "./Components/PaymentsPage/CreatePayments";
 import { usePermissions } from "./Context/PermissionContext";
 import PaymentsPage from "./Components/PaymentsPage/PaymentsPage";
 
