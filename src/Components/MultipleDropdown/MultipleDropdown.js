@@ -1,8 +1,15 @@
 import React from 'react';
 import { Autocomplete, MenuItem, TextField } from '@mui/material';
+import PropTypes from 'prop-types';
 import CheckIcon from '@mui/icons-material/Check';
 
-const MultipleAutocomplete = ({values,selectedValues, setSelectedValues}) => {
+const MultipleAutocomplete = ({ values, selectedValues, setSelectedValues }) => {
+
+    MultipleAutocomplete.propTypes = {
+        values: PropTypes.arrayOf(PropTypes.string).isRequired,
+        selectedValues: PropTypes.arrayOf(PropTypes.string).isRequired,
+        setSelectedValues: PropTypes.func.isRequired
+    };
 
     // Function to handle selection changes
     const handleSelectionChange = (event, newValue) => {
