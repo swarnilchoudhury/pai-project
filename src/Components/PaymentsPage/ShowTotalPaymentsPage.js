@@ -49,7 +49,7 @@ const ShowTotalPaymentsPage = () => {
 
     //  Render first time when Create Payments Page mounts
     useEffect(() => {
-        document.title = 'Show Total Payments';
+        document.title = 'Total Payments';
         fetchData();
     }, [fetchData]);
 
