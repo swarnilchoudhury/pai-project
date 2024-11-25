@@ -296,7 +296,7 @@ const HomePage = () => {
                 !showForm ?
                     <>
                         <Button variant="contained" className="HomePageButttons" onClick={ToggleForm}><AddIcon />&nbsp;ADD NEW</Button>
-                        <Button variant="contained" id="RefreshBtn" onClick={RefreshBtnOnClick}><RefreshIcon /></Button>
+                        <Button variant="contained" id="RefreshBtn" onClick={RefreshBtnOnClick}><RefreshIcon />REFRESH</Button>
                         <div style={{ marginTop: "2rem" }}>
                             <Switch
                                 checked={approvedToggleState}
