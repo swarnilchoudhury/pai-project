@@ -200,8 +200,8 @@ const PaymentsPage = () => {
     return (
         <div>
             <br />
-            <Button variant="contained" className="HomePageButttons" onClick={ToggleForm}>{showCreatePayment ? <><ArrowBackIcon />&nbsp;BACK TO SEARCH</> : <><AddIcon />&nbsp;CREATE PAYMENTS</>}</Button>
-            {!showTotalPaymentsPage && <Button variant="contained" className="HomePageButttons" onClick={ShowTotalPayments}><SearchIcon />&nbsp;TOTAL PAYMENTS</Button>}
+            <Button variant="contained" className="HomePageButttons" onClick={ToggleForm}>{showCreatePayment ? <><ArrowBackIcon />&nbsp;BACK</> : <><AddIcon />&nbsp;PAYMENTS</>}</Button>
+            {!showTotalPaymentsPage && <Button variant="contained" className="HomePageButttons" onClick={ShowTotalPayments}><SearchIcon />&nbsp;TOTAL</Button>}
             {!showTotalPaymentsPage &&
                 (!showCreatePayment ?
                     <>
