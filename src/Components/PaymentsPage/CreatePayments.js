@@ -86,7 +86,6 @@ const CreatePayments = () => {
             ...prevFormsTxts,
             month: monthDate
         }));
-        console.log("from " + monthDate);
 
     }, [monthDate]);
 
@@ -224,6 +223,8 @@ const CreatePayments = () => {
                             <div className="card shadow-2-strong" style={{ "borderRadius": "1rem" }}>
                                 <div className="card-body p-5 text-center">
                                     <div className="form-group row">
+                                        <p style={{ fontSize: '1.2rem', fontWeight: 'bold' }}>CREATE PAYMENTS</p>
+                                        <hr />
                                         {
                                             !showPaymentForm ?
                                                 <>
