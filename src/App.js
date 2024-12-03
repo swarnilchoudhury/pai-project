@@ -7,8 +7,10 @@ import PageNotFound from "./Components/PageNotFound/PageNotFound";
 import HomePage from "./Components/HomePage/HomePage";
 import Spinner from "./Components/Spinner/Spinner";
 import NavBar from "./Components/NavBar/NavBar";
-import axios from './Components/AxiosInterceptor/AxiosInterceptor'
+import axios from './Components/AxiosInterceptor/AxiosInterceptor';
 import { usePermissions } from "./Context/PermissionContext";
+import PaymentsPage from "./Components/PaymentsPage/PaymentsPage";
+
 
 const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -75,6 +77,7 @@ const App = () => {
           ) : (
             <>
               <Route path="/Home" element={<HomePage />} />
+              <Route path="/Payments" element={<PaymentsPage />} />
               <Route path="*" element={<PageNotFound />} />
             </>
           )}
