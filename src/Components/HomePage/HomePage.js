@@ -47,6 +47,7 @@ const HomePage = () => {
         { accessorKey: 'admissionDate', header: 'Admission Date' },
         { accessorKey: 'phoneNumber', header: 'Phone Number' },
         { accessorKey: 'createdDateTimeFormatted', header: 'Created Date Time' },
+        { accessorKey: 'modifiedDateTimeFormatted', header: 'Modified Date Time' },
         { accessorKey: 'createdBy', header: 'Created By' }
     ];
 

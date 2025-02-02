@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   MaterialReactTable,
   useMaterialReactTable,
@@ -9,10 +9,14 @@ import CloseIcon from '@mui/icons-material/Close';
 import Done from '@mui/icons-material/Done';
 import { Edit, Delete } from '@mui/icons-material';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
+import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import { mkConfig, generateCsv, download } from 'export-to-csv';
 import { usePermissions } from '../../Context/PermissionContext';
 import PropTypes from 'prop-types';
 import dayjs from 'dayjs';
+import EditForm from '../HomePage/EditForm';
+import useDialogBoxHandler from '../../CustomHooks/DialogBoxHandler';
+import axios from '../AxiosInterceptor/AxiosInterceptor';
 
 const Table = ({ columnsProps,
   dataProps,
@@ -55,6 +59,21 @@ const Table = ({ columnsProps,
     [columnsProps]);
 
   const { editPermissions } = usePermissions();
+  const [formsTxt, setFormsTxt] = useState({
+    showForm: false,
+    isDisabled: false,
+    btnName: "",
+    title: "",
+    studentName: "",
+    guardianName: "",
+    studentCode: "",
+    phoneNumber: "",
+    dob: "",
+    admissionDate: ""
+  });
+
+  const [count, setCount] = useState(0);
+  const { showDialogBox } = useDialogBoxHandler();
 
   const downloadRows = (rows = []) => {
     let activeToggleBtn = document.getElementById('ActiveToggleBtn');
@@ -108,7 +127,7 @@ const Table = ({ columnsProps,
   const table = useMaterialReactTable({
     columns,
     data,
-    enableRowActions: false,
+    enableRowActions: editPermissions,
     enableRowSelection: editPermissions,
     enableStickyHeader: true,
     getRowId: (row) => `${row.id}/${row.studentCode}`, // give each row a more useful id
@@ -150,30 +169,149 @@ const Table = ({ columnsProps,
         {isShowRowSelectionBtns && showRowSelectionBtns.approveButton && <Button variant="contained" color='success' id="approveBtn" onClick={clickFunctions}><Done />APPROVE</Button>}
       </div>
     ),
-    renderRowActionMenuItems: ({ row, table }) => ([
+    renderRowActionMenuItems: ({ row, table, closeMenu }) => ([
       <MRT_ActionMenuItem //  eslint-disable-line
         icon={<Edit />}
         key="edit"
         label="Edit"
-        onClick={() => console.info('Edit')}
-        table={table}
-      />,
-      <MRT_ActionMenuItem //  eslint-disable-line
-        icon={<Delete />}
-        key="delete"
-        label="Delete"
-        onClick={() => console.info('Delete')}
+        onClick={(e) => ActionButton(e, row, closeMenu, 'Edit')}
         table={table}
       />
+      //,
+      // <MRT_ActionMenuItem //  eslint-disable-line
+      //   icon={<Delete />}
+      //   key="delete"
+      //   label="Delete"
+      //   onClick={() => console.info('Delete')}
+      //   table={table}
+      // />,
+      // <MRT_ActionMenuItem //  eslint-disable-line
+      //   icon={<ErrorOutlineIcon />}
+      //   key="audit"
+      //   label="Audit"
+      //   onClick={() => console.info('Audit')}
+      //   table={table}
+      ///>
     ])
   });
 
+  let formConfig = {
+    fields: [
+      {
+        name: 'studentName',
+        label: 'Student Name',
+        required: true
+      },
+      {
+        name: 'guardianName',
+        label: 'Guardian Name',
+        required: true,
+      },
+      {
+        name: 'phoneNumber',
+        label: 'Phone Number',
+        required: true,
+      },
+      {
+        name: 'dob',
+        label: 'Date of Birth',
+        type: 'Date'
+      },
+      {
+        name: 'admissionDate',
+        label: 'Admission Date',
+        type: 'Date'
+      }
+    ]
+  };
+
+  const ActionButton = (e, row, closeMenu, action) => {
+    closeMenu();
+    if (action === 'Audit') {
+      //Audit
+    }
+    else if (action === 'Edit') {
+      setCount(count => count + 1);
+
+      setFormsTxt({
+        showForm: true,
+        isDisabled: false,
+        btnName: "Update",
+        title: "Update",
+        id: row.original.id,
+        studentName: row.original.studentName,
+        guardianName: row.original.guardianName,
+        phoneNumber: row.original.phoneNumber,
+        dob: dayjs(row.original.dob, "DD/MM/YYYY").format("YYYY-MM-DD"),
+        admissionDate: dayjs(row.original.admissionDate, "DD/MM/YYYY").format("YYYY-MM-DD")
+      });
+    }
+  }
+
+  const handleSubmit = async (updatedValues) => {
+    showDialogBox({ dialogTextTitle: 'Message', dialogTextContent: 'Processing...', showButtons: false });
+
+    const changedFields = {};
+    for (const key in formsTxt) {
+      if (formsTxt[key] !== updatedValues[key]) {
+        if (key === 'dob' || key === 'admissionDate') {
+          changedFields[key] = dayjs(updatedValues[key], "YYYY-MM-DD").format("DD/MM/YYYY");
+        }
+        else {
+          changedFields[key] = updatedValues[key];
+        }
+      }
+    }
+
+    let response = '';
+    if (updatedValues.title === 'Update') {
+      let status = 0;
+      let activeToggle = document.getElementById('ActiveToggleBtn');
+      if (activeToggle != null) {
+        if (activeToggle.checked) {
+          status = 1;
+        }
+        else {
+          status = 2;
+        }
+      }
+      else {
+        status = 3;
+      }
+
+      let updateForm = { id: updatedValues.id, ...changedFields };
+
+      response = await axios.post(process.env.REACT_APP_UPDATE_STUDENT_API_URL,
+        { updateForm, status }, {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+    }
+
+    if (response.data.message) {
+      const refreshButton = document.getElementById('RefreshBtn');
+      refreshButton.click();
+      showDialogBox({
+        showButtons: true,
+        dialogTextContent: response.data.message,
+        dialogTextButton: "OK",
+        showDefaultButton: true
+      });
+    }
+
+  };
+
   return (
     <div>
+      {formsTxt.showForm && <EditForm key={count}
+        onSubmit={handleSubmit}
+        formConfig={formConfig}
+        initialValues={formsTxt}
+        isDisabled={formsTxt.isDisabled} />}
       <MaterialReactTable table={table} />
       <div style={{ backgroundColor: 'White' }}>
         <Button style={{ marginLeft: "1.5rem" }}
-          // export all data that is currently in the table (ignore pagination, sorting, filtering, etc.)
           disabled={
             !data.length > 0
           }
