@@ -31,7 +31,6 @@ const ShowTotalPaymentsPage = () => {
                 { accessorKey: 'month', header: 'Month' },
                 { accessorKey: 'bank', header: 'Bank' },
                 { accessorKey: 'cash', header: 'Cash' },
-                { accessorKey: 'others', header: 'Others' },
                 { accessorKey: 'totalAmount', header: 'Total Amount' },
             ];
 

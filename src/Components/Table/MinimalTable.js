@@ -1,13 +1,17 @@
 import React, { useMemo } from 'react';
 import {
     MaterialReactTable,
-    useMaterialReactTable
+    useMaterialReactTable,
+    MRT_ActionMenuItem
 } from 'material-react-table';
 import PropTypes from 'prop-types';
+import { Edit, Delete } from '@mui/icons-material';
 
 const MiscTable = ({ columnsProps,
     dataProps,
-    isLoadingState
+    isLoadingState,
+    isEnableRowActions = false,
+    ActionButton
 }) => {
 
     // Props validations
@@ -22,7 +26,9 @@ const MiscTable = ({ columnsProps,
             PropTypes.array,
             PropTypes.object,
         ]),
-        isLoadingState: PropTypes.bool
+        isLoadingState: PropTypes.bool,
+        isEnableRowActions: PropTypes.bool,
+        ActionButton:  PropTypes.object
     };
 
     const data = dataProps; // For Data
@@ -70,6 +76,23 @@ const MiscTable = ({ columnsProps,
                 padding: '0.8rem',
             },
         }
+        // renderRowActionMenuItems: ({ row, table, closeMenu }) => ([
+        //     <MRT_ActionMenuItem //  eslint-disable-line
+        //       icon={<Edit />}
+        //       key="edit"
+        //       label="Edit"
+        //       //onClick={(e) => ActionButton(e, row, closeMenu, 'Edit')}
+        //       table={table}
+        //     />,
+        //     ,
+        //     <MRT_ActionMenuItem //  eslint-disable-line
+        //       icon={<Delete />}
+        //       key="delete"
+        //       label="Delete"
+        //       //onClick={(e) => ActionButton(e, row, closeMenu, 'Delete')}
+        //       table={table}
+        //     />
+        //   ])
     });
 
     return (

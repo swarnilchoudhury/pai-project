@@ -247,8 +247,8 @@ const CreatePayments = () => {
                                                     <br />
                                                     {
                                                         !isBtnLoading ?
-                                                            <Button variant="contained" id="searchtHomeBtn" disabled={!monthDate} onClick={searchBtnOnClick}><SearchIcon />Search</Button>
-                                                            : <Button variant="contained" id="searchtHomeBtn" disabled={true} ><SearchIcon />Searching...</Button>
+                                                            <Button variant="contained" id="searchBtn" disabled={!monthDate} onClick={searchBtnOnClick}><SearchIcon />Search</Button>
+                                                            : <Button variant="contained" id="searchBtn" disabled={true} ><SearchIcon />Searching...</Button>
                                                     }
                                                 </>
                                                 :
@@ -301,7 +301,6 @@ const CreatePayments = () => {
                                                                         >
                                                                             <MenuItem value={'Bank'}><AccountBalanceIcon /> Bank</MenuItem>
                                                                             <MenuItem value={'Cash'}><PaymentsIcon /> Cash</MenuItem>
-                                                                            <MenuItem value={'Others'}><MoreHorizIcon /> Others</MenuItem>
                                                                         </Select>
                                                                     </FormControl>
                                                                 </Box>

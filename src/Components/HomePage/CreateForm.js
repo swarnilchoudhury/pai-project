@@ -196,8 +196,8 @@ const CreateForm = () => {
                                                     <br />
                                                     {
                                                         !isBtnLoading ?
-                                                            <Button variant="contained" id="searchtHomeBtn" disabled={!formsTxts.studentCode} onClick={SearchButtonOnClick}><SearchIcon />Search</Button>
-                                                            : <Button variant="contained" id="searchtHomeBtn" disabled={true} ><SearchIcon />Searching...</Button>
+                                                            <Button variant="contained" id="searchBtn" disabled={!formsTxts.studentCode} onClick={SearchButtonOnClick}><SearchIcon />Search</Button>
+                                                            : <Button variant="contained" id="searchBtn" disabled={true} ><SearchIcon />Searching...</Button>
                                                     }
                                                 </>
                                                 :
