@@ -10,6 +10,8 @@ import { Edit, Delete } from '@mui/icons-material';
 const MiscTable = ({ columnsProps,
     dataProps,
     isLoadingState,
+    isEnableTopToolbar = true,
+    pageSize = 10,
     isEnableRowActions = false,
     ActionButton
 }) => {
@@ -27,8 +29,10 @@ const MiscTable = ({ columnsProps,
             PropTypes.object,
         ]),
         isLoadingState: PropTypes.bool,
+        isEnableTopToolbar: PropTypes.bool,
+        pageSize: PropTypes.number,
         isEnableRowActions: PropTypes.bool,
-        ActionButton:  PropTypes.object
+        ActionButton: PropTypes.object
     };
 
     const data = dataProps; // For Data
@@ -43,13 +47,19 @@ const MiscTable = ({ columnsProps,
     const table = useMaterialReactTable({
         columns,
         data,
-        enableRowActions: false,
+        enableRowActions: isEnableRowActions,
         enableRowSelection: false,
         enableStickyHeader: true,
+        enableTopToolbar: isEnableTopToolbar,
         state: { isLoading: isLoadingState }, // pass our managed row selection state to the table to use
         muiSkeletonProps: {
             animation: 'pulse',
             height: 28,
+        },
+        initialState: {
+            pagination: {
+                pageSize: pageSize,
+            },
         },
         muiTableHeadCellProps: {
             sx: {
@@ -75,25 +85,26 @@ const MiscTable = ({ columnsProps,
                 overflow: 'hidden',
                 padding: '0.8rem',
             },
-        }
-        // renderRowActionMenuItems: ({ row, table, closeMenu }) => ([
-        //     <MRT_ActionMenuItem //  eslint-disable-line
-        //       icon={<Edit />}
-        //       key="edit"
-        //       label="Edit"
-        //       //onClick={(e) => ActionButton(e, row, closeMenu, 'Edit')}
-        //       table={table}
-        //     />,
-        //     ,
-        //     <MRT_ActionMenuItem //  eslint-disable-line
-        //       icon={<Delete />}
-        //       key="delete"
-        //       label="Delete"
-        //       //onClick={(e) => ActionButton(e, row, closeMenu, 'Delete')}
-        //       table={table}
-        //     />
-        //   ])
-    });
+        },
+        renderRowActionMenuItems: ({ row, table, closeMenu }) => ([
+            <MRT_ActionMenuItem //  eslint-disable-line
+                icon={<Edit />}
+                key="edit"
+                label="Edit"
+                onClick={(e) => ActionButton(e, row, closeMenu, 'Edit')}
+                table={table}
+            />,
+            ,
+            <MRT_ActionMenuItem //  eslint-disable-line
+                icon={<Delete />}
+                key="delete"
+                label="Delete"
+                //onClick={(e) => ActionButton(e, row, closeMenu, 'Delete')}
+                table={table}
+            />
+        ])
+    }
+    );
 
     return (
         <MaterialReactTable table={table} />
