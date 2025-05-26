@@ -12,17 +12,19 @@ const style = {
   top: '50%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
-  width: '50%',
+  width: '90% !important',
   bgcolor: 'background.paper',
   border: '2px solid #000',
   boxShadow: 24,
-  p: 4,
+  p: 4
 };
 
 
 const TransitionsModal = ({ heading, columnsProps,
   dataProps,
-  isLoadingState
+  isLoadingState,
+  isEnableTopToolbar,
+  pageSize
 }) => {
 
   const [open, setOpen] = React.useState(true);
@@ -48,7 +50,9 @@ const TransitionsModal = ({ heading, columnsProps,
             <MiscTable
               columnsProps={columnsProps}
               dataProps={dataProps}
-              isLoadingState={isLoadingState} />
+              isLoadingState={isLoadingState}
+              isEnableTopToolbar={isEnableTopToolbar}
+              pageSize={pageSize}/>
             <Button variant="contained" onClick={handleClose} style={{ marginTop: '1.2rem',float: 'right' }}><CloseIcon />Close</Button>
           </Box>
         </Fade>
