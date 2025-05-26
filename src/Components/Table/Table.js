@@ -82,7 +82,9 @@ const Table = ({ columnsProps,
     showTable: false,
     header: [],
     data: null,
-    isLoadingState: false
+    isLoadingState: false,
+    isEnableTopToolbar: false,
+    pageSize: 5
   });
 
   const currentToggleBtnStatus = () => {
@@ -97,10 +99,10 @@ const Table = ({ columnsProps,
     return statusName;
   }
 
-  const refreshBtnOnClick = () =>{
+  const refreshBtnOnClick = () => {
     const refreshButton = document.getElementById('RefreshBtn');
     refreshButton.click();
-  } 
+  }
 
   const downloadRows = (rows = []) => {
 
@@ -270,7 +272,9 @@ const Table = ({ columnsProps,
         showTable: true,
         header: auditPageHeader,
         data: [],
-        isLoadingState: true
+        isLoadingState: true,
+        isEnableTopToolbar: false,
+        pageSize: 5
       });
 
       let response = await axios.post(process.env.REACT_APP_STUDENT_AUDIT_API_URL,
@@ -285,7 +289,9 @@ const Table = ({ columnsProps,
         showTable: true,
         header: auditPageHeader,
         data: response.data,
-        isLoadingState: false
+        isLoadingState: false,
+        isEnableTopToolbar: false,
+        pageSize: 5
       });
 
 
@@ -417,7 +423,9 @@ const Table = ({ columnsProps,
         heading='History'
         columnsProps={showMiscTableDetails.header}
         dataProps={showMiscTableDetails.data}
-        isLoadingState={showMiscTableDetails.isLoadingState} />}
+        isLoadingState={showMiscTableDetails.isLoadingState}
+        isEnableTopToolbar={showMiscTableDetails.isEnableTopToolbar}
+        pageSize={showMiscTableDetails.pageSize} />}
       <MaterialReactTable table={table} />
       <div style={{ backgroundColor: 'White' }}>
         <Button style={{ marginLeft: "1.5rem" }}
