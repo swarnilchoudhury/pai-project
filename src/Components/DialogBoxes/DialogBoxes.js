@@ -9,7 +9,7 @@ import { useDialogBox } from '../../Context/DialogBoxContext';
 
 const DialogBoxes = () => {
     const { showDialogBoxContent } = useDialogBox();
-    
+
     const [open, setOpen] = useState(false); // To toggle the Dialog Box
 
     useEffect(() => {
@@ -59,13 +59,23 @@ const DialogBoxes = () => {
                                 {showDialogBoxContent.dialogTextButton}
                             </Button>
                         ) : (
-                            <Button
-                                id={showDialogBoxContent.dialogTextButtonOnConfirmId}
-                                onClick={showDialogBoxContent.clickFunctionsOnConfirmFunction}
-                                autoFocus
-                            >
-                                {showDialogBoxContent.dialogTextButtonOnConfirm}
-                            </Button>
+                            showDialogBoxContent.dialogTextButtonOnConfirm === 'Delete' ?
+                                <Button
+                                    id={showDialogBoxContent.dialogTextButtonOnConfirmId}
+                                    color='error'
+                                    onClick={showDialogBoxContent.clickFunctionsOnConfirmFunction}
+                                    autoFocus
+                                >
+                                    {showDialogBoxContent.dialogTextButtonOnConfirm}
+                                </Button>
+                                :
+                                <Button
+                                    id={showDialogBoxContent.dialogTextButtonOnConfirmId}
+                                    onClick={showDialogBoxContent.clickFunctionsOnConfirmFunction}
+                                    autoFocus
+                                >
+                                    {showDialogBoxContent.dialogTextButtonOnConfirm}
+                                </Button>
                         )}
                     </DialogActions>
                 }

@@ -32,7 +32,7 @@ const MiscTable = ({ columnsProps,
         isEnableTopToolbar: PropTypes.bool,
         pageSize: PropTypes.number,
         isEnableRowActions: PropTypes.bool,
-        ActionButton: PropTypes.object
+        ActionButton: PropTypes.func
     };
 
     const data = dataProps; // For Data
@@ -42,6 +42,7 @@ const MiscTable = ({ columnsProps,
             ...columnsProps
         ],
         [columnsProps]);
+        
 
     // Construct the table
     const table = useMaterialReactTable({
@@ -51,15 +52,10 @@ const MiscTable = ({ columnsProps,
         enableRowSelection: false,
         enableStickyHeader: true,
         enableTopToolbar: isEnableTopToolbar,
-        state: { isLoading: isLoadingState }, // pass our managed row selection state to the table to use
+        state: { isLoading: isLoadingState, pagination: { pageIndex: 0, pageSize } }, // pass our managed row selection state to the table to use
         muiSkeletonProps: {
             animation: 'pulse',
             height: 28,
-        },
-        initialState: {
-            pagination: {
-                pageSize: pageSize,
-            },
         },
         muiTableHeadCellProps: {
             sx: {
@@ -94,12 +90,11 @@ const MiscTable = ({ columnsProps,
                 onClick={(e) => ActionButton(e, row, closeMenu, 'Edit')}
                 table={table}
             />,
-            ,
             <MRT_ActionMenuItem //  eslint-disable-line
                 icon={<Delete />}
                 key="delete"
                 label="Delete"
-                //onClick={(e) => ActionButton(e, row, closeMenu, 'Delete')}
+                onClick={(e) => ActionButton(e, row, closeMenu, 'Delete')}
                 table={table}
             />
         ])

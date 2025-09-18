@@ -34,7 +34,6 @@ const PaymentsPage = () => {
     const [isBtnLoading, setIsBtnLoading] = useState(false);
     const [selectMonthOption, setSelectMonthOption] = useState(true);
     const [count, setCount] = useState(0);
-
     const [showSearch, setShowSearch] = useState(false);
     const [showCreatePayment, setShowCreatePayment] = useState(false);
     const [showTotalPaymentsPage, setShowTotalPaymentsPage] = useState(false);
@@ -65,7 +64,6 @@ const PaymentsPage = () => {
         }
 
     }, [showTotalPaymentsPage, showCreatePayment]);
-
 
     useEffect(() => {
         if (!editPermissions) {
@@ -197,8 +195,8 @@ const PaymentsPage = () => {
 
                 setShowTableDetails({
                     showTable: true,
-                    header: monthPageHeader,
-                    data: response.data
+                    data: response.data,
+                    header: monthPageHeader
                 });
             }
 
@@ -220,6 +218,7 @@ const PaymentsPage = () => {
         });
 
         if (action === 'Edit') {
+            console.log(row.original);
 
             let formConfig = {
                 fields: [
@@ -232,7 +231,7 @@ const PaymentsPage = () => {
                     {
                         name: 'amount',
                         label: 'Amount',
-                        required: true,
+                        isDisabled: true
                     },
                     {
                         name: 'paymentDate',
@@ -251,52 +250,75 @@ const PaymentsPage = () => {
                 id: row.original.id,
                 modeOfPayment: row.original.modeOfPayment,
                 amount: row.original.amount.toString(),
+                month: row.original.month,
                 paymentDate: dayjs(row.original.paymentDate, "DD/MM/YYYY").format("YYYY-MM-DD")
             });
         }
 
-        // else if (action === 'Delete') {
+        else if (action === 'Delete') {
 
-        //   const clickFunctionsOnConfirm = async (e) => {
-        //     try {
-        //       showDialogBox({ dialogTextTitle: 'Message', dialogTextContent: 'Processing...', showButtons: false });
+            const clickFunctionsOnConfirm = async (e) => {
+                try {
+                    showDialogBox({ dialogTextTitle: 'Message', dialogTextContent: 'Processing...', showButtons: false });
 
-        //       let statusName = currentToggleBtnStatus();
+                    const isGivenDropdown = document.getElementById('isGiven-select');
+                    let month = '', studentName = '', studentCode = '', studentDetail = '';
 
-        //       let response = await axios.post(process.env.REACT_APP_STUDENT_DELETE_API_URL, { id: row.original.id, status: statusName }, {
-        //         headers: { 'Content-Type': 'application/json' }
-        //       });
+                    if (isGivenDropdown) {
+                        month = monthDate;
+                        studentName = row.original.studentName;
+                        studentCode = row.original.studentCode;
+                    }
+                    else {
+                        month = row.original.month;
+                        studentDetail = selectedValues.find((option) => option.id === selectedStudentOption).studentDetails || null;
+                    }
 
-        //       if (response.status === 200) {
-        //         refreshBtnOnClick();
+                    let data = {
+                        id: row.original.id,
+                        month,
+                        amount: row.original.amount,
+                        modeOfPayment: row.original.modeOfPayment,
+                        studentName,
+                        studentCode,
+                        studentDetail
+                    }
 
-        //         let dialogMessage = `Sucessfully deleted for ${row.original.studentName} - ${row.original.studentCode}`;
+                    let response = await axios.post(process.env.REACT_APP_DELETE_STUDENTS_PAYMENTS_API_URL, data, {
+                        headers: { 'Content-Type': 'application/json' }
+                    });
 
-        //         showDialogBox({
-        //           showButtons: true,
-        //           dialogTextContent: dialogMessage,
-        //           dialogTextButton: "OK",
-        //           showDefaultButton: true
-        //         });
-        //       }
-        //     }
-        //     catch {
-        //       handleErrorMessage();
-        //     }
-        //   }
+                    if (response.status === 200) {
+                        refreshBtnOnClick();
 
-        //   const dialogContent = {
-        //     showButtons: true,
-        //     dialogTextTitle: "",
-        //     dialogTextContent: "",
-        //     clickFunctionsOnConfirmFunction: clickFunctionsOnConfirm,
-        //     showCancelBtn: true,
-        //   };
+                        let dialogMessage = 'Sucessfully deleted for ' + (studentDetail || `${row.original.studentName} - ${row.original.studentCode}`);
 
-        //   dialogContent.dialogTextTitle = "Delete";
-        //   dialogContent.dialogTextContent = "Delete " + row.original.studentCode + " - " + row.original.studentName + "?";
-        //   dialogContent.dialogTextButtonOnConfirm = "Delete";
-        //   showDialogBox(dialogContent);
+                        showDialogBox({
+                            showButtons: true,
+                            dialogTextContent: dialogMessage,
+                            dialogTextButton: "OK",
+                            showDefaultButton: true
+                        });
+                    }
+                }
+                catch {
+                    handleErrorMessage();
+                }
+            }
+
+            const dialogContent = {
+                showButtons: true,
+                dialogTextTitle: "",
+                dialogTextContent: "",
+                clickFunctionsOnConfirmFunction: clickFunctionsOnConfirm,
+                showCancelBtn: true,
+            };
+
+            dialogContent.dialogTextTitle = "Delete";
+            dialogContent.dialogTextContent = "Delete " + (selectedValues.find((option) => option.id === selectedStudentOption)?.studentDetails || row.original.studentCode + " - " + row.original.studentName) +  "?";
+            dialogContent.dialogTextButtonOnConfirm = "Delete";
+            showDialogBox(dialogContent);
+        }
 
 
     };
@@ -313,7 +335,13 @@ const PaymentsPage = () => {
 
     };
 
+    const refreshBtnOnClick = () => {
+        const refreshButton = document.getElementById('searchBtn');
+        refreshButton.click();
+    }
+
     const handleSubmit = async (updatedValues) => {
+
         showDialogBox({ dialogTextTitle: 'Message', dialogTextContent: 'Processing...', showButtons: false });
 
         const changedFields = {};
@@ -322,36 +350,25 @@ const PaymentsPage = () => {
                 if (key === 'paymentDate') {
                     changedFields[key] = dayjs(updatedValues[key], "YYYY-MM-DD").format("DD/MM/YYYY");
                 }
-                else if (key === 'amount') {
-                    let prevAmount = parseInt(formsTxt.amount);
-                    let changedAmount = parseInt(updatedValues[key]);
-                    changedFields['finalAmount'] = changedAmount - prevAmount;
-                    changedFields[key] = parseInt(updatedValues[key]);
-                }
-                else if(key === 'modeOfPayment'){
-                    changedFields['amount'] = parseInt(formsTxt.amount);
-                    changedFields[key] = updatedValues[key];
-                }
                 else {
                     changedFields[key] = updatedValues[key];
                 }
             }
         }
 
-        const refreshBtnOnClick = () => {
-            const refreshButton = document.getElementById('searchBtn');
-            refreshButton.click();
-        }
-
         const isGivenDropdown = document.getElementById('isGiven-select');
 
         let month = "";
+        let updateForm;
 
-        if(isGivenDropdown){
+        if (isGivenDropdown) {
             month = monthDate;
         }
+        else {
+            month = formsTxt.month;
+        }
 
-        let updateForm = { id: updatedValues.id, month, ...changedFields };
+        updateForm = { id: updatedValues.id, month, ...changedFields };
 
         let response = await axios.put(process.env.REACT_APP_UPDATE_STUDENTS_PAYMENTS_API_URL,
             { updateForm }, {

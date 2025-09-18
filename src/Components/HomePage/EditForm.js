@@ -103,7 +103,7 @@ export default function EditForm({
                   className="form-control"
                   id={field.name}
                   value={formValues[field.name] || ''}
-                  disabled={isDisabled}
+                  disabled={isDisabled || field.isDisabled}
                   onChange={(e) =>
                     handleInputChange(field.name, field.transform ? field.transform(e.target.value) : e.target.value)
                   }

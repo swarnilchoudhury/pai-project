@@ -37,9 +37,7 @@ const HomePage = () => {
     const [approvedToggleState, setApprovedToggleState] = useState(false);
     const [activeToggleState, setActiveToggleState] = useState(true);
 
-
-    //  Home Page Header for Showing in Table
-    const homePageHeader = [
+    let defaultHomePageHeaders = [
         { accessorKey: 'studentName', header: 'Student Name' },
         { accessorKey: 'studentCode', header: 'Code' },
         { accessorKey: 'guardianName', header: 'Guardian Name' },
@@ -49,17 +47,13 @@ const HomePage = () => {
         { accessorKey: 'createdDateTimeFormatted', header: 'Created Date Time' },
         { accessorKey: 'modifiedDateTimeFormatted', header: 'Modified Date Time' },
         { accessorKey: 'createdBy', header: 'Created By' }
-    ];
+    ]
+
+    const [homePageHeader, setHomePageHeader] = useState(defaultHomePageHeaders);
 
     //  Fetch Home Page Data
     const homePageData = async (status) => {
         try {
-            let response = await axios.get(process.env.REACT_APP_HOME_API_URL, {
-                headers: { 'x-status': status }
-            });
-
-            setData(response.data);
-            
 
             // Show the messages before the table
             if (status === 'Active') {
@@ -85,8 +79,33 @@ const HomePage = () => {
 
             }
 
+            if (status === 'Deactive') {
+
+                let homePageHeaders = [
+                    { accessorKey: 'studentName', header: 'Student Name' },
+                    { accessorKey: 'studentCode', header: 'Code' },
+                    { accessorKey: 'guardianName', header: 'Guardian Name' },
+                    { accessorKey: 'dob', header: 'Date of Birth' },
+                    { accessorKey: 'admissionDate', header: 'Admission Date' },
+                    { accessorKey: 'phoneNumber', header: 'Phone Number' },
+                    { accessorKey: 'createdDateTimeFormatted', header: 'Created Date Time' },
+                    { accessorKey: 'lastDeactivatedOn', header: 'Last Deactivated On' },
+                    { accessorKey: 'createdBy', header: 'Created By' }
+                ]
+                setHomePageHeader(homePageHeaders);
+            }
+            else {
+                setHomePageHeader(defaultHomePageHeaders);
+            }
+
+            let response = await axios.get(process.env.REACT_APP_HOME_API_URL, {
+                headers: { 'x-status': status }
+            });
+
+            setData(response.data);
+
         } catch {
-            
+
             handleErrorMessage();
         }
 
@@ -123,7 +142,7 @@ const HomePage = () => {
     };
 
     //  Render first time when Home Page mounts
-    useEffect(() => { 
+    useEffect(() => {
         document.title = 'Home Page';
         homePageData('Active'); // eslint-disable-next-line
     }, []);
@@ -177,13 +196,13 @@ const HomePage = () => {
         RefreshTable();
     };
 
-   
+
 
     //  When status button is clicked after confirm
     const clickFunctionsOnConfirm = async (e) => {
-        
+
         showDialogBox({ dialogTextTitle: 'Message', dialogTextContent: 'Processing...', showButtons: false });
-        
+
         const { id } = e.target;
 
         let header = "";
@@ -207,7 +226,7 @@ const HomePage = () => {
                 RefreshTable();
                 setShowRowSelectionBtns({ isShowRowSelectionBtns: false });
                 setRowSelection({});
-            
+
                 // Setting up the dialog content based on different cases
                 const dialogContent = {
                     showButtons: true,
@@ -216,7 +235,7 @@ const HomePage = () => {
                     dialogTextButton: "OK",
                     showDefaultButton: true
                 };
-            
+
                 // Set dialog based on the response message or header type
                 if (response.data.message) {
                     dialogContent.dialogTextTitle = "Message";
@@ -227,25 +246,25 @@ const HomePage = () => {
                             dialogContent.dialogTextTitle = "Success";
                             dialogContent.dialogTextContent = "Deactivated Successfully";
                             break;
-            
+
                         case 'active':
                             dialogContent.dialogTextTitle = "Success";
                             dialogContent.dialogTextContent = "Activated Successfully";
                             break;
-            
+
                         case 'approve':
                             dialogContent.dialogTextTitle = "Success";
                             dialogContent.dialogTextContent = "Approved Successfully";
                             break;
-            
+
                         default:
                             return;
                     }
                 }
-            
+
                 // Call the dialog box function with the constructed content
                 showDialogBox(dialogContent);
-            }    
+            }
 
         } catch {
             handleErrorMessage();
@@ -254,7 +273,7 @@ const HomePage = () => {
 
     const clickFunctions = async (e) => {
         const { id } = e.target;
-    
+
         const dialogContent = {
             showButtons: true,
             dialogTextTitle: "",
@@ -263,7 +282,7 @@ const HomePage = () => {
             clickFunctionsOnConfirmFunction: clickFunctionsOnConfirm,
             showCancelBtn: true,
         };
-        
+
         // Set dialog based on header type
         switch (id) {
             case 'deactiveBtn':
@@ -284,11 +303,11 @@ const HomePage = () => {
             default:
                 return;
         }
-        
+
         // Call the dialog box function with the constructed content
         showDialogBox(dialogContent);
     };
-    
+
 
     return (
         <div>
