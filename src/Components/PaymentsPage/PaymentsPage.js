@@ -218,7 +218,6 @@ const PaymentsPage = () => {
         });
 
         if (action === 'Edit') {
-            console.log(row.original);
 
             let formConfig = {
                 fields: [
