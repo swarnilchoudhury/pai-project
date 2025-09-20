@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import AddIcon from '@mui/icons-material/Add';
 import Button from '@mui/material/Button';
 import RefreshIcon from '@mui/icons-material/Refresh';
+import { useNavigate, useLocation } from 'react-router-dom';
 import Table from '../Table/Table';
 import Switch from '@mui/material/Switch';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
@@ -36,6 +37,10 @@ const HomePage = () => {
     //  Add state variables to remember toggle button states
     const [approvedToggleState, setApprovedToggleState] = useState(false);
     const [activeToggleState, setActiveToggleState] = useState(true);
+
+    const navigate = useNavigate();
+    const currentLocation = useLocation();
+
 
     let defaultHomePageHeaders = [
         { accessorKey: 'studentName', header: 'Student Name' },
@@ -121,25 +126,40 @@ const HomePage = () => {
         setCount(count => count + 1);
 
         const { id, checked } = e.target;
-        if (id === 'ActiveToggleBtn') {
-            setActiveToggleState(checked); //  Update state
+
+        if (id === 'ApprovedToggleBtn') {
+            setApprovedToggleState(checked);
+
             if (checked) {
-                await homePageData('Active');
-            } else {
-                await homePageData('Deactive');
-            }
-        } else if (id === 'ApprovedToggleBtn') {
-            setApprovedToggleState(checked); //  Update state
-            setActiveToggleState(true);
-            setShowActiveStatus(!checked);
-            if (checked) {
+                setShowActiveStatus(false);    // hide Active toggle
+                setActiveToggleState(false);   // turn off Active toggle
                 await homePageData('Unapproval');
+                navigate('/Home/Unapprove');
             } else {
+                setShowActiveStatus(true);     // show Active toggle
+                setActiveToggleState(true);    // default to Active view
                 await homePageData('Active');
+                navigate('/Home/Active');
             }
         }
+
+        else if (id === 'ActiveToggleBtn') {
+            setActiveToggleState(checked);
+
+            if (checked) {
+                await homePageData('Active');
+                navigate('/Home/Active');
+            } else {
+                await homePageData('Deactive');
+                navigate('/Home/Deactive');
+            }
+        }
+
         setIsLoading(false);
     };
+
+
+
 
     //  Render first time when Home Page mounts
     useEffect(() => {
@@ -165,6 +185,30 @@ const HomePage = () => {
             setShowRowSelectionBtns({ isShowRowSelectionBtns: false });
         }
     }, [rowSelection, editPermissions, activeToggleState, approvedToggleState, showActiveStatus]);
+
+    useEffect(() => {
+        const path = currentLocation.pathname;
+
+        if (path.includes('/Home/Deactive')) {
+            setActiveToggleState(false);
+            setApprovedToggleState(false);
+            setShowActiveStatus(true);
+            homePageData('Deactive');
+        }
+        else if (path.includes('/Home/Unapprove')) {
+            setActiveToggleState(false);
+            setApprovedToggleState(true);
+            setShowActiveStatus(false);
+            homePageData('Unapproval');
+        }
+        else if (path.includes('/Home/Active')) {
+            setActiveToggleState(true);
+            setApprovedToggleState(false);
+            setShowActiveStatus(true);
+            homePageData('Active');
+        }
+    }, [currentLocation.pathname]);
+
 
     //  When changing the form from create to home or vice-versa
     const ToggleForm = (e) => {

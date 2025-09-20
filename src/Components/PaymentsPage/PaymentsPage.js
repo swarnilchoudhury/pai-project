@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { usePermissions } from '../../Context/PermissionContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Autocomplete, Button, TextField } from '@mui/material';
 import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -29,6 +29,7 @@ const PaymentsPage = () => {
 
     const { editPermissions } = usePermissions();
     const navigate = useNavigate();
+    const currentLocation = useLocation();
     const [selectedValues, setSelectedValues] = useState([]);
     const [monthDate, setMonthDate] = useState('');
     const [isBtnLoading, setIsBtnLoading] = useState(false);
@@ -48,7 +49,6 @@ const PaymentsPage = () => {
         header: [],
         data: null
     });
-
 
     useEffect(() => {
         if (!showTotalPaymentsPage) {
@@ -76,6 +76,19 @@ const PaymentsPage = () => {
         isDisabled: false
     });
 
+    useEffect(() => {
+    const path = currentLocation.pathname;
+    if (path.endsWith('/Create')) {
+        setShowCreatePayment(true);
+        setShowTotalPaymentsPage(false);
+    } else if (path.endsWith('/Total')) {
+        setShowCreatePayment(false);
+        setShowTotalPaymentsPage(true);
+    } else {
+        setShowCreatePayment(false);
+        setShowTotalPaymentsPage(false);
+    }
+}, [currentLocation.pathname]);
 
     const { showDialogBox } = useDialogBoxHandler();
     const { handleErrorMessage } = useErrorMessageHandler();
@@ -314,7 +327,7 @@ const PaymentsPage = () => {
             };
 
             dialogContent.dialogTextTitle = "Delete";
-            dialogContent.dialogTextContent = "Delete " + (selectedValues.find((option) => option.id === selectedStudentOption)?.studentDetails || row.original.studentCode + " - " + row.original.studentName) +  "?";
+            dialogContent.dialogTextContent = "Delete " + (selectedValues.find((option) => option.id === selectedStudentOption)?.studentDetails || row.original.studentCode + " - " + row.original.studentName) + "?";
             dialogContent.dialogTextButtonOnConfirm = "Delete";
             showDialogBox(dialogContent);
         }
@@ -326,13 +339,17 @@ const PaymentsPage = () => {
     const ToggleForm = (e) => {
         e.preventDefault();
         setShowTotalPaymentsPage(false);
-        setShowCreatePayment(state => !state);
+        const newState = !showCreatePayment;
+        setShowCreatePayment(newState);
+        navigate(newState ? '/Payments/Create' : '/Payments/Show');
     };
+
 
     const ShowTotalPayments = () => {
         setShowTotalPaymentsPage(true);
-
+        navigate('/Payments/Total');
     };
+
 
     const refreshBtnOnClick = () => {
         const refreshButton = document.getElementById('searchBtn');
