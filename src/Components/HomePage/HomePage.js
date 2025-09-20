@@ -133,12 +133,10 @@ const HomePage = () => {
             if (checked) {
                 setShowActiveStatus(false);    // hide Active toggle
                 setActiveToggleState(false);   // turn off Active toggle
-                await homePageData('Unapproval');
                 navigate('/Home/Unapprove');
             } else {
                 setShowActiveStatus(true);     // show Active toggle
                 setActiveToggleState(true);    // default to Active view
-                await homePageData('Active');
                 navigate('/Home/Active');
             }
         }
@@ -147,10 +145,8 @@ const HomePage = () => {
             setActiveToggleState(checked);
 
             if (checked) {
-                await homePageData('Active');
                 navigate('/Home/Active');
             } else {
-                await homePageData('Deactive');
                 navigate('/Home/Deactive');
             }
         }
@@ -164,7 +160,6 @@ const HomePage = () => {
     //  Render first time when Home Page mounts
     useEffect(() => {
         document.title = 'Home Page';
-        homePageData('Active'); // eslint-disable-next-line
     }, []);
 
     //  Select the rows to change the status for data based on edit permissions
