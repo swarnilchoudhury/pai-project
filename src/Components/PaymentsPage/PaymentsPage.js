@@ -67,7 +67,7 @@ const PaymentsPage = () => {
 
     useEffect(() => {
         if (!editPermissions) {
-            navigate('/Home');
+            navigate('/Home/Active');
         }
     }, [editPermissions, navigate]);
 

@@ -33,7 +33,10 @@ const App = () => {
           //  User is signed in
           try {
             if (location.pathname.includes("/Login") || location.pathname.endsWith('/login') || location.pathname.endsWith('/')) {
-              navigate("/Home");
+              navigate("/Home/Active");
+            }
+            else if (location.pathname.endsWith("/Home")) {
+              navigate("/Home/Active");
             } else {
               navigate(location.pathname);
             }

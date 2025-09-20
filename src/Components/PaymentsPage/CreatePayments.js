@@ -60,7 +60,7 @@ const CreatePayments = () => {
 
     useEffect(() => {
         if (!editPermissions) {
-            navigate('/Home');
+            navigate('/Home/Active');
         }
     }, [editPermissions, navigate]);
 
