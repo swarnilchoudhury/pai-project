@@ -120,7 +120,6 @@ const HomePage = () => {
 
     //  When toggles on statusToggle button
     const statusToggleOnClick = async (e) => {
-        setIsLoading(true);
         setRowSelection({});
         setShowRowSelectionBtns({ isShowRowSelectionBtns: false });
         setCount(count => count + 1);
@@ -181,28 +180,36 @@ const HomePage = () => {
         }
     }, [rowSelection, editPermissions, activeToggleState, approvedToggleState, showActiveStatus]);
 
-    useEffect(() => {
+   useEffect(() => {
+    const fetchData = async () => {
+        setIsLoading(true); // start loading
+
         const path = currentLocation.pathname;
 
         if (path.includes('/Home/Deactive')) {
             setActiveToggleState(false);
             setApprovedToggleState(false);
             setShowActiveStatus(true);
-            homePageData('Deactive');
-        }
-        else if (path.includes('/Home/Unapprove')) {
+            await homePageData('Deactive');
+        } else if (path.includes('/Home/Unapprove')) {
             setActiveToggleState(false);
             setApprovedToggleState(true);
             setShowActiveStatus(false);
-            homePageData('Unapproval');
-        }
-        else if (path.includes('/Home/Active')) {
+            await homePageData('Unapproval');
+        } else if (path.includes('/Home/Active')) {
             setActiveToggleState(true);
             setApprovedToggleState(false);
             setShowActiveStatus(true);
-            homePageData('Active');
+            await homePageData('Active');
         }
-    }, [currentLocation.pathname]);
+
+        setIsLoading(false); // stop loading after fetch completes
+    };
+
+    fetchData();
+}, [currentLocation.pathname]);
+
+
 
 
     //  When changing the form from create to home or vice-versa
