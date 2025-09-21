@@ -82,6 +82,7 @@ const App = () => {
               <Route path="/Home/Active" element={<HomePage />} />
               <Route path="/Home/Deactive" element={<HomePage />} />
               <Route path="/Home/Unapprove" element={<HomePage />} />
+              <Route path="/Home/Add" element={<HomePage />} />
               <Route path="/Payments/Show" element={<PaymentsPage />} />
               <Route path="/Payments/Create" element={<PaymentsPage />} />
               <Route path="/Payments/Total" element={<PaymentsPage />} />

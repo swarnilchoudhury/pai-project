@@ -180,44 +180,58 @@ const HomePage = () => {
         }
     }, [rowSelection, editPermissions, activeToggleState, approvedToggleState, showActiveStatus]);
 
-   useEffect(() => {
-    const fetchData = async () => {
-        setIsLoading(true); // start loading
-
+    useEffect(() => {
         const path = currentLocation.pathname;
 
-        if (path.includes('/Home/Deactive')) {
-            setActiveToggleState(false);
-            setApprovedToggleState(false);
-            setShowActiveStatus(true);
-            await homePageData('Deactive');
-        } else if (path.includes('/Home/Unapprove')) {
-            setActiveToggleState(false);
-            setApprovedToggleState(true);
-            setShowActiveStatus(false);
-            await homePageData('Unapproval');
-        } else if (path.includes('/Home/Active')) {
-            setActiveToggleState(true);
-            setApprovedToggleState(false);
-            setShowActiveStatus(true);
-            await homePageData('Active');
+        const fetchData = async () => {
+            setIsLoading(true);
+
+            if (path.includes('/Home/Deactive')) {
+                setActiveToggleState(false);
+                setApprovedToggleState(false);
+                setShowActiveStatus(true);
+                await homePageData('Deactive');
+            } else if (path.includes('/Home/Unapprove')) {
+                setActiveToggleState(false);
+                setApprovedToggleState(true);
+                setShowActiveStatus(false);
+                await homePageData('Unapproval');
+            } else if (path.includes('/Home/Active')) {
+                setActiveToggleState(true);
+                setApprovedToggleState(false);
+                setShowActiveStatus(true);
+                await homePageData('Active');
+            }
+
+            setIsLoading(false);
+        };
+
+        if (path.includes('/Home/Add')) {
+            setShowForm(true);
+        } else {
+            setShowForm(false);
+            fetchData();
         }
 
-        setIsLoading(false); // stop loading after fetch completes
-    };
-
-    fetchData();
-}, [currentLocation.pathname]);
-
-
+    }, [currentLocation.pathname]);
 
 
     //  When changing the form from create to home or vice-versa
     const ToggleForm = (e) => {
         e.preventDefault();
         setRowSelection({});
-        setShowForm(state => !state);
+        setShowForm(state => {
+            const newState = !state;
+            if (newState) {
+                navigate('/Home/Add');
+            } else {
+                navigate('/Home/Active');
+            }
+
+            return newState;
+        });
     };
+
 
     //  When RefreshTable button is clicked
     const RefreshTable = async () => {
