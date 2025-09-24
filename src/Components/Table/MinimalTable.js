@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
     MaterialReactTable,
     useMaterialReactTable,
@@ -42,7 +42,11 @@ const MiscTable = ({ columnsProps,
             ...columnsProps
         ],
         [columnsProps]);
-        
+
+    const [pagination, setPagination] = useState({
+        pageIndex: 0,
+        pageSize: pageSize,
+    });
 
     // Construct the table
     const table = useMaterialReactTable({
@@ -52,7 +56,11 @@ const MiscTable = ({ columnsProps,
         enableRowSelection: false,
         enableStickyHeader: true,
         enableTopToolbar: isEnableTopToolbar,
-        state: { isLoading: isLoadingState, pagination: { pageIndex: 0, pageSize } }, // pass our managed row selection state to the table to use
+        onPaginationChange: setPagination,
+        state: {
+            isLoading: isLoadingState,
+            pagination,
+        },
         muiSkeletonProps: {
             animation: 'pulse',
             height: 28,
