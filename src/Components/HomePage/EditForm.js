@@ -1,9 +1,14 @@
-import React, { useState,useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import Button from '@mui/material/Button';
+import Box from '@mui/material/Box';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select from '@mui/material/Select';
 import PropTypes from 'prop-types';
 
 export default function EditForm({
@@ -13,13 +18,13 @@ export default function EditForm({
   isDisabled
 }) {
 
-    // Props validations
-    EditForm.propTypes = {
-      isDisabled: PropTypes.bool,
-      formConfig: PropTypes.object,
-      onSubmit: PropTypes.func,
-      initialValues: PropTypes.object,
-    };
+  // Props validations
+  EditForm.propTypes = {
+    isDisabled: PropTypes.bool,
+    formConfig: PropTypes.object,
+    onSubmit: PropTypes.func,
+    initialValues: PropTypes.object
+  };
 
   const [formValues, setFormValues] = useState(initialValues);
 
@@ -34,7 +39,7 @@ export default function EditForm({
     }));
   };
 
-   useEffect(() => {
+  useEffect(() => {
     const isDataChanged = JSON.stringify(formValues) !== JSON.stringify(initialValues);
     setIsBtnEnabled(isDataChanged);
   }, [formValues]);
@@ -71,21 +76,39 @@ export default function EditForm({
           <div className="form-group row" key={field.name}>
             <label
               htmlFor={field.name}
-              className="col-sm-5 col-form-label"
+              className="col-sm-6 col-form-label"
             >
               {field.label} {field.required && <span className="required">*</span>}
             </label>
-            <input
-              type={field.type || 'text'}
-              className="form-control"
-              id={field.name}
-              value={formValues[field.name] || ''}
-              disabled={isDisabled}
-              onChange={(e) =>
-                handleInputChange(field.name, field.transform ? field.transform(e.target.value) : e.target.value)
-              }
-              required={field.required}
-            />
+            {
+              field.type === "Dropdown"
+                ?
+                <Box>
+                  <FormControl fullWidth>
+                    <Select
+                      value={formValues[field.name]}
+                      onChange={(e) =>
+                        handleInputChange(field.name, field.transform ? field.transform(e.target.value) : e.target.value)
+                      }
+                    >
+                      {field.data.map((data) => (
+                        <MenuItem key={data.value} value={data.value}>{data.name}</MenuItem>
+                      ))
+                      }
+                    </Select>
+                  </FormControl>
+                </Box>
+                : <input
+                  type={field.type || 'text'}
+                  className="form-control"
+                  id={field.name}
+                  value={formValues[field.name] || ''}
+                  disabled={isDisabled || field.isDisabled}
+                  onChange={(e) =>
+                    handleInputChange(field.name, field.transform ? field.transform(e.target.value) : e.target.value)
+                  }
+                  required={field.required} />
+            }
           </div>
         ))}
       </DialogContent>

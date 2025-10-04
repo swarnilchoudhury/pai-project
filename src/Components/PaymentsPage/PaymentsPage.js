@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { usePermissions } from '../../Context/PermissionContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Autocomplete, Button, TextField } from '@mui/material';
 import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -22,21 +22,25 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import AddIcon from '@mui/icons-material/Add';
 import MiscTable from '../Table/MinimalTable';
 import ShowTotalPaymentsPage from './ShowTotalPaymentsPage';
+import EditForm from '../HomePage/EditForm';
+import useDialogBoxHandler from '../../CustomHooks/DialogBoxHandler';
 
 const PaymentsPage = () => {
 
     const { editPermissions } = usePermissions();
     const navigate = useNavigate();
+    const currentLocation = useLocation();
     const [selectedValues, setSelectedValues] = useState([]);
     const [monthDate, setMonthDate] = useState('');
     const [isBtnLoading, setIsBtnLoading] = useState(false);
     const [selectMonthOption, setSelectMonthOption] = useState(true);
-
+    const [count, setCount] = useState(0);
     const [showSearch, setShowSearch] = useState(false);
     const [showCreatePayment, setShowCreatePayment] = useState(false);
     const [showTotalPaymentsPage, setShowTotalPaymentsPage] = useState(false);
     const [selectedOption, setSelectedOption] = useState('ByMonth');
     const [selectedIsGivenOption, setSelectedIsGivenOption] = useState(1);
+    const [boolSelectedIsGivenOption, setBoolSelectedIsGivenOption] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [selectedStudentOption, setSelectedStudentOption] = useState('');
     const [selectedOptionType, setSelectedOptionType] = useState();
@@ -46,20 +50,47 @@ const PaymentsPage = () => {
         data: null
     });
 
-    //  Render first time when Create Payments Page mounts
     useEffect(() => {
-        document.title = 'Create Payments';
-    }, []);
+        if (!showTotalPaymentsPage) {
+            if (showCreatePayment) {
+                document.title = 'Create Payments'
+            }
+            else {
+                document.title = 'Show Payments'
+            }
+        }
+        else {
+            document.title = 'Total Payments'
+        }
 
+    }, [showTotalPaymentsPage, showCreatePayment]);
 
     useEffect(() => {
         if (!editPermissions) {
-            navigate('/Home');
+            navigate('/Home/Active');
         }
     }, [editPermissions, navigate]);
 
+    const [formsTxt, setFormsTxt] = useState({
+        showForm: false,
+        isDisabled: false
+    });
 
+    useEffect(() => {
+    const path = currentLocation.pathname;
+    if (path.endsWith('/Create')) {
+        setShowCreatePayment(true);
+        setShowTotalPaymentsPage(false);
+    } else if (path.endsWith('/Total')) {
+        setShowCreatePayment(false);
+        setShowTotalPaymentsPage(true);
+    } else {
+        setShowCreatePayment(false);
+        setShowTotalPaymentsPage(false);
+    }
+}, [currentLocation.pathname]);
 
+    const { showDialogBox } = useDialogBoxHandler();
     const { handleErrorMessage } = useErrorMessageHandler();
 
 
@@ -141,6 +172,8 @@ const PaymentsPage = () => {
                     data: response.data
                 });
 
+                setBoolSelectedIsGivenOption(true);
+
             }
             else {
 
@@ -161,6 +194,7 @@ const PaymentsPage = () => {
                         { accessorKey: 'paymentDate', header: 'Payment Date' },
                         { accessorKey: 'createdDateTime', header: 'Created Date Time' }
                     ];
+                    setBoolSelectedIsGivenOption(true);
                 }
                 else {
                     monthPageHeader = [
@@ -168,12 +202,14 @@ const PaymentsPage = () => {
                         { accessorKey: 'studentCode', header: 'Student Code' }
                     ];
 
+                    setBoolSelectedIsGivenOption(false);
+
                 }
 
                 setShowTableDetails({
                     showTable: true,
-                    header: monthPageHeader,
-                    data: response.data
+                    data: response.data,
+                    header: monthPageHeader
                 });
             }
 
@@ -185,23 +221,200 @@ const PaymentsPage = () => {
 
     }
 
+    const ActionButton = async (e, row, closeMenu, action) => {
+
+        closeMenu();
+        setCount(count => count + 1);
+
+        setFormsTxt({
+            showForm: false
+        });
+
+        if (action === 'Edit') {
+
+            let formConfig = {
+                fields: [
+                    {
+                        name: 'modeOfPayment',
+                        label: 'Mode Of Payment',
+                        type: 'Dropdown',
+                        data: [{ value: 'Bank', name: 'Bank' }, { value: 'Cash', name: 'Cash' }]
+                    },
+                    {
+                        name: 'amount',
+                        label: 'Amount',
+                        isDisabled: true
+                    },
+                    {
+                        name: 'paymentDate',
+                        label: 'Payment Date',
+                        type: 'Date'
+                    }
+                ]
+            };
+
+            setFormsTxt({
+                showForm: true,
+                isDisabled: false,
+                btnName: "Update",
+                title: "Update",
+                formConfig,
+                id: row.original.id,
+                modeOfPayment: row.original.modeOfPayment,
+                amount: row.original.amount.toString(),
+                month: row.original.month,
+                paymentDate: dayjs(row.original.paymentDate, "DD/MM/YYYY").format("YYYY-MM-DD")
+            });
+        }
+
+        else if (action === 'Delete') {
+
+            const clickFunctionsOnConfirm = async (e) => {
+                try {
+                    showDialogBox({ dialogTextTitle: 'Message', dialogTextContent: 'Processing...', showButtons: false });
+
+                    const isGivenDropdown = document.getElementById('isGiven-select');
+                    let month = '', studentName = '', studentCode = '', studentDetail = '';
+
+                    if (isGivenDropdown) {
+                        month = monthDate;
+                        studentName = row.original.studentName;
+                        studentCode = row.original.studentCode;
+                    }
+                    else {
+                        month = row.original.month;
+                        studentDetail = selectedValues.find((option) => option.id === selectedStudentOption).studentDetails || null;
+                    }
+
+                    let data = {
+                        id: row.original.id,
+                        month,
+                        amount: row.original.amount,
+                        modeOfPayment: row.original.modeOfPayment,
+                        studentName,
+                        studentCode,
+                        studentDetail
+                    }
+
+                    let response = await axios.post(process.env.REACT_APP_DELETE_STUDENTS_PAYMENTS_API_URL, data, {
+                        headers: { 'Content-Type': 'application/json' }
+                    });
+
+                    if (response.status === 200) {
+                        refreshBtnOnClick();
+
+                        let dialogMessage = 'Sucessfully deleted for ' + (studentDetail || `${row.original.studentName} - ${row.original.studentCode}`);
+
+                        showDialogBox({
+                            showButtons: true,
+                            dialogTextContent: dialogMessage,
+                            dialogTextButton: "OK",
+                            showDefaultButton: true
+                        });
+                    }
+                }
+                catch {
+                    handleErrorMessage();
+                }
+            }
+
+            const dialogContent = {
+                showButtons: true,
+                dialogTextTitle: "",
+                dialogTextContent: "",
+                clickFunctionsOnConfirmFunction: clickFunctionsOnConfirm,
+                showCancelBtn: true,
+            };
+
+            dialogContent.dialogTextTitle = "Delete";
+            dialogContent.dialogTextContent = "Delete " + (selectedValues.find((option) => option.id === selectedStudentOption)?.studentDetails || row.original.studentCode + " - " + row.original.studentName) + "?";
+            dialogContent.dialogTextButtonOnConfirm = "Delete";
+            showDialogBox(dialogContent);
+        }
+
+
+    };
+
     //  When changing the form from create to home or vice-versa
     const ToggleForm = (e) => {
         e.preventDefault();
         setShowTotalPaymentsPage(false);
-        setShowCreatePayment(state => !state);
+        const newState = !showCreatePayment;
+        setShowCreatePayment(newState);
+        navigate(newState ? '/Payments/Create' : '/Payments/Show');
     };
+
 
     const ShowTotalPayments = () => {
         setShowTotalPaymentsPage(true);
-
+        navigate('/Payments/Total');
     };
+
+
+    const refreshBtnOnClick = () => {
+        const refreshButton = document.getElementById('searchBtn');
+        refreshButton.click();
+    }
+
+    const handleSubmit = async (updatedValues) => {
+
+        showDialogBox({ dialogTextTitle: 'Message', dialogTextContent: 'Processing...', showButtons: false });
+
+        const changedFields = {};
+        for (const key in formsTxt) {
+            if (formsTxt[key] !== updatedValues[key]) {
+                if (key === 'paymentDate') {
+                    changedFields[key] = dayjs(updatedValues[key], "YYYY-MM-DD").format("DD/MM/YYYY");
+                }
+                else {
+                    changedFields[key] = updatedValues[key];
+                }
+            }
+        }
+
+        const isGivenDropdown = document.getElementById('isGiven-select');
+
+        let month = "";
+        let updateForm;
+
+        if (isGivenDropdown) {
+            month = monthDate;
+        }
+        else {
+            month = formsTxt.month;
+        }
+
+        updateForm = { id: updatedValues.id, month, ...changedFields };
+
+        let response = await axios.put(process.env.REACT_APP_UPDATE_STUDENTS_PAYMENTS_API_URL,
+            { updateForm }, {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (response.data.message) {
+            refreshBtnOnClick();
+
+            showDialogBox({
+                showButtons: true,
+                dialogTextContent: response.data.message,
+                dialogTextButton: "OK",
+                showDefaultButton: true
+            });
+        }
+    }
 
     return (
         <div>
             <br />
             <Button variant="contained" className="HomePageButttons" onClick={ToggleForm}>{showCreatePayment ? <><ArrowBackIcon />&nbsp;BACK</> : <><AddIcon />&nbsp;PAYMENTS</>}</Button>
-            {!showTotalPaymentsPage && <Button variant="contained" className="HomePageButttons" onClick={ShowTotalPayments}><SearchIcon />&nbsp;TOTAL</Button>}
+            {formsTxt.showForm && <EditForm key={count}
+                onSubmit={handleSubmit}
+                formConfig={formsTxt.formConfig}
+                initialValues={formsTxt}
+                isDisabled={formsTxt.isDisabled} />}
+            {!showTotalPaymentsPage && <Button variant="contained" className="HomePageButttons" onClick={ShowTotalPayments} style={{ float: 'right', marginRight: '1rem' }}><SearchIcon />&nbsp;TOTAL</Button>}
             {!showTotalPaymentsPage &&
                 (!showCreatePayment ?
                     <>
@@ -258,7 +471,7 @@ const PaymentsPage = () => {
                                                                                 <FormControl fullWidth>
                                                                                     <Select
                                                                                         labelId="simple-select-label"
-                                                                                        id="simple-select"
+                                                                                        id="isGiven-select"
                                                                                         value={selectedIsGivenOption}
                                                                                         onChange={handleIsGivenOptionChange}
                                                                                     >
@@ -299,9 +512,9 @@ const PaymentsPage = () => {
                                                         }
                                                         {
                                                             !isBtnLoading ?
-                                                                <Button variant="contained" id="searchtHomeBtn" disabled={!showSearch} onClick={searchBtnOnClick}><SearchIcon />Search</Button>
+                                                                <Button variant="contained" id="searchBtn" disabled={!showSearch} onClick={searchBtnOnClick}><SearchIcon />Search</Button>
                                                                 :
-                                                                <Button variant="contained" id="searchtHomeBtn" disabled={true}><SearchIcon />Searching...</Button>
+                                                                <Button variant="contained" id="searchBtn" disabled={true}><SearchIcon />Searching...</Button>
                                                         }
 
                                                     </div>
@@ -315,7 +528,9 @@ const PaymentsPage = () => {
                         {showTableDetails.showTable && <MiscTable
                             columnsProps={showTableDetails.header}
                             dataProps={showTableDetails.data}
-                            isLoadingState={isBtnLoading} />}
+                            isLoadingState={isBtnLoading}
+                            isEnableRowActions={boolSelectedIsGivenOption}
+                            ActionButton={ActionButton} />}
                     </>
                     :
                     <>

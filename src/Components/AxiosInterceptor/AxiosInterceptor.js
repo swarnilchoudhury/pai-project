@@ -18,7 +18,7 @@ axios.interceptors.request.use(
             let token = await auth.currentUser.getIdToken(); // Fetch the latest token from Firebase
             config.headers.Authorization = `Bearer ${token}`; // Insert the token for API Call
         } catch {
-            throw new Error();
+            somethingWrong();
         }
         return config;
     },
@@ -34,6 +34,9 @@ axios.interceptors.response.use(
     async (error) => {
         if (error.response && error.response.status === 401) {
             await unauthorized(); // IF it is unauthorized
+        }
+        else{
+            somethingWrong();
         }
         return Promise.reject(error);
     }

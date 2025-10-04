@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import AddIcon from '@mui/icons-material/Add';
 import Button from '@mui/material/Button';
 import RefreshIcon from '@mui/icons-material/Refresh';
+import { useNavigate, useLocation } from 'react-router-dom';
 import Table from '../Table/Table';
 import Switch from '@mui/material/Switch';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
@@ -37,9 +38,11 @@ const HomePage = () => {
     const [approvedToggleState, setApprovedToggleState] = useState(false);
     const [activeToggleState, setActiveToggleState] = useState(true);
 
+    const navigate = useNavigate();
+    const currentLocation = useLocation();
 
-    //  Home Page Header for Showing in Table
-    const homePageHeader = [
+
+    let defaultHomePageHeaders = [
         { accessorKey: 'studentName', header: 'Student Name' },
         { accessorKey: 'studentCode', header: 'Code' },
         { accessorKey: 'guardianName', header: 'Guardian Name' },
@@ -49,17 +52,13 @@ const HomePage = () => {
         { accessorKey: 'createdDateTimeFormatted', header: 'Created Date Time' },
         { accessorKey: 'modifiedDateTimeFormatted', header: 'Modified Date Time' },
         { accessorKey: 'createdBy', header: 'Created By' }
-    ];
+    ]
+
+    const [homePageHeader, setHomePageHeader] = useState(defaultHomePageHeaders);
 
     //  Fetch Home Page Data
     const homePageData = async (status) => {
         try {
-            let response = await axios.get(process.env.REACT_APP_HOME_API_URL, {
-                headers: { 'x-status': status }
-            });
-
-            setData(response.data);
-            
 
             // Show the messages before the table
             if (status === 'Active') {
@@ -85,8 +84,33 @@ const HomePage = () => {
 
             }
 
+            if (status === 'Deactive') {
+
+                let homePageHeaders = [
+                    { accessorKey: 'studentName', header: 'Student Name' },
+                    { accessorKey: 'studentCode', header: 'Code' },
+                    { accessorKey: 'guardianName', header: 'Guardian Name' },
+                    { accessorKey: 'dob', header: 'Date of Birth' },
+                    { accessorKey: 'admissionDate', header: 'Admission Date' },
+                    { accessorKey: 'phoneNumber', header: 'Phone Number' },
+                    { accessorKey: 'createdDateTimeFormatted', header: 'Created Date Time' },
+                    { accessorKey: 'lastDeactivatedOn', header: 'Last Deactivated On' },
+                    { accessorKey: 'createdBy', header: 'Created By' }
+                ]
+                setHomePageHeader(homePageHeaders);
+            }
+            else {
+                setHomePageHeader(defaultHomePageHeaders);
+            }
+
+            let response = await axios.get(process.env.REACT_APP_HOME_API_URL, {
+                headers: { 'x-status': status }
+            });
+
+            setData(response.data);
+
         } catch {
-            
+
             handleErrorMessage();
         }
 
@@ -96,36 +120,45 @@ const HomePage = () => {
 
     //  When toggles on statusToggle button
     const statusToggleOnClick = async (e) => {
-        setIsLoading(true);
         setRowSelection({});
         setShowRowSelectionBtns({ isShowRowSelectionBtns: false });
         setCount(count => count + 1);
 
         const { id, checked } = e.target;
-        if (id === 'ActiveToggleBtn') {
-            setActiveToggleState(checked); //  Update state
+
+        if (id === 'ApprovedToggleBtn') {
+            setApprovedToggleState(checked);
+
             if (checked) {
-                await homePageData('Active');
+                setShowActiveStatus(false);    // hide Active toggle
+                setActiveToggleState(false);   // turn off Active toggle
+                navigate('/Home/Unapprove');
             } else {
-                await homePageData('Deactive');
-            }
-        } else if (id === 'ApprovedToggleBtn') {
-            setApprovedToggleState(checked); //  Update state
-            setActiveToggleState(true);
-            setShowActiveStatus(!checked);
-            if (checked) {
-                await homePageData('Unapproval');
-            } else {
-                await homePageData('Active');
+                setShowActiveStatus(true);     // show Active toggle
+                setActiveToggleState(true);    // default to Active view
+                navigate('/Home/Active');
             }
         }
+
+        else if (id === 'ActiveToggleBtn') {
+            setActiveToggleState(checked);
+
+            if (checked) {
+                navigate('/Home/Active');
+            } else {
+                navigate('/Home/Deactive');
+            }
+        }
+
         setIsLoading(false);
     };
 
+
+
+
     //  Render first time when Home Page mounts
-    useEffect(() => { 
+    useEffect(() => {
         document.title = 'Home Page';
-        homePageData('Active'); // eslint-disable-next-line
     }, []);
 
     //  Select the rows to change the status for data based on edit permissions
@@ -147,12 +180,58 @@ const HomePage = () => {
         }
     }, [rowSelection, editPermissions, activeToggleState, approvedToggleState, showActiveStatus]);
 
+    useEffect(() => {
+        const path = currentLocation.pathname;
+
+        const fetchData = async () => {
+            setIsLoading(true);
+
+            if (path.includes('/Home/Deactive')) {
+                setActiveToggleState(false);
+                setApprovedToggleState(false);
+                setShowActiveStatus(true);
+                await homePageData('Deactive');
+            } else if (path.includes('/Home/Unapprove')) {
+                setActiveToggleState(false);
+                setApprovedToggleState(true);
+                setShowActiveStatus(false);
+                await homePageData('Unapproval');
+            } else if (path.includes('/Home/Active')) {
+                setActiveToggleState(true);
+                setApprovedToggleState(false);
+                setShowActiveStatus(true);
+                await homePageData('Active');
+            }
+
+            setIsLoading(false);
+        };
+
+        if (path.includes('/Home/Add')) {
+            setShowForm(true);
+        } else {
+            setShowForm(false);
+            fetchData();
+        }
+
+    }, [currentLocation.pathname]);
+
+
     //  When changing the form from create to home or vice-versa
     const ToggleForm = (e) => {
         e.preventDefault();
         setRowSelection({});
-        setShowForm(state => !state);
+        setShowForm(state => {
+            const newState = !state;
+            if (newState) {
+                navigate('/Home/Add');
+            } else {
+                navigate('/Home/Active');
+            }
+
+            return newState;
+        });
     };
+
 
     //  When RefreshTable button is clicked
     const RefreshTable = async () => {
@@ -177,13 +256,13 @@ const HomePage = () => {
         RefreshTable();
     };
 
-   
+
 
     //  When status button is clicked after confirm
     const clickFunctionsOnConfirm = async (e) => {
-        
+
         showDialogBox({ dialogTextTitle: 'Message', dialogTextContent: 'Processing...', showButtons: false });
-        
+
         const { id } = e.target;
 
         let header = "";
@@ -207,7 +286,7 @@ const HomePage = () => {
                 RefreshTable();
                 setShowRowSelectionBtns({ isShowRowSelectionBtns: false });
                 setRowSelection({});
-            
+
                 // Setting up the dialog content based on different cases
                 const dialogContent = {
                     showButtons: true,
@@ -216,7 +295,7 @@ const HomePage = () => {
                     dialogTextButton: "OK",
                     showDefaultButton: true
                 };
-            
+
                 // Set dialog based on the response message or header type
                 if (response.data.message) {
                     dialogContent.dialogTextTitle = "Message";
@@ -227,25 +306,25 @@ const HomePage = () => {
                             dialogContent.dialogTextTitle = "Success";
                             dialogContent.dialogTextContent = "Deactivated Successfully";
                             break;
-            
+
                         case 'active':
                             dialogContent.dialogTextTitle = "Success";
                             dialogContent.dialogTextContent = "Activated Successfully";
                             break;
-            
+
                         case 'approve':
                             dialogContent.dialogTextTitle = "Success";
                             dialogContent.dialogTextContent = "Approved Successfully";
                             break;
-            
+
                         default:
                             return;
                     }
                 }
-            
+
                 // Call the dialog box function with the constructed content
                 showDialogBox(dialogContent);
-            }    
+            }
 
         } catch {
             handleErrorMessage();
@@ -254,7 +333,7 @@ const HomePage = () => {
 
     const clickFunctions = async (e) => {
         const { id } = e.target;
-    
+
         const dialogContent = {
             showButtons: true,
             dialogTextTitle: "",
@@ -263,7 +342,7 @@ const HomePage = () => {
             clickFunctionsOnConfirmFunction: clickFunctionsOnConfirm,
             showCancelBtn: true,
         };
-        
+
         // Set dialog based on header type
         switch (id) {
             case 'deactiveBtn':
@@ -284,11 +363,11 @@ const HomePage = () => {
             default:
                 return;
         }
-        
+
         // Call the dialog box function with the constructed content
         showDialogBox(dialogContent);
     };
-    
+
 
     return (
         <div>

@@ -1,13 +1,19 @@
-import React, { useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
     MaterialReactTable,
-    useMaterialReactTable
+    useMaterialReactTable,
+    MRT_ActionMenuItem
 } from 'material-react-table';
 import PropTypes from 'prop-types';
+import { Edit, Delete } from '@mui/icons-material';
 
 const MiscTable = ({ columnsProps,
     dataProps,
-    isLoadingState
+    isLoadingState,
+    isEnableTopToolbar = true,
+    pageSize = 10,
+    isEnableRowActions = false,
+    ActionButton
 }) => {
 
     // Props validations
@@ -22,7 +28,11 @@ const MiscTable = ({ columnsProps,
             PropTypes.array,
             PropTypes.object,
         ]),
-        isLoadingState: PropTypes.bool
+        isLoadingState: PropTypes.bool,
+        isEnableTopToolbar: PropTypes.bool,
+        pageSize: PropTypes.number,
+        isEnableRowActions: PropTypes.bool,
+        ActionButton: PropTypes.func
     };
 
     const data = dataProps; // For Data
@@ -33,14 +43,24 @@ const MiscTable = ({ columnsProps,
         ],
         [columnsProps]);
 
+    const [pagination, setPagination] = useState({
+        pageIndex: 0,
+        pageSize: pageSize,
+    });
+
     // Construct the table
     const table = useMaterialReactTable({
         columns,
         data,
-        enableRowActions: false,
+        enableRowActions: isEnableRowActions,
         enableRowSelection: false,
         enableStickyHeader: true,
-        state: { isLoading: isLoadingState }, // pass our managed row selection state to the table to use
+        enableTopToolbar: isEnableTopToolbar,
+        onPaginationChange: setPagination,
+        state: {
+            isLoading: isLoadingState,
+            pagination,
+        },
         muiSkeletonProps: {
             animation: 'pulse',
             height: 28,
@@ -69,8 +89,25 @@ const MiscTable = ({ columnsProps,
                 overflow: 'hidden',
                 padding: '0.8rem',
             },
-        }
-    });
+        },
+        renderRowActionMenuItems: ({ row, table, closeMenu }) => ([
+            <MRT_ActionMenuItem //  eslint-disable-line
+                icon={<Edit />}
+                key="edit"
+                label="Edit"
+                onClick={(e) => ActionButton(e, row, closeMenu, 'Edit')}
+                table={table}
+            />,
+            <MRT_ActionMenuItem //  eslint-disable-line
+                icon={<Delete />}
+                key="delete"
+                label="Delete"
+                onClick={(e) => ActionButton(e, row, closeMenu, 'Delete')}
+                table={table}
+            />
+        ])
+    }
+    );
 
     return (
         <MaterialReactTable table={table} />

@@ -17,6 +17,8 @@ import dayjs from 'dayjs';
 import EditForm from '../HomePage/EditForm';
 import useDialogBoxHandler from '../../CustomHooks/DialogBoxHandler';
 import axios from '../AxiosInterceptor/AxiosInterceptor';
+import TransitionsModal from '../Modal/TransitionsModal';
+import useErrorMessageHandler from '../../CustomHooks/ErrorMessageHandler';
 
 const Table = ({ columnsProps,
   dataProps,
@@ -74,16 +76,37 @@ const Table = ({ columnsProps,
 
   const [count, setCount] = useState(0);
   const { showDialogBox } = useDialogBoxHandler();
+  const { handleErrorMessage } = useErrorMessageHandler();
 
-  const downloadRows = (rows = []) => {
-    let activeToggleBtn = document.getElementById('ActiveToggleBtn');
+  const [showMiscTableDetails, setShowMiscTableDetails] = useState({
+    showTable: false,
+    header: [],
+    data: null,
+    isLoadingState: false,
+    isEnableTopToolbar: false,
+    pageSize: 5
+  });
+
+  const currentToggleBtnStatus = () => {
     let statusName = "";
-
+    let activeToggleBtn = document.getElementById('ActiveToggleBtn');
     if (activeToggleBtn) {
       statusName = activeToggleBtn.checked ? "Active" : "Deactive";
     } else {
       statusName = "Approve";
     }
+
+    return statusName;
+  }
+
+  const refreshBtnOnClick = () => {
+    const refreshButton = document.getElementById('RefreshBtn');
+    refreshButton.click();
+  }
+
+  const downloadRows = (rows = []) => {
+
+    let statusName = currentToggleBtnStatus();
 
     let csvConfig = mkConfig({
       fieldSeparator: ',',
@@ -176,22 +199,22 @@ const Table = ({ columnsProps,
         label="Edit"
         onClick={(e) => ActionButton(e, row, closeMenu, 'Edit')}
         table={table}
+      />,
+      ,
+      <MRT_ActionMenuItem //  eslint-disable-line
+        icon={<Delete />}
+        key="delete"
+        label="Delete"
+        onClick={(e) => ActionButton(e, row, closeMenu, 'Delete')}
+        table={table}
+      />,
+      <MRT_ActionMenuItem //  eslint-disable-line
+        icon={<ErrorOutlineIcon />}
+        key="audit"
+        label="Audit"
+        onClick={(e) => ActionButton(e, row, closeMenu, 'Audit')}
+        table={table}
       />
-      //,
-      // <MRT_ActionMenuItem //  eslint-disable-line
-      //   icon={<Delete />}
-      //   key="delete"
-      //   label="Delete"
-      //   onClick={() => console.info('Delete')}
-      //   table={table}
-      // />,
-      // <MRT_ActionMenuItem //  eslint-disable-line
-      //   icon={<ErrorOutlineIcon />}
-      //   key="audit"
-      //   label="Audit"
-      //   onClick={() => console.info('Audit')}
-      //   table={table}
-      ///>
     ])
   });
 
@@ -225,13 +248,55 @@ const Table = ({ columnsProps,
     ]
   };
 
-  const ActionButton = (e, row, closeMenu, action) => {
+  const ActionButton = async (e, row, closeMenu, action) => {
     closeMenu();
+    setCount(count => count + 1);
+
+    setFormsTxt({
+      showForm: false
+    });
+
+    setShowMiscTableDetails({
+      showTable: false
+    });
+
     if (action === 'Audit') {
       //Audit
+      const auditPageHeader = [
+        { accessorKey: 'systemComments', header: 'Comments' },
+        { accessorKey: 'user', header: 'User' },
+        { accessorKey: 'updatedDateTime', header: 'Created Date Time' }
+      ];
+
+      setShowMiscTableDetails({
+        showTable: true,
+        header: auditPageHeader,
+        data: [],
+        isLoadingState: true,
+        isEnableTopToolbar: false,
+        pageSize: 5
+      });
+
+      let response = await axios.post(process.env.REACT_APP_STUDENT_AUDIT_API_URL,
+        { id: row.original.id }, {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+
+
+      setShowMiscTableDetails({
+        showTable: true,
+        header: auditPageHeader,
+        data: response.data,
+        isLoadingState: false,
+        isEnableTopToolbar: false,
+        pageSize: 5
+      });
+
+
     }
     else if (action === 'Edit') {
-      setCount(count => count + 1);
 
       setFormsTxt({
         showForm: true,
@@ -246,7 +311,51 @@ const Table = ({ columnsProps,
         admissionDate: dayjs(row.original.admissionDate, "DD/MM/YYYY").format("YYYY-MM-DD")
       });
     }
-  }
+    else if (action === 'Delete') {
+
+      const clickFunctionsOnConfirm = async (e) => {
+        try {
+          showDialogBox({ dialogTextTitle: 'Message', dialogTextContent: 'Processing...', showButtons: false });
+
+          let statusName = currentToggleBtnStatus();
+
+          let response = await axios.post(process.env.REACT_APP_STUDENT_DELETE_API_URL, { id: row.original.id, status: statusName }, {
+            headers: { 'Content-Type': 'application/json' }
+          });
+
+          if (response.status === 200) {
+            refreshBtnOnClick();
+
+            let dialogMessage = `Sucessfully deleted for ${row.original.studentName} - ${row.original.studentCode}`;
+
+            showDialogBox({
+              showButtons: true,
+              dialogTextContent: dialogMessage,
+              dialogTextButton: "OK",
+              showDefaultButton: true
+            });
+          }
+        }
+        catch {
+          handleErrorMessage();
+        }
+      }
+
+      const dialogContent = {
+        showButtons: true,
+        dialogTextTitle: "",
+        dialogTextContent: "",
+        clickFunctionsOnConfirmFunction: clickFunctionsOnConfirm,
+        showCancelBtn: true,
+      };
+
+      dialogContent.dialogTextTitle = "Delete";
+      dialogContent.dialogTextContent = "Delete " + row.original.studentCode + " - " + row.original.studentName + "?";
+      dialogContent.dialogTextButtonOnConfirm = "Delete";
+      showDialogBox(dialogContent);
+
+    }
+  };
 
   const handleSubmit = async (updatedValues) => {
     showDialogBox({ dialogTextTitle: 'Message', dialogTextContent: 'Processing...', showButtons: false });
@@ -281,7 +390,7 @@ const Table = ({ columnsProps,
 
       let updateForm = { id: updatedValues.id, ...changedFields };
 
-      response = await axios.post(process.env.REACT_APP_UPDATE_STUDENT_API_URL,
+      response = await axios.put(process.env.REACT_APP_UPDATE_STUDENT_API_URL,
         { updateForm, status }, {
         headers: {
           'Content-Type': 'application/json'
@@ -290,8 +399,8 @@ const Table = ({ columnsProps,
     }
 
     if (response.data.message) {
-      const refreshButton = document.getElementById('RefreshBtn');
-      refreshButton.click();
+      refreshBtnOnClick();
+
       showDialogBox({
         showButtons: true,
         dialogTextContent: response.data.message,
@@ -309,6 +418,14 @@ const Table = ({ columnsProps,
         formConfig={formConfig}
         initialValues={formsTxt}
         isDisabled={formsTxt.isDisabled} />}
+      {showMiscTableDetails.showTable && <TransitionsModal
+        key={count}
+        heading='History'
+        columnsProps={showMiscTableDetails.header}
+        dataProps={showMiscTableDetails.data}
+        isLoadingState={showMiscTableDetails.isLoadingState}
+        isEnableTopToolbar={showMiscTableDetails.isEnableTopToolbar}
+        pageSize={showMiscTableDetails.pageSize} />}
       <MaterialReactTable table={table} />
       <div style={{ backgroundColor: 'White' }}>
         <Button style={{ marginLeft: "1.5rem" }}

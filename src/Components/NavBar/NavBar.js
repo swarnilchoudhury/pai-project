@@ -30,10 +30,10 @@ const NavBar = ({ UserName }) => {
     const { editPermissions } = usePermissions();
     let pages = ['Home'];
 
-    if(editPermissions){
-        pages = ['Home','Payments'];
+    if (editPermissions) {
+        pages = ['Home,Active', 'Payments,Show'];
     }
-    
+
     let settings = ['Logout'];
 
     const [anchorElNav, setAnchorElNav] = useState(null);
@@ -141,15 +141,25 @@ const NavBar = ({ UserName }) => {
                                     display: { xs: 'block', md: 'none' },
                                 }}
                             >
-                                {pages.map((page) => (
-                                    <MenuItem key={page} onClick={handleCloseNavMenu}>
-                                        <Typography textAlign="center"
-                                            key={page}
-                                            component={Link}
-                                            to={"/".concat(page)}
-                                            sx={{ textDecoration: "none", color: "black" }}>{page}</Typography>
-                                    </MenuItem>
-                                ))}
+                                {pages.map((page) => {
+                                    let word = page.split(',');
+                                    let pageHeader = word[0];
+                                    let pageLink = pageHeader + "/" + word[1];
+
+                                    return (
+                                        <MenuItem key={page} onClick={handleCloseNavMenu}>
+                                            <Typography
+                                                textAlign="center"
+                                                component={Link}
+                                                to={"/".concat(pageLink)}
+                                                sx={{ textDecoration: "none", color: "black" }}
+                                            >
+                                                {pageHeader}
+                                            </Typography>
+                                        </MenuItem>
+                                    );
+                                })}
+
                             </Menu>
                         </Box>
 
@@ -174,17 +184,24 @@ const NavBar = ({ UserName }) => {
                         </Typography>
 
                         <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-                            {pages.map((page) => (
+                            {pages.map((page) => {
+                                let word = page.split(',');
+                                let pageHeader = word[0];
+                                let pageLink = pageHeader + "/" + word[1];
 
-                                <Button
-                                    key={page}
-                                    component={Link}
-                                    to={"/".concat(page)}
-                                    sx={{ my: 2, color: 'white', display: 'block' }}>
-                                    {page}
-                                </Button>
-                            ))}
+                                return (
+                                    <Button
+                                        key={page}
+                                        component={Link}
+                                        to={"/".concat(pageLink)}
+                                        sx={{ my: 2, color: 'white', display: 'block' }}
+                                    >
+                                        {pageHeader}
+                                    </Button>
+                                );
+                            })}
                         </Box>
+
                         <Box sx={{ flexGrow: 0 }}>
                             <Tooltip title="Open settings">
                                 <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
