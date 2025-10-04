@@ -10,6 +10,7 @@ import dayjs from 'dayjs';
 import Button from '@mui/material/Button';
 import '../../ComponetsStyles/CreateForm.css';
 import axios from '../AxiosInterceptor/AxiosInterceptor';
+import CircularProgress from '@mui/material/CircularProgress';
 import useErrorMessageHandler from '../../CustomHooks/ErrorMessageHandler';
 import useDialogBoxHandler from '../../CustomHooks/DialogBoxHandler';
 
@@ -103,10 +104,10 @@ const CreateForm = () => {
             if (response.data) { // When response with data received
                 if (response.data.returnCode === 1) {
                     showDialogBox({
-                        showButtons:true,
-                        dialogTextContent:response.data.message,
-                        dialogTextButton:"OK",
-                        showDefaultButton:true
+                        showButtons: true,
+                        dialogTextContent: response.data.message,
+                        dialogTextButton: "OK",
+                        showDefaultButton: true
                     });
                     setShowFullForm(false);
                 }
@@ -115,7 +116,7 @@ const CreateForm = () => {
                 }
             }
         }
-        catch {          
+        catch {
             handleErrorMessage();
         }
 
@@ -144,10 +145,10 @@ const CreateForm = () => {
                 }
             });
             showDialogBox({
-                showButtons:true,
-                dialogTextContent:response.data.message,
-                dialogTextButton:"OK",
-                showDefaultButton:true
+                showButtons: true,
+                dialogTextContent: response.data.message,
+                dialogTextButton: "OK",
+                showDefaultButton: true
             });
 
             fetchLatestStudentCodeData(); // Fetch Latest Student Code
@@ -184,9 +185,12 @@ const CreateForm = () => {
                                                 <>
                                                     <div style={{ backgroundColor: 'white', fontSize: '15px' }}>
                                                         <span style={{ fontWeight: 'bold', textDecoration: 'underline' }}>Latest Student Codes</span>
-                                                        {latestStudentCodeData.split(',').map((part, index) => (
-                                                            <div key={index}>{part}</div>
-                                                        ))}
+                                                        {
+                                                            latestStudentCodeData ? latestStudentCodeData.split(',').map((part, index) => (
+                                                                <div key={index}>{part}</div>
+                                                            )) : <><div style={{ marginTop: '10px' }}><CircularProgress size={16} /></div>
+                                                                <div><CircularProgress size={16} /></div></>
+                                                        }
                                                     </div>
                                                     <label htmlFor='StudentCodeTxt' className="col-sm-2 col-form-label">Student Code <span className='required'>*</span></label>
                                                     <div className="col-sm-10">
