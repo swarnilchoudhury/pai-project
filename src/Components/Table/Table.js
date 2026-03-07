@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import {
   MaterialReactTable,
   useMaterialReactTable,
@@ -46,6 +47,7 @@ const Table = ({ columnsProps,
     showRowSelectionBtns: PropTypes.oneOfType([
       PropTypes.func,
       PropTypes.object,
+      PropTypes.bool,
     ]),
     rowSelection: PropTypes.object,
     setRowSelection: PropTypes.func,
@@ -61,6 +63,7 @@ const Table = ({ columnsProps,
     [columnsProps]);
 
   const { editPermissions } = usePermissions();
+  const location = useLocation();
   const [formsTxt, setFormsTxt] = useState({
     showForm: false,
     isDisabled: false,
@@ -150,7 +153,7 @@ const Table = ({ columnsProps,
   const table = useMaterialReactTable({
     columns,
     data,
-    enableRowActions: editPermissions,
+    enableRowActions: editPermissions || location.pathname.includes('/Home/Unapprove'),
     enableRowSelection: editPermissions,
     enableStickyHeader: true,
     getRowId: (row) => `${row.id}/${row.studentCode}`, // give each row a more useful id
@@ -200,7 +203,6 @@ const Table = ({ columnsProps,
         onClick={(e) => ActionButton(e, row, closeMenu, 'Edit')}
         table={table}
       />,
-      ,
       <MRT_ActionMenuItem //  eslint-disable-line
         icon={<Delete />}
         key="delete"
