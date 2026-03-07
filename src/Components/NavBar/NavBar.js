@@ -28,7 +28,7 @@ const NavBar = ({ UserName }) => {
     };
 
     const { editPermissions } = usePermissions();
-    let pages = ['Home'];
+    let pages = ['Home,Active'];
 
     if (editPermissions) {
         pages = ['Home,Active', 'Payments,Show'];
