@@ -37,7 +37,7 @@ const DialogBoxes = () => {
         <div>
             <Dialog
                 open={open}  // Controlled by the local open state
-                onClose={handleClose}  // Close the dialog when clicking outside or pressing escape
+                disableEscapeKeyDown={true}
                 aria-labelledby="alert-dialog-title"
                 aria-describedby="alert-dialog-description"
             >
