@@ -1,0 +1,192 @@
+/* BatchesPage Styles - Table Format */
+
+.batch-container {
+  padding: 20px;
+  background-color: #f5f5f5;
+  min-height: 100vh;
+}
+
+/* Top Buttons Section */
+.batch-buttons-section {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.batch-buttons-section button {
+  min-width: 150px;
+}
+
+/* Table Styling */
+.batch-table-wrapper {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.batch-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.batch-table thead {
+  background-color: #f5f5f5;
+  border-bottom: 2px solid #ddd;
+}
+
+.batch-table th {
+  padding: 16px;
+  text-align: left;
+  font-weight: 600;
+  color: #333;
+  font-size: 14px;
+  text-transform: none;
+}
+
+.batch-table tbody tr {
+  border-bottom: 1px solid #eee;
+  transition: background-color 0.2s ease;
+}
+
+.batch-table tbody tr:hover {
+  background-color: #f9f9f9;
+  cursor: pointer;
+}
+
+.batch-table td {
+  padding: 14px 16px;
+  color: #333;
+  font-size: 14px;
+}
+
+/* Link Styling in Table */
+.batch-table a {
+  color: #1976d2;
+  text-decoration: none;
+  cursor: pointer;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.batch-table a:hover {
+  color: #1565c0;
+  text-decoration: underline;
+}
+
+/* Empty State */
+.batch-empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: #999;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.batch-empty-state p {
+  margin: 0;
+  font-size: 16px;
+}
+
+/* Loading State */
+.batch-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 300px;
+  background: white;
+  border-radius: 8px;
+}
+
+/* Auto-generated Batch Name Display */
+.batch-name-display {
+  background-color: #f0f0f0;
+  border-radius: 6px;
+  padding: 16px;
+  margin: 16px 0;
+  border-left: 4px solid #1976d2;
+}
+
+.batch-name-display-label {
+  font-size: 12px;
+  color: #666;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.batch-name-display-value {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1976d2;
+}
+
+/* Dialog Styles */
+.batch-dialog-title {
+  font-weight: 600;
+  font-size: 20px;
+}
+
+/* Disabled Time Slot Indicator */
+.batch-disabled-slot {
+  opacity: 0.5;
+  background-color: #f5f5f5;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .batch-buttons-section {
+    flex-direction: column;
+  }
+
+  .batch-buttons-section button {
+    width: 100%;
+  }
+
+  .batch-table th,
+  .batch-table td {
+    padding: 12px 8px;
+    font-size: 12px;
+  }
+
+  .batch-name-display-value {
+    font-size: 16px;
+  }
+}
+
+/* Back Button */
+.batch-back-button {
+  margin-bottom: 16px;
+  color: #1976d2;
+  text-transform: none;
+}
+
+.batch-back-button:hover {
+  background-color: #f0f0f0;
+}
+
+/* Table Cell Alignment */
+.batch-table-center {
+  text-align: center;
+}
+
+.batch-table-bold {
+  font-weight: 600;
+}
+
+/* Teachers Display (comma-separated) */
+.batch-teachers-list {
+  display: inline;
+  color: #333;
+}
+
+/* No batches message */
+.batch-no-data {
+  padding: 24px;
+  text-align: center;
+  color: #999;
+  font-size: 14px;
+}
+

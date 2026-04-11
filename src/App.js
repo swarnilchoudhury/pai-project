@@ -10,6 +10,7 @@ import NavBar from "./Components/NavBar/NavBar";
 import axios from './Components/AxiosInterceptor/AxiosInterceptor';
 import { usePermissions } from "./Context/PermissionContext";
 import PaymentsPage from "./Components/PaymentsPage/PaymentsPage";
+import BatchesPage from "./Components/BatchesPage/BatchesPage";
 
 
 const App = () => {
@@ -86,6 +87,9 @@ const App = () => {
               <Route path="/Payments/Show" element={<PaymentsPage />} />
               <Route path="/Payments/Create" element={<PaymentsPage />} />
               <Route path="/Payments/Total" element={<PaymentsPage />} />
+              <Route path="/Batches/Dashboard" element={<BatchesPage />} />
+              <Route path="/Batches/:batchSlug/view" element={<BatchesPage />} />
+              <Route path="/Batches/:batchSlug/add" element={<BatchesPage />} />
               <Route path="*" element={<PageNotFound />} />
             </>
           )}
