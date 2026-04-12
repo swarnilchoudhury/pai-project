@@ -110,42 +110,59 @@ const BatchDetailView = ({ batchId, onBack, onAddStudents }) => {
 
     return (
         <Box sx={{ p: 6 }}>
-            {/* Top Bar with Back and Add Students Buttons */}
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
-                <Box sx={{ display: 'flex', gap: 2 }}>
-                    <Button
-                        variant="contained"
-                        startIcon={<ArrowBackIcon />}
-                        onClick={onBack}
-                    >
-                        Back to Batches
-                    </Button>
+            <Box
+                sx={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'flex-start',
+                    mb: 4,
+                    flexWrap: 'wrap',
+                    gap: 2
+                }}
+            >
+                <Button
+                    variant="contained"
+                    startIcon={<ArrowBackIcon />}
+                    onClick={onBack}
+                    sx={{ whiteSpace: 'nowrap' }}
+                >
+                    Back
+                </Button>
+                <Box
+                    sx={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'flex-end',
+                        gap: 1
+                    }}
+                >
                     {onAddStudents && (
                         <Button
                             variant="contained"
                             color="primary"
                             startIcon={<AddIcon />}
                             onClick={onAddStudents}
+                            sx={{ whiteSpace: 'nowrap' }}
                         >
                             Add Students
                         </Button>
                     )}
+                    <Button
+                        variant="contained"
+                        startIcon={<HistoryIcon />}
+                        onClick={fetchBatchAuditHistory}
+                        sx={{
+                            whiteSpace: 'nowrap',
+                            mt: 1
+                        }}
+                    >
+                        History
+                    </Button>
                 </Box>
-                <Button
-                    variant="contained"
-                    startIcon={<HistoryIcon />}
-                    onClick={fetchBatchAuditHistory}
-                >
-                    History
-                </Button>
             </Box>
-
-            {/* Batch Details Title */}
             <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 2 }}>
                 Batch Details
             </Typography>
-
-            {/* Batch Info Details - One Line */}
             <Box sx={{ display: 'flex', gap: 4, mb: 4, alignItems: 'center', backgroundColor: '#f5f5f5', p: 3, borderRadius: 1, overflow: 'auto', whiteSpace: 'nowrap' }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexShrink: 0 }}>
                     <Typography variant="caption" color="textSecondary" sx={{ fontSize: '0.7rem', fontWeight: 600 }}>

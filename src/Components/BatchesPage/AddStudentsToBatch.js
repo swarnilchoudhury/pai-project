@@ -111,54 +111,91 @@ const AddStudentsToBatch = ({ batchId, batchName, onStudentsAdded, currentStuden
         <section className="vh-200">
             <div className="container py-5 h-100">
                 <div className="row d-flex justify-content-center align-items-center h-100">
-                    <div className="formDiv">
-                        <div className="card shadow-2-strong" style={{ borderRadius: "1rem" }}>
-                            <div className="card-body p-5 text-center">
-                                <p style={{ fontSize: "1.2rem", fontWeight: "bold" }}>ADD STUDENTS</p>
-                                <hr />
 
-                                <Typography variant="body2">
-                                    Batch: <strong>{batchName}</strong>
+                    <div
+                        className="formDiv"
+                        style={{
+                            width: "100%",
+                            maxWidth: "420px",
+                            flex: "0 0 420px",
+                            margin: "0 auto"
+                        }}
+                    >
+                        <div className="card shadow-2-strong" style={{ borderRadius: "1rem" }}>
+                            <div className="card-body text-center" style={{ padding: "20px" }}>
+                                <p style={{ fontSize: "1.2rem", fontWeight: "bold" }}>
+                                    ADD STUDENTS
+                                </p>
+                                <hr />
+                                <Typography
+                                    variant="body2"
+                                    sx={{
+                                        whiteSpace: "nowrap",
+                                        overflow: "hidden",
+                                        textOverflow: "ellipsis",
+                                        fontWeight: "bold"
+                                    }}
+                                >
+                                    {batchName}
                                 </Typography>
                                 <Typography variant="body2" sx={{ mb: 3 }}>
                                     Students: <strong>{currentStudentCount}/{MAX_STUDENTS_PER_BATCH}</strong>
                                 </Typography>
-
                                 {error && <Alert severity="error">{error}</Alert>}
-
                                 {isFetchingStudents ? (
                                     <CircularProgress />
                                 ) : availableStudents.length > 0 ? (
                                     <>
-                                        <div className="row" style={{ justifyContent: "center" }}>
-                                            <MultipleDropdown
-                                                values={dropdownValues}
-                                                selectedValues={selectedStudentDetails}
-                                                setSelectedValues={(values) => {
-                                                    setSelectedStudentDetails(values);
-                                                    setError("");
+                                        <Box
+                                            sx={{
+                                                width: "100%",
+                                                maxWidth: "100%",
+                                                margin: "0 auto"
+                                            }}
+                                        >
+                                            <div className="row" style={{ justifyContent: "center" }}>
+                                                <MultipleDropdown
+                                                    values={dropdownValues}
+                                                    selectedValues={selectedStudentDetails}
+                                                    setSelectedValues={(values) => {
+                                                        setSelectedStudentDetails(values);
+                                                        setError("");
+                                                    }} />
+                                            </div>
+                                            <Box
+                                                sx={{
+                                                    mt: 3,
+                                                    display: "flex",
+                                                    justifyContent: "space-between",
+                                                    px: 1
                                                 }}
-                                            />
-                                        </div>
-
-                                        <Box sx={{ mt: 3, display: "flex", justifyContent: "center", gap: 2 }}>
-                                            <Button
-                                                variant="contained"
-                                                onClick={handleAddStudents}
-                                                disabled={isLoading || selectedStudents.length === 0}
                                             >
-                                                {isLoading ? "Adding..." : "Add Students"}
-                                            </Button>
-                                            <Button
-                                                variant="outlined"
-                                                onClick={() => {
-                                                    setSelectedStudentDetails([]);
-                                                    setError("");
-                                                }}
-                                                disabled={isLoading}
-                                            >
-                                                Clear
-                                            </Button>
+                                                <Button
+                                                    variant="contained"
+                                                    onClick={handleAddStudents}
+                                                    disabled={isLoading || selectedStudents.length === 0}
+                                                    sx={{
+                                                        height: 40,
+                                                        whiteSpace: "nowrap"
+                                                    }}
+                                                >
+                                                    {isLoading ? "Adding..." : "Add Students"}
+                                                </Button>
+                                                <Button
+                                                    variant="outlined"
+                                                    onClick={() => {
+                                                        setSelectedStudentDetails([]);
+                                                        setError("");
+                                                    }}
+                                                    disabled={isLoading}
+                                                    sx={{
+                                                        height: 40,
+                                                        whiteSpace: "nowrap"
+                                                    }}
+                                                >
+                                                    Clear
+                                                </Button>
+                                            </Box>
                                         </Box>
                                     </>
                                 ) : (
@@ -167,6 +204,7 @@ const AddStudentsToBatch = ({ batchId, batchName, onStudentsAdded, currentStuden
                             </div>
                         </div>
                     </div>
+
                 </div>
             </div>
         </section>

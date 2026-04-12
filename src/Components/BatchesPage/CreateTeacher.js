@@ -81,7 +81,7 @@ const CreateTeacher = ({ onClose }) => {
         <>
             <DialogTitle>Add New Teacher</DialogTitle>
 
-            <DialogContent sx={{ pt: 2 }}>
+            <DialogContent sx={{ pt: 4 }}>
                 {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
 
                 <TextField
