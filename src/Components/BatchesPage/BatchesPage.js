@@ -31,12 +31,15 @@ const BatchesPage = () => {
     const navigate = useNavigate();
     const { editPermissions } = usePermissions();
     const { batchSlug } = useParams();
+
     const action = window.location.pathname.includes('/view')
         ? 'view'
         : window.location.pathname.includes('/add')
             ? 'add'
             : null;
-    const [view, setView] = useState('table');
+
+    const [view, setView] = useState(null);
+
     const [batches, setBatches] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [showCreateBatchDialog, setShowCreateBatchDialog] = useState(false);
@@ -45,198 +48,139 @@ const BatchesPage = () => {
     const [refreshCount, setRefreshCount] = useState(0);
 
     const { handleErrorMessage } = useErrorMessageHandler();
-    const createSlug = (batchName) => {
-        return batchName
-            .toLowerCase()
-            .replace(/\s+/g, '')
-            .replace(/[^\w\-]/g, '');
-    };
+
+    const createSlug = (batchName) =>
+        batchName.toLowerCase().replace(/\s+/g, '').replace(/[^\w\-]/g, '');
 
     const findBatchIdBySlug = (slug) => {
-        const batch = batches.find((batchData) => createSlug(batchData.batchName) === slug);
+        const batch = batches.find((b) => createSlug(b.batchName) === slug);
         return batch?.id || null;
     };
 
+    // Permissions redirect
     useEffect(() => {
         if (editPermissions === false) {
             navigate('/Home/Active');
         }
     }, [editPermissions, navigate]);
 
+    // Page title
     useEffect(() => {
         const path = window.location.pathname.toLowerCase();
-        if (path.endsWith('/view')) {
-            document.title = 'View Batch';
-        } else if (path.endsWith('/add')) {
-            document.title = 'Add Students Batch';
-        } else {
-            document.title = 'Batches Dasboard';
-        }
+        if (path.endsWith('/view')) document.title = 'View Batch';
+        else if (path.endsWith('/add')) document.title = 'Add Students Batch';
+        else document.title = 'Batches Dashboard';
     }, [view, batchSlug]);
 
+
     useEffect(() => {
-        if (!batchSlug) return;
-
-        const batchId = findBatchIdBySlug(batchSlug);
-
-        if (batchId) {
-            setSelectedBatchId(batchId);
-
-            if (action === 'view') {
-                setView('detail');
-            } else if (action === 'add') {
-                setView('add-students');
-            }
-        } else if (batches.length > 0) {
-            navigate('/Batches/dashboard');
+        if (editPermissions === true) {
+            fetchBatches();
         }
-    }, [batchSlug, action, batches, navigate]);
+    }, [editPermissions, refreshCount]);
 
     const fetchBatches = async () => {
         try {
             setIsLoading(true);
-            const response = await axios.get(process.env.REACT_APP_BATCHES_ALL_API_URL);
-            const batchesData = Array.isArray(response.data) ? response.data : [];
-            setBatches(batchesData);
-        } catch (error) {
+            const res = await axios.get(process.env.REACT_APP_BATCHES_ALL_API_URL);
+            setBatches(Array.isArray(res.data) ? res.data : []);
+        } catch (e) {
             handleErrorMessage();
         } finally {
             setIsLoading(false);
         }
     };
 
+    // Routing based on slug
     useEffect(() => {
-        if (editPermissions !== true) {
+        if (!batchSlug) {
+            setView('table');
             return;
         }
-        fetchBatches();
-    }, [refreshCount, editPermissions]);
 
-    const handleRefresh = () => {
-        setRefreshCount((previousCount) => previousCount + 1);
-    };
+        if (batches.length === 0) return;
 
-    const handleViewDetails = (batchId, batchName) => {
-        setSelectedBatchId(batchId);
+        const id = findBatchIdBySlug(batchSlug);
+
+        if (id) {
+            setSelectedBatchId(id);
+            setView(action === 'view' ? 'detail' : 'add-students');
+        } else {
+            navigate('/Batches/dashboard');
+        }
+    }, [batchSlug, batches, action, navigate]);
+
+    const handleRefresh = () => setRefreshCount((p) => p + 1);
+
+    const handleViewDetails = (id, name) => {
+        setSelectedBatchId(id);
         setView('detail');
-        navigate(`/Batches/${createSlug(batchName)}/view`);
+        navigate(`/Batches/${createSlug(name)}/view`);
     };
 
-    const handleAddStudents = (batchId, batchName) => {
-        setSelectedBatchId(batchId);
+    const handleAddStudents = (id, name) => {
+        setSelectedBatchId(id);
         setView('add-students');
-        navigate(`/Batches/${createSlug(batchName)}/add`);
+        navigate(`/Batches/${createSlug(name)}/add`);
     };
 
     const renderTableView = () => (
-        <Box sx={{ p: 6 }}>
-            <Box sx={{ display: 'flex', gap: 2, mb: 3, justifyContent: 'space-between' }}>
-                <Button
-                    variant="contained"
-                    startIcon={<AddIcon />}
-                    onClick={() => setShowCreateBatchDialog(true)}
-                >
+        <Box sx={{ p: { xs: 2, sm: 6 } }}>
+            <Box sx={{ display: 'flex', gap: 2, mb: 3, justifyContent: 'space-between', flexWrap: 'wrap' }}>
+                <Button variant="contained" startIcon={<AddIcon />} onClick={() => setShowCreateBatchDialog(true)}>
                     Create New Batch
                 </Button>
 
-                <Box sx={{ display: 'flex', gap: 2 }}>
-                    <Button
-                        variant="contained"
-                        startIcon={<AddIcon />}
-                        sx={{ minWidth: 180 }}
-                        onClick={() => setShowCreateTeacherDialog(true)}
-                    >
+                <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+                    <Button variant="contained" startIcon={<AddIcon />} onClick={() => setShowCreateTeacherDialog(true)}>
                         Add New Teacher
                     </Button>
-
-                    <Button
-                        variant="contained"
-                        startIcon={<RefreshIcon />}
-                        onClick={handleRefresh}
-                    >
+                    <Button variant="contained" startIcon={<RefreshIcon />} onClick={handleRefresh}>
                         Refresh
                     </Button>
                 </Box>
             </Box>
 
             {isLoading ? (
-                <Box sx={{ display: 'flex', justifyContent: 'center', mt: 8, minHeight: 280, alignItems: 'flex-start' }}>
-                    <CircularProgress />
-                </Box>
-            ) : (
-                <TableContainer component={Paper}>
-                    <Table>
-                        <TableHead>
-                            <TableRow>
-                                <TableCell>Batch Name</TableCell>
-                                <TableCell align="center">Students</TableCell>
-                                <TableCell>Teachers</TableCell>
-                                <TableCell align="center">Actions</TableCell>
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
-                            {batches.map((batch) => (
-                                <TableRow key={batch.id}>
-                                    <TableCell>{batch.batchName}</TableCell>
-                                    <TableCell align="center">
-                                        {batch.studentIds?.length || 0}/24
-                                    </TableCell>
-                                    <TableCell>
-                                        {Array.isArray(batch.teacherNames)
-                                            ? batch.teacherNames.join(', ')
-                                            : batch.teacherName}
-                                    </TableCell>
-                                    <TableCell align="center">
-                                        <MuiLink
-                                            component="button"
-                                            sx={{
-                                                fontSize: '1.00rem',
-                                                fontWeight: 400,
-                                                textDecorationThickness: '1px',
-                                                textUnderlineOffset: '1px'
-                                            }}
-                                            onClick={() => handleViewDetails(batch.id, batch.batchName)}
-                                        >
-                                            View
-                                        </MuiLink>
-
-                                        <Box component="span" sx={{ mx: 1, color: 'text.secondary', fontWeight: 600 }}>|</Box>
-
-                                        <MuiLink
-                                            component="button"
-                                            sx={{
-                                                fontSize: '1.00rem',
-                                                fontWeight: 400,
-                                                textDecorationThickness: '1px',
-                                                textUnderlineOffset: '1px'
-                                            }}
-                                            onClick={() => handleAddStudents(batch.id, batch.batchName)}
-                                        >
-                                            Add
-                                        </MuiLink>
-                                    </TableCell>
-                                </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
-                </TableContainer>
-            )}
-        </Box>
-    );
-
-    if (editPermissions === null) {
-        return (
-            <Container>
                 <Box sx={{ display: 'flex', justifyContent: 'center', mt: 8 }}>
                     <CircularProgress />
                 </Box>
-            </Container>
-        );
-    }
-
-    if (editPermissions === false) {
-        return null;
-    }
+            ) : (
+                <Box sx={{ overflowX: 'auto' }}>
+                    <TableContainer component={Paper}>
+                        <Table>
+                            <TableHead>
+                                <TableRow>
+                                    <TableCell sx={{ whiteSpace: 'nowrap' }}>Batch Name</TableCell>
+                                    <TableCell align="center" sx={{ whiteSpace: 'nowrap' }}>Students</TableCell>
+                                    <TableCell sx={{ whiteSpace: 'nowrap' }}>Teachers</TableCell>
+                                    <TableCell align="center" sx={{ whiteSpace: 'nowrap' }}>Actions</TableCell>
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                {batches.map((b) => (
+                                    <TableRow key={b.id}>
+                                        <TableCell sx={{ whiteSpace: 'nowrap' }}>{b.batchName}</TableCell>
+                                        <TableCell align="center" sx={{ whiteSpace: 'nowrap' }}>
+                                            {b.studentIds?.length || 0}/24
+                                        </TableCell>
+                                        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+                                            {Array.isArray(b.teacherNames) ? b.teacherNames.join(', ') : b.teacherName}
+                                        </TableCell>
+                                        <TableCell align="center" sx={{ whiteSpace: 'nowrap' }}>
+                                            <MuiLink component="button" onClick={() => handleViewDetails(b.id, b.batchName)}>View</MuiLink>
+                                            <Box component="span" sx={{ mx: 1 }}>|</Box>
+                                            <MuiLink component="button" onClick={() => handleAddStudents(b.id, b.batchName)}>Add</MuiLink>
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
+                </Box>
+            )}
+        </Box>
+    );
 
     const renderDetailView = () => (
         <BatchDetailView
@@ -246,40 +190,30 @@ const BatchesPage = () => {
                 navigate('/Batches/dashboard');
             }}
             onAddStudents={() => {
-                const batch = batches.find((batchData) => batchData.id === selectedBatchId);
-                if (batch) {
-                    setView('add-students');
-                    navigate(`/Batches/${createSlug(batch.batchName)}/add`);
-                }
+                const b = batches.find(x => x.id === selectedBatchId);
+                if (b) navigate(`/Batches/${createSlug(b.batchName)}/add`);
             }}
         />
     );
 
     const renderAddStudentsView = () => {
-        const batch = batches.find((batchData) => batchData.id === selectedBatchId);
-        const currentStudentCount = batch?.studentIds?.length || 0;
-
+        const b = batches.find(x => x.id === selectedBatchId);
         return (
-            <Box sx={{ py: 2 }}>
+            <Box sx={{ p: 6 }}>
                 <Button
                     variant="contained"
                     startIcon={<ArrowBackIcon />}
-                    sx={{ ml: 1, mb: 2 }}
-                    onClick={() => {
-                        setView('table');
-                        navigate('/Batches/dashboard');
-                    }}
+                    sx={{ width: { sm: 'auto' }, mb: 2 }}
+                    onClick={() => navigate('/Batches/dashboard')}
                 >
                     BACK
                 </Button>
-
                 <AddStudentsToBatch
                     batchId={selectedBatchId}
-                    batchName={batch?.batchName || ''}
-                    currentStudentCount={currentStudentCount}
+                    batchName={b?.batchName || ''}
+                    currentStudentCount={b?.studentIds?.length || 0}
                     onStudentsAdded={() => {
-                        setRefreshCount((previousCount) => previousCount + 1);
-                        setView('table');
+                        setRefreshCount((p) => p + 1);
                         navigate('/Batches/dashboard');
                     }}
                 />
@@ -288,24 +222,24 @@ const BatchesPage = () => {
     };
 
     return (
-        <Container>
+        <Container maxWidth="lg">
+            {view === null && (
+                <Box sx={{ display: 'flex', justifyContent: 'center', mt: 8 }}>
+                    <CircularProgress />
+                </Box>
+            )}
             {view === 'table' && renderTableView()}
             {view === 'detail' && renderDetailView()}
             {view === 'add-students' && renderAddStudentsView()}
 
             <Dialog open={showCreateBatchDialog}>
-                <CreateBatch
-                    onClose={() => setShowCreateBatchDialog(false)}
-                    onCreated={() => setRefreshCount((previousCount) => previousCount + 1)}
-                    allBatches={batches}
-                />
+                <CreateBatch onClose={() => setShowCreateBatchDialog(false)} onCreated={handleRefresh} allBatches={batches} />
             </Dialog>
 
             <Dialog
                 open={showCreateTeacherDialog}
                 fullWidth
                 maxWidth="sm"
-                PaperProps={{ sx: { minWidth: { xs: 360, sm: 460 } } }}
             >
                 <CreateTeacher onClose={() => setShowCreateTeacherDialog(false)} />
             </Dialog>
