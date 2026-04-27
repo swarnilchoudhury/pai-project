@@ -19,8 +19,8 @@ import useErrorMessageHandler from '../../CustomHooks/ErrorMessageHandler';
 import useDialogBoxHandler from '../../CustomHooks/DialogBoxHandler';
 
 const CreateBatch = ({ onClose, onCreated, allBatches = [] }) => {
-    const [day, setDay] = useState('Monday');
-    const [timeSlot, setTimeSlot] = useState('Morning');
+    const [day, setDay] = useState('Friday');
+    const [timeSlot, setTimeSlot] = useState('Evening First');
     const [selectedTeachers, setSelectedTeachers] = useState([]);
     const [teachers, setTeachers] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
@@ -39,7 +39,7 @@ const CreateBatch = ({ onClose, onCreated, allBatches = [] }) => {
     const { showDialogBox } = useDialogBoxHandler();
 
     const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-    const timeSlots = ['Morning', 'Afternoon', 'Evening'];
+    const timeSlots = ['Morning First', 'Morning Second', 'Evening First','Evening Second'];
 
     // Fetch teachers and calculate disabled time slots
     useEffect(() => {
