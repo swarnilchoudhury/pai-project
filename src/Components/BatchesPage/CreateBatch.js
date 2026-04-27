@@ -39,7 +39,7 @@ const CreateBatch = ({ onClose, onCreated, allBatches = [] }) => {
     const { showDialogBox } = useDialogBoxHandler();
 
     const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-    const timeSlots = ['Morning', 'Afternoon', 'Evening'];
+    const timeSlots = ['Morning First', 'Morning Second', 'Evening First','Evening Second'];
 
     // Fetch teachers and calculate disabled time slots
     useEffect(() => {
