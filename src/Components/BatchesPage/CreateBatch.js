@@ -19,8 +19,8 @@ import useErrorMessageHandler from '../../CustomHooks/ErrorMessageHandler';
 import useDialogBoxHandler from '../../CustomHooks/DialogBoxHandler';
 
 const CreateBatch = ({ onClose, onCreated, allBatches = [] }) => {
-    const [day, setDay] = useState('Monday');
-    const [timeSlot, setTimeSlot] = useState('Morning');
+    const [day, setDay] = useState('Friday');
+    const [timeSlot, setTimeSlot] = useState('Evening First');
     const [selectedTeachers, setSelectedTeachers] = useState([]);
     const [teachers, setTeachers] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
