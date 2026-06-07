@@ -350,7 +350,7 @@ const BatchesPage = () => {
                     <Button variant="contained" startIcon={<AddIcon />} onClick={() => setShowCreateTeacherDialog(true)}>
                         Add New Teacher
                     </Button>
-                    <Button variant="contained" onClick={handleShowTeachers}>
+                    <Button variant="contained" startIcon={<VisibilityIcon />} onClick={handleShowTeachers}>
                         Show Teachers
                     </Button>
                     <Button variant="contained" startIcon={<RefreshIcon />} onClick={handleRefresh}>
