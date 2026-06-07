@@ -33,7 +33,7 @@ const AddStudentsToBatch = ({ batchId, batchName, onStudentsAdded, currentStuden
 
             setAvailableStudents(studentsData);
             setSelectedStudentDetails([]);
-        } catch (fetchError) {
+        } catch {
             handleErrorMessage();
         } finally {
             setIsFetchingStudents(false);
@@ -75,7 +75,7 @@ const AddStudentsToBatch = ({ batchId, batchName, onStudentsAdded, currentStuden
 
             await fetchAvailableStudents();
             onStudentsAdded?.();
-        } catch (addError) {
+        } catch {
             setError("Failed to add students");
             handleErrorMessage();
         } finally {

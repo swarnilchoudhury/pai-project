@@ -40,7 +40,7 @@ const BatchDetailView = ({ batchId, onBack, onAddStudents }) => {
         pageSize: 5
     });
     const [historyModalCount, setHistoryModalCount] = useState(0);
-    
+
     // Move student state
     const [showMoveDialog, setShowMoveDialog] = useState(false);
     const [selectedStudent, setSelectedStudent] = useState(null);
@@ -121,7 +121,7 @@ const BatchDetailView = ({ batchId, onBack, onAddStudents }) => {
             const batchesResponse = await axios.get(process.env.REACT_APP_BATCHES_ALL_API_URL);
             const batchesData = Array.isArray(batchesResponse.data) ? batchesResponse.data : [];
             setAllBatches(batchesData);
-            
+
             const batchData = batchesData.find((b) => b.id === batchId);
 
             if (batchData) {
@@ -131,7 +131,7 @@ const BatchDetailView = ({ batchId, onBack, onAddStudents }) => {
                 const batchStudents = Array.isArray(studentsResponse.data) ? studentsResponse.data : [];
                 setStudents(batchStudents);
             }
-        } catch (error) {
+        } catch {
             handleErrorMessage();
         } finally {
             setIsLoading(false);
@@ -165,7 +165,7 @@ const BatchDetailView = ({ batchId, onBack, onAddStudents }) => {
                 isEnableTopToolbar: false,
                 pageSize: 5
             });
-        } catch (error) {
+        } catch {
             handleErrorMessage();
         }
     };
@@ -197,7 +197,7 @@ const BatchDetailView = ({ batchId, onBack, onAddStudents }) => {
                 isEnableTopToolbar: false,
                 pageSize: 5
             });
-        } catch (error) {
+        } catch {
             handleErrorMessage();
         }
     };
@@ -205,10 +205,10 @@ const BatchDetailView = ({ batchId, onBack, onAddStudents }) => {
     const handleDeleteStudent = async (student) => {
         const deleteFunction = async () => {
             try {
-                showDialogBox({ 
-                    dialogTextTitle: 'Processing', 
-                    dialogTextContent: 'Removing student from batch...', 
-                    showButtons: false 
+                showDialogBox({
+                    dialogTextTitle: 'Processing',
+                    dialogTextContent: 'Removing student from batch...',
+                    showButtons: false
                 });
 
                 await axios.post(
@@ -218,7 +218,7 @@ const BatchDetailView = ({ batchId, onBack, onAddStudents }) => {
 
                 setStudents(students.filter(s => s.id !== student.id));
                 await fetchBatchAndStudents();
-                
+
                 showDialogBox({
                     showButtons: true,
                     dialogTextTitle: 'Success',
@@ -227,7 +227,7 @@ const BatchDetailView = ({ batchId, onBack, onAddStudents }) => {
                     showDefaultButton: true,
                     dialogTextButton: 'OK'
                 });
-            } catch (error) {
+            } catch {
                 handleErrorMessage();
             }
         };
@@ -262,10 +262,10 @@ const BatchDetailView = ({ batchId, onBack, onAddStudents }) => {
         }
 
         try {
-            showDialogBox({ 
-                dialogTextTitle: 'Processing', 
-                dialogTextContent: 'Moving student...', 
-                showButtons: false 
+            showDialogBox({
+                dialogTextTitle: 'Processing',
+                dialogTextContent: 'Moving student...',
+                showButtons: false
             });
 
             await axios.post(
@@ -275,7 +275,7 @@ const BatchDetailView = ({ batchId, onBack, onAddStudents }) => {
 
             setShowMoveDialog(false);
             await fetchBatchAndStudents();
-            
+
             showDialogBox({
                 showButtons: true,
                 dialogTextTitle: 'Success',
@@ -284,7 +284,7 @@ const BatchDetailView = ({ batchId, onBack, onAddStudents }) => {
                 showDefaultButton: true,
                 dialogTextButton: 'OK'
             });
-        } catch (error) {
+        } catch {
             handleErrorMessage();
         }
     };

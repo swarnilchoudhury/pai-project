@@ -91,7 +91,7 @@ const TeachersDialog = ({ open, onClose, teachers, isLoading, onEdit, onDelete, 
             <Box sx={{ p: 2, display: 'flex', justifyContent: 'flex-end', gap: 1 }}>
                 <Button
                     variant="contained"
-                    endIcon={<CloseIcon />}
+                    startIcon={<CloseIcon />}
                     onClick={onClose}
                 >
                     Close

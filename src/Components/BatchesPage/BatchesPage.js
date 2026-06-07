@@ -99,7 +99,7 @@ const BatchesPage = () => {
             setIsLoading(true);
             const res = await axios.get(process.env.REACT_APP_BATCHES_ALL_API_URL);
             setBatches(Array.isArray(res.data) ? res.data : []);
-        } catch (e) {
+        } catch {
             handleErrorMessage();
         } finally {
             setIsLoading(false);
@@ -133,7 +133,7 @@ const BatchesPage = () => {
             setIsLoadingTeachers(true);
             const res = await axios.get(process.env.REACT_APP_BATCH_TEACHERS_ALL_API_URL);
             setTeachers(Array.isArray(res.data) ? res.data : []);
-        } catch (e) {
+        } catch {
             handleErrorMessage();
             setTeachers([]);
         } finally {
@@ -168,7 +168,7 @@ const BatchesPage = () => {
                 isEnableTopToolbar: false,
                 pageSize: 5
             });
-        } catch (error) {
+        } catch {
             handleErrorMessage();
         }
     };
@@ -203,7 +203,7 @@ const BatchesPage = () => {
                     showDefaultButton: true,
                     dialogTextButton: 'OK'
                 });
-            } catch (error) {
+            } catch {
                 handleErrorMessage();
             }
         };
@@ -260,7 +260,7 @@ const BatchesPage = () => {
                 showDefaultButton: true,
                 dialogTextButton: 'OK'
             });
-        } catch (error) {
+        } catch {
             handleErrorMessage();
             setEditTeacher(null);
             setEditTeacherName('');
