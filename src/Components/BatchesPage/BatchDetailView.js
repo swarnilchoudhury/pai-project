@@ -1,24 +1,36 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
     Box,
     Paper,
     Typography,
     CircularProgress,
     Alert,
-    Button
+    Button,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
+    FormControl,
+    InputLabel,
+    Select,
+    MenuItem
 } from '@mui/material';
+import { MaterialReactTable, useMaterialReactTable, MRT_ActionMenuItem as ActionMenuItem } from 'material-react-table';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import { Edit, Delete } from '@mui/icons-material';
+import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import axios from '../AxiosInterceptor/AxiosInterceptor';
 import AddIcon from '@mui/icons-material/Add';
 import useErrorMessageHandler from '../../CustomHooks/ErrorMessageHandler';
+import useDialogBoxHandler from '../../CustomHooks/DialogBoxHandler';
 import HistoryIcon from '@mui/icons-material/History';
 import TransitionsModal from '../Modal/TransitionsModal';
-import MiscTable from '../Table/MinimalTable';
 
 const BatchDetailView = ({ batchId, onBack, onAddStudents }) => {
     const [batch, setBatch] = useState(null);
     const [students, setStudents] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [allBatches, setAllBatches] = useState([]);
     const [historyTableDetails, setHistoryTableDetails] = useState({
         showTable: false,
         header: [],
@@ -29,7 +41,71 @@ const BatchDetailView = ({ batchId, onBack, onAddStudents }) => {
     });
     const [historyModalCount, setHistoryModalCount] = useState(0);
 
+    // Move student state
+    const [showMoveDialog, setShowMoveDialog] = useState(false);
+    const [selectedStudent, setSelectedStudent] = useState(null);
+    const [targetBatchId, setTargetBatchId] = useState('');
+
     const { handleErrorMessage } = useErrorMessageHandler();
+    const { showDialogBox } = useDialogBoxHandler();
+
+    // Define columns at top level - before any conditional logic
+    const studentColumns = useMemo(
+        () => [
+            {
+                accessorKey: 'studentName',
+                header: 'Student Name',
+            },
+            {
+                accessorKey: 'studentCode',
+                header: 'Student Code',
+            },
+        ],
+        []
+    );
+
+    const studentTable = useMaterialReactTable({
+        columns: studentColumns,
+        data: students,
+        enableRowActions: true,
+        enableRowSelection: false,
+        enableStickyHeader: true,
+        muiTableHeadCellProps: { sx: { border: '1px solid rgba(81, 81, 81, .5)', backgroundColor: 'lightgrey', fontWeight: 'bold' } },
+        muiTableBodyCellProps: { sx: { border: '1px solid rgba(81, 81, 81, .5)', backgroundColor: '#ffffff' } },
+        renderRowActionMenuItems: ({ row, table, closeMenu }) => [
+            <ActionMenuItem
+                icon={<Delete />}
+                key="delete"
+                label="Delete"
+                table={table}
+                onClick={() => {
+                    closeMenu();
+                    handleDeleteStudent(row.original);
+                }}
+            />,
+            <ActionMenuItem
+                icon={<Edit />}
+                key="move"
+                label="Move to Other Batch"
+                table={table}
+                onClick={() => {
+                    closeMenu();
+                    handleMoveStudent(row.original);
+                }}
+            />,
+            <ActionMenuItem
+                icon={<ErrorOutlineIcon />}
+                key="audit"
+                label="Audit"
+                table={table}
+                onClick={() => {
+                    closeMenu();
+                    fetchStudentAuditHistory(row.original.id);
+                }}
+            />,
+        ],
+        muiSkeletonProps: { animation: 'pulse', height: 28 },
+    });
 
     // Fetch batch and its students
     useEffect(() => {
@@ -41,9 +117,11 @@ const BatchDetailView = ({ batchId, onBack, onAddStudents }) => {
         try {
             setIsLoading(true);
 
-            // Fetch all batches to get batch details
+            // Fetch all batches to get batch details and for move dialog
             const batchesResponse = await axios.get(process.env.REACT_APP_BATCHES_ALL_API_URL);
             const batchesData = Array.isArray(batchesResponse.data) ? batchesResponse.data : [];
+            setAllBatches(batchesData);
+
             const batchData = batchesData.find((b) => b.id === batchId);
 
             if (batchData) {
@@ -53,7 +131,7 @@ const BatchDetailView = ({ batchId, onBack, onAddStudents }) => {
                 const batchStudents = Array.isArray(studentsResponse.data) ? studentsResponse.data : [];
                 setStudents(batchStudents);
             }
-        } catch (error) {
+        } catch {
             handleErrorMessage();
         } finally {
             setIsLoading(false);
@@ -87,7 +165,126 @@ const BatchDetailView = ({ batchId, onBack, onAddStudents }) => {
                 isEnableTopToolbar: false,
                 pageSize: 5
             });
-        } catch (error) {
+        } catch {
+            handleErrorMessage();
+        }
+    };
+
+    const fetchStudentAuditHistory = async (studentId) => {
+        try {
+            setHistoryModalCount((prevCount) => prevCount + 1);
+            const auditPageHeader = [
+                { accessorKey: 'systemComments', header: 'Comments' },
+                { accessorKey: 'user', header: 'User' },
+                { accessorKey: 'updatedDateTime', header: 'Updated Date Time' }
+            ];
+
+            setHistoryTableDetails({
+                showTable: true,
+                header: auditPageHeader,
+                data: [],
+                isLoadingState: true,
+                isEnableTopToolbar: false,
+                pageSize: 5
+            });
+
+            const response = await axios.post(process.env.REACT_APP_STUDENT_AUDIT_API_URL, { id: studentId });
+            setHistoryTableDetails({
+                showTable: true,
+                header: auditPageHeader,
+                data: Array.isArray(response.data) ? response.data : [],
+                isLoadingState: false,
+                isEnableTopToolbar: false,
+                pageSize: 5
+            });
+        } catch {
+            handleErrorMessage();
+        }
+    };
+
+    const handleDeleteStudent = async (student) => {
+        const deleteFunction = async () => {
+            try {
+                showDialogBox({
+                    dialogTextTitle: 'Processing',
+                    dialogTextContent: 'Removing student from batch...',
+                    showButtons: false
+                });
+
+                await axios.post(
+                    process.env.REACT_APP_STUDENT_REMOVE_FROM_BATCH_API_URL,
+                    { id: student.id, status: 'Active' }
+                );
+
+                setStudents(students.filter(s => s.id !== student.id));
+                await fetchBatchAndStudents();
+
+                showDialogBox({
+                    showButtons: true,
+                    dialogTextTitle: 'Success',
+                    dialogTextContent: 'Student removed from batch successfully',
+                    showCancelBtn: false,
+                    showDefaultButton: true,
+                    dialogTextButton: 'OK'
+                });
+            } catch {
+                handleErrorMessage();
+            }
+        };
+
+        showDialogBox({
+            showButtons: true,
+            dialogTextTitle: 'Remove Student',
+            dialogTextContent: `Remove ${student.studentName} from this batch?`,
+            dialogTextButtonOnConfirm: 'Remove',
+            clickFunctionsOnConfirmFunction: deleteFunction,
+            showCancelBtn: true
+        });
+    };
+
+    const handleMoveStudent = (student) => {
+        setSelectedStudent(student);
+        setTargetBatchId('');
+        setShowMoveDialog(true);
+    };
+
+    const handleConfirmMove = async () => {
+        if (!targetBatchId) {
+            showDialogBox({
+                showButtons: true,
+                dialogTextTitle: 'Error',
+                dialogTextContent: 'Please select a target batch',
+                showCancelBtn: false,
+                showDefaultButton: true,
+                dialogTextButton: 'OK'
+            });
+            return;
+        }
+
+        try {
+            showDialogBox({
+                dialogTextTitle: 'Processing',
+                dialogTextContent: 'Moving student...',
+                showButtons: false
+            });
+
+            await axios.post(
+                process.env.REACT_APP_STUDENT_MOVE_API_URL,
+                { studentId: selectedStudent.id, fromBatchId: batchId, toBatchId: targetBatchId }
+            );
+
+            setShowMoveDialog(false);
+            await fetchBatchAndStudents();
+
+            showDialogBox({
+                showButtons: true,
+                dialogTextTitle: 'Success',
+                dialogTextContent: 'Student moved successfully',
+                showCancelBtn: false,
+                showDefaultButton: true,
+                dialogTextButton: 'OK'
+            });
+        } catch {
             handleErrorMessage();
         }
     };
@@ -189,22 +386,47 @@ const BatchDetailView = ({ batchId, onBack, onAddStudents }) => {
                 </Typography>
 
                 {students.length > 0 ? (
-                    <MiscTable
-                        columnsProps={[
-                            { accessorKey: 'studentName', header: 'Student Name' },
-                            { accessorKey: 'studentCode', header: 'Student Code' }
-                        ]}
-                        dataProps={students}
-                        isLoadingState={false}
-                        isEnableTopToolbar={false}
-                        pageSize={10}
-                    />
+                    <MaterialReactTable table={studentTable} />
                 ) : (
                     <Paper sx={{ p: 2 }}>
                         <Typography>No students in this batch yet.</Typography>
                     </Paper>
                 )}
             </Box>
+
+            {/* Move Student Dialog */}
+            <Dialog open={showMoveDialog} onClose={() => setShowMoveDialog(false)} fullWidth maxWidth="sm">
+                <DialogTitle>Move Student to Another Batch</DialogTitle>
+                <DialogContent sx={{ pt: 3 }}>
+                    {selectedStudent && (
+                        <Box sx={{ mb: 3 }}>
+                            <Typography variant="body2" sx={{ mb: 2 }}>
+                                <strong>Student:</strong> {selectedStudent.studentName}
+                            </Typography>
+                        </Box>
+                    )}
+                    <FormControl fullWidth>
+                        <InputLabel>Select Target Batch</InputLabel>
+                        <Select
+                            value={targetBatchId}
+                            onChange={(e) => setTargetBatchId(e.target.value)}
+                            label="Select Target Batch"
+                        >
+                            {allBatches.filter(b => b.id !== batchId).map((b) => (
+                                <MenuItem key={b.id} value={b.id}>
+                                    {b.batchName}
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setShowMoveDialog(false)}>Cancel</Button>
+                    <Button onClick={handleConfirmMove} variant="contained" color="primary">
+                        Move
+                    </Button>
+                </DialogActions>
+            </Dialog>
 
             {historyTableDetails.showTable && (
                 <TransitionsModal

@@ -70,8 +70,7 @@ const CreateTeacher = ({ onClose }) => {
                 });
                 return;
             }
-        } catch (error) {
-            console.error('Error creating teacher:', error);
+        } catch {
             setError('Failed to create teacher');
             setIsLoading(false);
         }

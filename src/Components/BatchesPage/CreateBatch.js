@@ -39,7 +39,7 @@ const CreateBatch = ({ onClose, onCreated, allBatches = [] }) => {
     const { showDialogBox } = useDialogBoxHandler();
 
     const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-    const timeSlots = ['Morning First', 'Morning Second', 'Evening First','Evening Second'];
+    const timeSlots = ['Morning First', 'Morning Second', 'Evening First', 'Evening Second'];
 
     // Fetch teachers and calculate disabled time slots
     useEffect(() => {
@@ -69,7 +69,7 @@ const CreateBatch = ({ onClose, onCreated, allBatches = [] }) => {
             const response = await axios.get(process.env.REACT_APP_BATCH_TEACHERS_ALL_API_URL);
             const teachersData = Array.isArray(response.data) ? response.data : [];
             setTeachers(teachersData);
-        } catch (error) {
+        } catch {
             setTeachers([]);
         } finally {
             setIsFetchingTeachers(false);
@@ -122,7 +122,7 @@ const CreateBatch = ({ onClose, onCreated, allBatches = [] }) => {
                 showDefaultButton: true,
                 showButtons: true
             });
-        } catch (error) {
+        } catch {
             setError('Failed to save batch');
             handleErrorMessage();
         } finally {

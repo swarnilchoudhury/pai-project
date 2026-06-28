@@ -17,8 +17,8 @@ const ShowTotalPaymentsPage = () => {
     });
 
     const { handleErrorMessage } = useErrorMessageHandler();
-    
-    const fetchData = useCallback(async () => { 
+
+    const fetchData = useCallback(async () => {
         setIsLoading(true);
         try {
             let response = await axios.get(process.env.REACT_APP_TOTAL_PAYMENTS_API_URL, {
@@ -38,8 +38,8 @@ const ShowTotalPaymentsPage = () => {
                 header: showTotalPaymentsHeader,
                 data: response.data,
             });
-        } catch (error) {
-            handleErrorMessage(); 
+        } catch {
+            handleErrorMessage();
         } finally {
             setIsLoading(false);
             setIsBtnLoading(false);

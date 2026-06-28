@@ -77,18 +77,18 @@ const PaymentsPage = () => {
     });
 
     useEffect(() => {
-    const path = currentLocation.pathname;
-    if (path.endsWith('/Create')) {
-        setShowCreatePayment(true);
-        setShowTotalPaymentsPage(false);
-    } else if (path.endsWith('/Total')) {
-        setShowCreatePayment(false);
-        setShowTotalPaymentsPage(true);
-    } else {
-        setShowCreatePayment(false);
-        setShowTotalPaymentsPage(false);
-    }
-}, [currentLocation.pathname]);
+        const path = currentLocation.pathname;
+        if (path.endsWith('/Create')) {
+            setShowCreatePayment(true);
+            setShowTotalPaymentsPage(false);
+        } else if (path.endsWith('/Total')) {
+            setShowCreatePayment(false);
+            setShowTotalPaymentsPage(true);
+        } else {
+            setShowCreatePayment(false);
+            setShowTotalPaymentsPage(false);
+        }
+    }, [currentLocation.pathname]);
 
     const { showDialogBox } = useDialogBoxHandler();
     const { handleErrorMessage } = useErrorMessageHandler();
@@ -197,6 +197,25 @@ const PaymentsPage = () => {
                     setBoolSelectedIsGivenOption(true);
                 }
                 else {
+
+                    if (response.data.length === 0) {
+                        showDialogBox({
+                            showButtons: true,
+                            dialogTextTitle: 'Message',
+                            dialogTextContent: 'All Students have given payment for ' + monthDate,
+                            dialogTextButton: "OK",
+                            showDefaultButton: true
+                        });
+
+                        setIsBtnLoading(false);
+
+                        setShowTableDetails({
+                            showTable: false,
+                        });
+
+                        return;
+                    }
+
                     monthPageHeader = [
                         { accessorKey: 'studentName', header: 'Student Name' },
                         { accessorKey: 'studentCode', header: 'Student Code' }
