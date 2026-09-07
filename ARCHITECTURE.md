@@ -33,6 +33,7 @@ flowchart LR
 | `/Batches/Dashboard` | See batches and teachers | `BatchesPage` |
 | `/Batches/:batchSlug/view` | See a batch and its students | `BatchDetailView` |
 | `/Batches/:batchSlug/add` | Add unassigned students to a batch | `AddStudentsToBatch` |
+| `/Audits/Show` | See global user-side audit history from the last 30 days | `AuditsPage` |
 
 Unknown URLs show `PageNotFound`.
 
@@ -75,7 +76,11 @@ Payment and batch screens are intended for Admin users; the backend enforces thi
 
 ## Batch flow
 
-Admins create teachers, create batches with one or more teachers, then add available students. A student can belong to only one batch, and a batch can contain at most 40 students. Students can be removed or moved between batches. Deactivating/deleting a student asks the QueueWorker to remove that student from any batch.
+Admins create teachers, create batches with one or more teachers, then add available students. A student can belong to only one batch, and a batch can contain at most 40 students. The batches dashboard can search selected active students and show their current batch assignment. Students can be removed or moved between batches from either the batch detail table or the search results table. Deactivating/deleting a student asks the QueueWorker to remove that student from any batch.
+
+## Audit flow
+
+The Audits navbar item is available to every signed-in user. It opens a Material React Table with Title, User, and Date Time columns. The page reads `/api/audits`, which returns only user-side audit messages from the last 30 days with the newest entry first. The Clear History button calls `/api/audits/clear`; when the backend returns HTTP 200, the UI shows `Clear Started`, retained records are normalized to the three table fields, and the table refreshes.
 
 ## Important code locations
 
@@ -86,6 +91,7 @@ Admins create teachers, create batches with one or more teachers, then add avail
 | `src/Components/HomePage/` | Student lists, creation, and editing |
 | `src/Components/PaymentsPage/` | Payment entry, history, and totals |
 | `src/Components/BatchesPage/` | Batches, teachers, and membership |
+| `src/Components/AuditsPage/` | Global user-side audit history |
 | `src/Providers/` and `src/Context/` | Shared dialogs, snackbars, and permissions |
 | `src/Configs/FirebaseConfig.js` | Firebase browser setup from environment variables |
 
@@ -105,4 +111,3 @@ npm run build
 ```
 
 `npm start` runs the development site. `npm run build` creates the production files in `build/`. Netlify settings are in `netlify.toml`.
-

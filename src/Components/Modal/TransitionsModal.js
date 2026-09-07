@@ -24,7 +24,8 @@ const TransitionsModal = ({ heading, columnsProps,
   dataProps,
   isLoadingState,
   isEnableTopToolbar,
-  pageSize
+  pageSize,
+  enableWordWrap = false
 }) => {
 
   const [open, setOpen] = React.useState(true);
@@ -52,7 +53,8 @@ const TransitionsModal = ({ heading, columnsProps,
               dataProps={dataProps}
               isLoadingState={isLoadingState}
               isEnableTopToolbar={isEnableTopToolbar}
-              pageSize={pageSize}/>
+              pageSize={pageSize}
+              enableWordWrap={enableWordWrap}/>
             <Button variant="contained" onClick={handleClose} style={{ marginTop: '1.2rem',float: 'right' }}><CloseIcon />Close</Button>
           </Box>
         </Fade>

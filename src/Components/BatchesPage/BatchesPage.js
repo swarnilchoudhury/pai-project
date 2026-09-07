@@ -17,6 +17,7 @@ import AddIcon from '@mui/icons-material/Add';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import SearchIcon from '@mui/icons-material/Search';
 import axios from '../AxiosInterceptor/AxiosInterceptor';
 import useErrorMessageHandler from '../../CustomHooks/ErrorMessageHandler';
 import useDialogBoxHandler from '../../CustomHooks/DialogBoxHandler';
@@ -25,6 +26,7 @@ import BatchDetailView from './BatchDetailView';
 import CreateTeacher from './CreateTeacher';
 import AddStudentsToBatch from './AddStudentsToBatch';
 import TeachersDialog from './TeachersDialog';
+import SearchStudentsDialog from './SearchStudentsDialog';
 import TransitionsModal from '../Modal/TransitionsModal';
 import '../../ComponetsStyles/BatchesPage.css';
 
@@ -39,6 +41,7 @@ const BatchesPage = () => {
     const [showCreateBatchDialog, setShowCreateBatchDialog] = useState(false);
     const [showCreateTeacherDialog, setShowCreateTeacherDialog] = useState(false);
     const [showTeachersDialog, setShowTeachersDialog] = useState(false);
+    const [showSearchStudentsDialog, setShowSearchStudentsDialog] = useState(false);
     const [selectedBatchId, setSelectedBatchId] = useState(null);
     const [refreshCount, setRefreshCount] = useState(0);
     const [teachers, setTeachers] = useState([]);
@@ -353,6 +356,9 @@ const BatchesPage = () => {
                     <Button variant="contained" startIcon={<VisibilityIcon />} onClick={handleShowTeachers}>
                         Show Teachers
                     </Button>
+                    <Button variant="contained" startIcon={<SearchIcon />} onClick={() => setShowSearchStudentsDialog(true)}>
+                        Search Students
+                    </Button>
                     <Button variant="contained" startIcon={<RefreshIcon />} onClick={handleRefresh}>
                         Refresh
                     </Button>
@@ -434,6 +440,15 @@ const BatchesPage = () => {
                     onEdit={handleUpdateTeacher}
                     onDelete={handleDeleteTeacher}
                     onAudit={handleTeacherAudit}
+                />
+            )}
+
+            {showSearchStudentsDialog && (
+                <SearchStudentsDialog
+                    open={showSearchStudentsDialog}
+                    onClose={() => setShowSearchStudentsDialog(false)}
+                    batches={batches}
+                    onStudentsChanged={handleRefresh}
                 />
             )}
 
