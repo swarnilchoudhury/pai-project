@@ -13,7 +13,8 @@ const MiscTable = ({ columnsProps,
     isEnableTopToolbar = true,
     pageSize = 10,
     isEnableRowActions = false,
-    ActionButton
+    ActionButton,
+    enableWordWrap = false
 }) => {
 
     // Props validations
@@ -32,7 +33,8 @@ const MiscTable = ({ columnsProps,
         isEnableTopToolbar: PropTypes.bool,
         pageSize: PropTypes.number,
         isEnableRowActions: PropTypes.bool,
-        ActionButton: PropTypes.func
+        ActionButton: PropTypes.func,
+        enableWordWrap: PropTypes.bool
     };
 
     const data = dataProps; // For Data
@@ -77,6 +79,7 @@ const MiscTable = ({ columnsProps,
         muiTableProps: {
             sx: {
                 border: '1px solid rgba(81, 81, 81, .5)',
+                tableLayout: enableWordWrap ? 'fixed' : 'auto',
                 caption: {
                     captionSide: 'top',
                 },
@@ -85,8 +88,10 @@ const MiscTable = ({ columnsProps,
         muiTableBodyCellProps: {
             sx: {
                 border: '1px solid rgba(81, 81, 81, .5)',
-                whiteSpace: 'nowrap',
-                overflow: 'hidden',
+                whiteSpace: enableWordWrap ? 'normal' : 'nowrap',
+                overflow: enableWordWrap ? 'visible' : 'hidden',
+                overflowWrap: enableWordWrap ? 'anywhere' : 'normal',
+                wordBreak: enableWordWrap ? 'break-word' : 'normal',
                 padding: '0.8rem',
             },
         },
