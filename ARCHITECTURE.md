@@ -80,7 +80,7 @@ Admins create teachers, create batches with one or more teachers, then add avail
 
 ## Audit flow
 
-The Audits navbar item is available to every signed-in user. It opens a Material React Table with Title, User, and Date Time columns. The page reads `/api/audits`, which returns only user-side audit messages from the last 30 days with the newest entry first. The Clear History button calls `/api/audits/clear`; when the backend returns HTTP 200, the UI shows `Clear Started`, retained records are normalized to the three table fields, and the table refreshes.
+The Audits navbar item is available to every signed-in user. It opens a Material React Table with Title, User, and Date Time columns. The page reads `/api/audits`, which returns only user-side audit messages from the last 30 days with the newest entry first. Audit titles include the student name and PAI code before the change description when available. The Clear History button calls `/api/audits/clear`; the backend queues cleanup in QueueWorker and immediately returns `Clear Started`, while retained records are normalized asynchronously.
 
 ## Important code locations
 
